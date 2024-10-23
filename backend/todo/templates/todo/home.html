@@ -1,0 +1,26 @@
+{% extends "todo/base.html" %}
+{% block content %}
+    <h1>App home!</h1>
+    {% for task in tasks %}
+        <div class="media content-section">
+            <div class="media-body">
+                
+                <div class="article-metadata">
+                    <a class="mr-2" href="#">{{ task.other }}</a>
+                    <small class="text-muted">assigned at: {{ task.created_at }}</small>                    
+                </div>
+                <h3>
+                    <a class="article-title" href="#">
+                        {{ task.title }}
+                        {% if task.complete %}<span style="color: green;"> &#10003;</span>{% endif %} 
+                    </a>
+                </h3>
+                <p>description: {{ task.description }}</p>    
+            </div>
+                       
+
+ 
+        </div>
+
+    {% endfor %}
+{% endblock content %}
