@@ -1,38 +1,21 @@
 from django.shortcuts import render
+from .models import Task
 from datetime import datetime
+from django.utils import timezone
+from zoneinfo import ZoneInfo
 
-
-dummy_tasks = [
-    {
-        'title': 'task #1',
-        'description': 'this is the first task',
-        'complete': True,
-        'created_at': datetime.now(),
-        'other': 'some link',
-
-    },
-        {
-        'title': 'task #2',
-        'description': 'this is the second task',
-        'complete': False,
-        'created_at': datetime.now(),
-        'other': 'some link',
-
-    },
-        {
-        'title': 'task #3',
-        'description': 'this is the third task',
-        'complete': False,
-        'created_at': datetime.now(),
-        'other': 'some link',
-
-    }
-]
 
 # Create your views here.
 def home(request):
+    # # Get the user's time zone from their profile or default to UTC
+    # user_timezone = request.user.userprofile.timezone if request.user.is_authenticated else 'UTC'
+
+    # # Activate the user's time zone
+    # timezone.activate(ZoneInfo(user_timezone))
+    timezone.activate('America/Chicago')
+
     context = {
-        'tasks': dummy_tasks
+        'tasks': Task.objects.all()
     }
     return render(request, 'todo/home.html', context=context)
 
