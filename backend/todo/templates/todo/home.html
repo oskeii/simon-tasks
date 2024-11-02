@@ -3,6 +3,7 @@
     <h1>App home!</h1>
     {% for task in tasks %}
         <div class="media content-section">
+            <img class="rounded-circle article-img" src="{{ task.user.profile.image.url }}"
             <div class="media-body">
                 
                 <div class="article-metadata">
