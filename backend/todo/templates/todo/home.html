@@ -8,10 +8,11 @@
                 
                 <div class="article-metadata">
                     <a class="mr-2" href="#">link here</a>
+                    <small class="text-muted">DUE: {{ task.due_date }}</small>   
                     <small class="text-muted">assigned at: {{ task.created_at }}</small>                    
                 </div>
                 <h3>
-                    <a class="article-title" href="#">
+                    <a class="article-title" href="{% url 'task-detail' task.id %}">
                         {{ task.title }}
                         {% if task.complete %}<span style="color: green;"> &#10003;</span>{% endif %} 
                     </a>

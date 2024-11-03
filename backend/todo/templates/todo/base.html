@@ -29,6 +29,9 @@
                         <div class="navbar-nav mr-auto">
                             <a class="nav-item nav-link" href="{% url 'todo-home' %}">Home</a>
                             <a class="nav-item nav-link" href="{% url 'todo-about' %}">About</a>
+                            {% if user.is_authenticated %}
+                                <a class="nav-item nav-link" href="{% url 'task-create' %}">New Task</a>
+                            {% endif %}
                         </div>
                         <!-- Navbar Right Side -->
                         <!-- Right Side (ms-auto for alignment) -->
@@ -39,6 +42,7 @@
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
                                 </form>
+
                             {% else %}
                                 <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
                                 <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
