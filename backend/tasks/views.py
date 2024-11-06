@@ -25,14 +25,14 @@ def home(request):
     context = {
         'tasks': Task.objects.all()
     }
-    return render(request, 'todo/home.html', context=context)
+    return render(request, 'tasks/home.html', context=context)
 
 # <app>/<model>_<viewtype>.html
 class TaskListView(ListView):
     model = Task
     ordering = ['-created_at']  #newest to oldest
 
-    template_name = 'todo/home.html'
+    template_name = 'tasks/home.html'
     context_object_name = 'tasks'
 
 
@@ -76,4 +76,4 @@ class TaskDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     
 
 def about(request):
-    return render(request, 'todo/about.html', context={'title': 'About'})
+    return render(request, 'tasks/about.html', context={'title': 'About'})
