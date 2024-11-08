@@ -11,6 +11,9 @@ django-crispy-forms = "*"
 crispy-bootstrap5 = "*"
 pillow = "*"
 python-dotenv = "*"
+pytest = "*"
+pytest-django = "*"
+pytest-watch = "*"
 
 [dev-packages]
 
