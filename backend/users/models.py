@@ -20,3 +20,23 @@ class Profile(models.Model):
     
     def __str__(self):
         return f'{self.user.username} Profile'
+    
+
+class Component(models.Model):
+    # might rename...
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='component')
+    name = models.CharField(max_length=50)
+    description = models.TextField(blank=True, null=True)
+    as_workload = models.BooleanField(default=True)  # should this component be counted towards workload limit?
+
+    def __str__(self):
+        return self.name
+
+
+
+class Tag(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tags')
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
