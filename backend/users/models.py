@@ -8,14 +8,16 @@ class Profile(models.Model):
     image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
 
 
-    def save(self):
-        super().save()
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
-        img = Image.open(self.image.path)
-        if img.height > 300 or img.width > 300:
-            output_size = (300, 300)
-            img.thumbnail(output_size)
-            img.save(self.image.path)
+
+        if self.image:
+            img = Image.open(self.image.path)
+            if img.height > 300 or img.width > 300:
+                output_size = (300, 300)
+                img.thumbnail(output_size)
+                img.save(self.image.path)
     
     
     def __str__(self):
@@ -24,7 +26,7 @@ class Profile(models.Model):
 
 class Component(models.Model):
     # might rename...
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='component')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='components')
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
     as_workload = models.BooleanField(default=True)  # should this component be counted towards workload limit?
