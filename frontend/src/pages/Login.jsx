@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import axios from 'axios'
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -31,23 +32,36 @@ const Login = () => {
     return (
         <div>
             <h2>Login</h2>
+            {error && <p style={{color: "red"}}>{error}</p>}
             <form onSubmit={handleSubmit}>
-                <input 
-                type='text'
-                placeholder='Username'
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                />
-
-                <input 
-                type='password'
-                placeholder='Password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                />
+                <p>
+                <label>
+                    Username: 
+                    <input 
+                    type='text'
+                    placeholder='Username'
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    />
+                </label>   
+                </p>
+                
+                <p>
+                <label>
+                    Password: 
+                   <input 
+                    type='password'
+                    placeholder='Password'
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    /> 
+                </label>    
+                </p>
                 <button type='submit'>Login</button>
-            </form>
-            {error && <p>{error}</p>}
+            </form> 
+            <hr/>
+            <p>Dont Have an Account Yet? <Link to={'/register'}>Register Here!</Link></p>
+            
         </div>
     );
 };

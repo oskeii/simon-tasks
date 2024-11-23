@@ -1,23 +1,38 @@
 import React, { useEffect, useState } from 'react'
 import api from '../axios'
+import TaskItem from '../components/TaskItem';
+import { formToJSON } from 'axios';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
+  const [newTask, SetNewTask] = useState("");
   const [loading, setLoading] = useState(true);
 
+  
+  const getTasks = async () => {
+    try {
+      const response = await api.get('tasks/');
+      setTasks(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching tasks', err);
+      setLoading(false);
+    }
+  };
+
+  const createTask = async () => {
+    try {
+      let data = {"title": newTask}
+      const response = await api.post('tasks/', data=data);
+
+    } catch (err) {
+      console.error('Error adding new task', err);
+    }
+  };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await api.get('tasks/');
-        setTasks(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching tasks', err);
-        setLoading(false);
-      }
-    };
-    fetchTasks();
+
+    getTasks();
   }, []);
 
   if (loading) {
@@ -33,15 +48,28 @@ const TaskList = () => {
 
   return (
     <div>
-
-        <div className='task-list'>
-          <h3>My tasks:</h3>
-          <ul>
-            {Array.isArray(tasks) && tasks.map((task) => (
+      <input
+        type='text'
+        name='new-task' value={newTask} placeholder='new task'
+        onChange={(e) => {SetNewTask(e.target.value)}}>
+      </input>
+      <button onClick={createTask}>Add</button>
+      <hr/>
+      <div className='task-list'>
+        <h3>My tasks:</h3>
+        <ul>
+          {Array.isArray(tasks) && tasks.map((task) => (
+            <div>
               <li key={task.id}>{task.title}</li>
-            ))}
-          </ul>
-        </div>
+              {/* <li>
+                <TaskItem key={task.id} item={task}/>
+              </li> */}
+              
+            </div>
+            
+          ))}
+        </ul>
+      </div>
 
     </div>
   );

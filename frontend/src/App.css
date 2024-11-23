@@ -12,6 +12,20 @@
 
 }
 
+li {
+  background-color: beige;
+  border: 1px solid #706886aa;
+  border-radius: 5px;
+  border-style: outset;
+}
+
+.profile-pic {
+  border: 2px solid #747bff;
+  border-radius: 100%;
+  height: 150px;
+  width: 150px;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
