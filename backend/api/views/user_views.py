@@ -6,9 +6,9 @@ from api.serializers import ProfileSerializer, UserSerializer
 
 
 class UserProfileView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        print(request)
         try:
             profile = Profile.objects.get(user=request.user)
 
@@ -32,7 +32,10 @@ class UserProfileView(APIView):
     
 
 class UserRegistrationView(APIView):
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
+    # print('made it to view')
+
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
