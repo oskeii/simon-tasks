@@ -34,20 +34,24 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'corsheaders',
-    'api.apps.ApiConfig',
-    'tasks.apps.TasksConfig',
-    'users.apps.UsersConfig',
-    'crispy_forms',
-    'crispy_bootstrap5',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    'crispy_forms',
+    'crispy_bootstrap5',
+
+    'tasks.apps.TasksConfig',
+    'users.apps.UsersConfig',
+    'api.apps.ApiConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -55,6 +59,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'api.middleware.CookieToAuthHeaderMiddleware',  # custom middleware for COOKIES
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -142,17 +147,20 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'api.utils.CookieJWTAuthentication',  # custom cookie authentication class
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated' # Only authenticated users can access the API
+        'rest_framework.permissions.IsAuthenticated'
     ],
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(hours=48),
-    # 'ROTATE_REFRESH_TOKENS': True, <-- default
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(hours=1),
+    'ROTATE_REFRESH_TOKENS': True, #<-- default
     'BLACKLIST_AFTER_ROTATION': True,
+    
+    # 'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
 
 CORS_ALLOWED_ORIGINS = [

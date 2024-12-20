@@ -9,10 +9,10 @@ from api.serializers import TaskSerializer
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
+        # print('made it to view')
         return Task.objects.filter(user=user).order_by('-due_date', 'created_at')
     
     @action(detail=True, methods=['patch'], url_path='update')
@@ -20,6 +20,10 @@ class TaskViewSet(viewsets.ModelViewSet):
         task = self.get_object()
         serializer = self.get_serializer(task, data=request.data, partial=True)
 
+        # Ensure that the task belongs to the authenticated user
+        if task.user != request.user:
+            return Response({"error": "You do not have permission to update this task."}, status=status.HTTP_403_FORBIDDEN)
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

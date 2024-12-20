@@ -12,7 +12,7 @@ router.register(r'tasks', TaskViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('profile/', UserProfileView.as_view(), name='profile'),
-    path('register/', UserRegistrationView.as_view(), name='user-registration'),
-    path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', refresh_token_view, name='token_refresh')
+    path('register/', UserRegistrationView.as_view(), name='user_registration'),
+    path('auth/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/refresh/', refresh_token_view, name='token_refresh')
 ]
