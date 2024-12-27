@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import { Link } from 'react-router-dom';
 import axios from 'axios'
 
 const Register = () => {
@@ -25,7 +26,7 @@ const Register = () => {
             console.error(err);
             setStatusCode(err.response.status)
             console.log(statusCode)
-            if (statusCode != 400) {
+            if (statusCode !== 400) {
                 setError(`User registration failed! Possible server error... \nStatus Code: ${statusCode}`)
             } else {
                 setError('User registration failed! Please check field requirements.')
@@ -37,6 +38,9 @@ const Register = () => {
 
     return (
     <div>
+        <p>
+            <Link to={'/login'}>&larr; Back to Login</Link>
+        </p>
         <h1>Create an Account!</h1> <hr/>
         <div className='form-container'>
         {error && <p style={{color: "red"}}>{error}</p>}

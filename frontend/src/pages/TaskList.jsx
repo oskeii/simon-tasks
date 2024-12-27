@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import api from '../axios'
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import TaskItem from '../components/TaskItem';
 import { formToJSON } from 'axios';
 
 const TaskList = () => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [tasks, setTasks] = useState([]);
   const [newTask, SetNewTask] = useState("");
   const [loading, setLoading] = useState(true);
@@ -11,7 +13,7 @@ const TaskList = () => {
   
   const getTasks = async () => {
     try {
-      const response = await api.get('tasks/');
+      const response = await axiosPrivate.get('/tasks/');
       setTasks(response.data);
       setLoading(false);
     } catch (err) {
@@ -31,6 +33,7 @@ const TaskList = () => {
   };
 
   useEffect(() => {
+
 
     getTasks();
   }, []);
@@ -66,7 +69,6 @@ const TaskList = () => {
               </li> */}
               
             </div>
-            
           ))}
         </ul>
       </div>

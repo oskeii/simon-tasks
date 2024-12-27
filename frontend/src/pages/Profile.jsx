@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import api from '../axios'
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 
 const ProfileForm = ({profile, setProfile, user, setUser}) => {
 
@@ -78,6 +78,8 @@ const ProfileForm = ({profile, setProfile, user, setUser}) => {
 
 
 const Profile = () => {
+    const axiosPrivate = useAxiosPrivate();
+
     const [profile, setProfile] = useState("[nothing here]");
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -85,7 +87,7 @@ const Profile = () => {
     const getProfile = async () => {
 
         try {
-            const response = await api.get('profile/');
+            const response = await axiosPrivate.get('profile/');
             setProfile(response.data['profile']);
             setUser(response.data.user);
             setLoading(false);
