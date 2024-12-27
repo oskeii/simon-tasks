@@ -1,30 +1,38 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route} from "react-router-dom"
-import Header from './components/Header'
+import { Routes, Route} from "react-router-dom"
+import RequireAuth from './components/RequireAuth'
+import PersistLogin from './components/PersistLogin'
+import Missing from './pages/Missing'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import TaskList from "./pages/TaskList"
 import Profile from './pages/Profile'
 import Register from './pages/Register'
+import Layout from './components/Layout'
+
 
 
 function App() {
     return (
-        <>
-        <Router>
-            <Header />
-
-        
-            <Routes>
+        <Routes>
+            <Route path='/' element={<Layout />}>
+                {/* public routes */}
                 <Route path='/' element={<Home key={"home"}/>} />  
                 <Route path='/register' element={<Register key={"register"}/>} />
                 <Route path='/login' element={<Login key={"login"}/>} />
-                <Route path='/profile' element={<Profile key={"profile"}/>} />
-                <Route path='/tasks' element={<TaskList key={"tasks"}/>} />
-            </Routes>
-        </Router>        
-        </>
 
+                {/* protected routes */}
+                <Route element={<PersistLogin />}>
+                    <Route element={<RequireAuth />}>
+                        <Route path='/profile' element={<Profile key={"profile"}/>} />
+                        <Route path='/tasks' element={<TaskList key={"tasks"}/>} />
+                    </Route>
+                </Route>
+
+                {/* catch all */}
+                <Route path='*' element={<Missing />} />
+            </Route>
+        </Routes>
         
     )
 }

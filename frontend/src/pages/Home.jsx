@@ -1,16 +1,20 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import useLogout from '../hooks/useLogout';
+import useAuth from '../hooks/useAuth';
 
 const Home = () => {
+  const { auth } = useAuth()
+  const navigate = useNavigate();
+  const logout = useLogout();
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    window.location.href = '/login';  // Redirect to login page
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');  // Redirect to login page
   };
 
-  const CheckLogin = () => {
-    if (localStorage.getItem('access_token') == null) {
+  const AuthButton = () => {
+    if (!auth?.username) {
       return <Link to='/login'><button>Login here</button></Link>
     } else {
       return (<button onClick={handleLogout}>Logout</button>)
@@ -19,9 +23,12 @@ const Home = () => {
 
   return (
     <div>
-        <h1>Welcome</h1>
+        {auth?.username
+        ?<h2>Hello, {auth.username}!</h2>
+        :<h1>Welcome</h1>}
+        
         <div>
-          <CheckLogin />
+          <AuthButton />
         </div>
         
     </div>

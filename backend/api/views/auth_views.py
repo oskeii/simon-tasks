@@ -29,7 +29,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             httponly=True,  # Prevents access to the token by JavaScript (XSS protection)
             secure=settings.DEBUG == False,  # Only set Secure in production (HTTPS)
             samesite='Strict',  # CSRF protection
-            expires=timedelta(minutes=5)  # Adjust token expiration time here
+            # expires=timedelta(minutes=5),  # Adjust token expiration time here
+            max_age=timedelta(minutes=5)
         )
 
         response.set_cookie(
@@ -38,11 +39,22 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             httponly=True,  # Prevents access to the token by JavaScript (XSS protection)
             secure=settings.DEBUG == False,  # Only set Secure in production (HTTPS)
             samesite='Strict',  # CSRF protection
-            expires=timedelta(hours=1)  # Adjust token expiration time here
+            # expires=timedelta(hours=1),  # Adjust token expiration time here
+            max_age=timedelta(minutes=10)
         )
         print(f"Response object type: {type(response)}")
         # return response with tokens set as cookies
         return response
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def logout_view(request):
+    response = Response("Logged out successfully", status=status.HTTP_200_OK)
+    for cookie in request.COOKIES:
+        response.delete_cookie(cookie)
+
+    return response
 
 
 @api_view(['POST'])
@@ -51,6 +63,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 def refresh_token_view(request):
     # print('made it to view')
     refresh_token = request.COOKIES.get('refresh_token')
+    print(refresh_token)
     if not refresh_token:
         return Response({"error": "Refresh token is required"}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -68,22 +81,10 @@ def refresh_token_view(request):
             httponly=True,  
             secure=settings.DEBUG == False,  
             samesite='Strict',  
-            expires=timedelta(minutes=5)  
+            # expires=timedelta(minutes=5),
+            max_age=timedelta(minutes=5)
         )
 
-
-        # optional: issue a new refresh token to cookie
-        if settings.SIMPLE_JWT['ROTATE_REFRESH_TOKENS']:
-            new_refresh = str(refresh)
-            response.set_cookie(
-                key='refresh_token',
-                value=new_refresh,
-                httponly=True,
-                secure=settings.DEBUG == False,
-                samesite='Strict',
-                expires=refresh.lifetime + timedelta(seconds=30)
-            )
-        
         return response
     except TokenError as e:
         print('invalid refresh token')
