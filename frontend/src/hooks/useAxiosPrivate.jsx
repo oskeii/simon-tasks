@@ -2,10 +2,15 @@ import { axiosPrivate } from "../axios";
 import { useEffect } from "react";
 import useRefreshToken from "./useRefreshToken";
 import useAuth from "./useAuth";
+import useLogout from "./useLogout";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const useAxiosPrivate = () => {
     const refresh = useRefreshToken();
     const { auth } = useAuth();
+    const logout = useLogout();
+    const navigate = useNavigate();
+    const location = useLocation();
 
 
     useEffect(() => {
@@ -25,24 +30,35 @@ const useAxiosPrivate = () => {
             (response) => response, // return as is if success
             async (error) => {  // if error, get new access token and retry
                 const originalRequest = error?.config;
+
                 console.log(originalRequest)
                 console.log(`status: ${error.response.status}`)
                 console.log(`auth state:\n ${auth.aT}`)
+
+                // If we get a 401 or 403, attempt to refresh (unless we already tried)
                 if ((error.response.status === 401 || error.response.status === 403) 
                     && !originalRequest?.sent) {
                     originalRequest.sent = true;
-                    // new access token and retry
-                    
-                    const validAT = await refresh();
-                    console.log(`auth state:\n ${auth.aT}`)
-                    // setAuth()
-                    originalRequest.withCredentials = true; 
-                    console.log(originalRequest)
-                    
-                    return axiosPrivate(originalRequest);
-                }
-                return Promise.reject(error);
+                    try { // new access token and retry
+                        const validAT = await refresh();
+                        console.log(`auth state:\n ${auth.aT}`)
+                        // setAuth()
+                        originalRequest.withCredentials = true; 
+                        console.log(originalRequest)
+                        
+                        return axiosPrivate(originalRequest);  
+                    } catch (refreshErr) {
+                        // If refresh throws an error (token expired, server error, etc.)
+                        console.error("Refresh failed:", refreshErr);
+                        const username = auth.username;
+                        await logout();
+                        navigate('/login', { replace: true, state: { from: { location, user: username } } });
 
+                        //return Promise.reject(refreshErr); // other logout logic??
+                    } 
+                }
+                // If error is not 401/403 or the request was already retried, reject
+                return Promise.reject(error);
             }
         );
         
@@ -50,10 +66,9 @@ const useAxiosPrivate = () => {
             axiosPrivate.interceptors.request.eject(requestIntercept);
             axiosPrivate.interceptors.response.eject(responseIntercept);
         }
-
-    }, [auth, refresh])
+    }, [auth, refresh, navigate]);
 
     return axiosPrivate;
-}
+};
 
 export default useAxiosPrivate;

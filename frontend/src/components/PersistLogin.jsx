@@ -22,7 +22,7 @@ const PersistLogin = () => {
             }
         }
 
-        !auth?.aT ? verifyRefreshToken() : setIsLoading(false);
+        !auth?.aT ? verifyRefreshToken() : setIsLoading(false); // !! doesnt automatically updatewhen cookie expires
         
         return () => {isMounted = false;}
     }, [])
@@ -30,9 +30,11 @@ const PersistLogin = () => {
 
     useEffect(() => {
         console.log(`isLoading: ${isLoading}`);
-        console.log(`aT: ${auth?.aT}`);
-        console.log(`rT: ${auth?.rT}`);
+        console.log("Auth state in PersistLogin:", auth);
     },[isLoading])
+    useEffect(() => {
+        console.log("Auth state in PersistLogin:", auth);
+    },[auth])
 
     return (
         <>
