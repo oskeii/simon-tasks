@@ -5,23 +5,27 @@ const useRefreshToken = () => {
     const { auth, setAuth } = useAuth();
 
     const refresh = async () => {
-        const response = await axios.post('/auth/refresh/', {}, {withCredentials:true})
-        // const response = await axiosPrivate.post('/auth/refresh/');
-        setAuth(prev => {
-            console.log(prev);
-            console.log(response.data.access);
+        try {
+            const response = await axios.post('/auth/refresh/', {}, {withCredentials:true})
             if (response?.data?.access) {
-                return {...prev, aT:true, rT:true}
+                console.log(prev);
+                console.log(response.data.access);
+                setAuth(prev => ({...prev, aT:true, rT:true}));
             } else {
-                return {...prev, aT:false, rT:false};
+                setAuth(prev => ({...prev, aT:false, rT:false}));
+                
+                throw new Error("No access token in response");
             }
-            
-            
-        })
-        console.log(`auth state:\n ${auth.aT}`)
+            console.log("Updated auth state:", auth);
+        } catch (err) {
+            console.error("Refresh token failed:", err);
+            setAuth(prev => ({...prev, aT:false, rT:false}));
+            console.log("Updated auth state:", auth);
+            throw err
+        }
+        return auth.aT; 
+    };
 
-        return auth.aT; //response.data.access;
-    }
     return refresh;
 };
 
