@@ -3,7 +3,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from django.conf import settings
 from datetime import timedelta
@@ -29,7 +29,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             httponly=True,  # Prevents access to the token by JavaScript (XSS protection)
             secure=settings.DEBUG == False,  # Only set Secure in production (HTTPS)
             samesite='Strict',  # CSRF protection
-            # expires=timedelta(minutes=5),  # Adjust token expiration time here
             max_age=timedelta(minutes=5)
         )
 
@@ -39,7 +38,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             httponly=True,  # Prevents access to the token by JavaScript (XSS protection)
             secure=settings.DEBUG == False,  # Only set Secure in production (HTTPS)
             samesite='Strict',  # CSRF protection
-            # expires=timedelta(hours=1),  # Adjust token expiration time here
             max_age=timedelta(minutes=10)
         )
         print(f"Response object type: {type(response)}")
@@ -58,10 +56,8 @@ def logout_view(request):
 
 
 @api_view(['POST'])
-@authentication_classes([])
 @permission_classes([AllowAny])
 def refresh_token_view(request):
-    # print('made it to view')
     refresh_token = request.COOKIES.get('refresh_token')
     print(refresh_token)
     if not refresh_token:
@@ -81,7 +77,6 @@ def refresh_token_view(request):
             httponly=True,  
             secure=settings.DEBUG == False,  
             samesite='Strict',  
-            # expires=timedelta(minutes=5),
             max_age=timedelta(minutes=5)
         )
 
