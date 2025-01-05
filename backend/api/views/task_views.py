@@ -12,7 +12,6 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        # print('made it to view')
         return Task.objects.filter(user=user).order_by('-due_date', 'created_at')
     
     @action(detail=True, methods=['patch'], url_path='update')

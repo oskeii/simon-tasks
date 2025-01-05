@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'api.middleware.CookieToAuthHeaderMiddleware',  # custom middleware for COOKIES
+    # 'api.middleware.CookieToAuthHeaderMiddleware',  # custom middleware for COOKIES
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -146,8 +146,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'api.utils.CookieJWTAuthentication',  # custom cookie authentication class
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'api.utils.CookieJWTAuthentication',  # custom cookie authentication class
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
@@ -159,8 +159,6 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(minutes=30),
     'ROTATE_REFRESH_TOKENS': True, #<-- default
     'BLACKLIST_AFTER_ROTATION': True,
-    
-    # 'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
 
 CORS_ALLOWED_ORIGINS = [

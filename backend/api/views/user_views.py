@@ -32,10 +32,7 @@ class UserProfileView(APIView):
     
 
 class UserRegistrationView(APIView):
-    authentication_classes = []
     permission_classes = [permissions.AllowAny]
-    # print('made it to view')
-
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
