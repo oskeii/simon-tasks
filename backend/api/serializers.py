@@ -13,14 +13,18 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
     confirm_password = serializers.CharField(write_only=True, required=True)
 
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'confirm_password', 'first_name', 'last_name']
+        fields = [
+            'email', 'username', 
+            'password', 'confirm_password', 
+            'first_name', 'last_name'
+            ]
 
     def validate(self, data):
         password = data.get('password')
@@ -52,15 +56,52 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return user
     
-    
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name'
+        ]
+
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
     class Meta:
         model = Profile
-        fields = '__all__'
-        # fields = ['user',
-        #           'image']
+        # fields = '__all__'
+        fields = [
+            'id',
+            'user',
+            'image',
+            # Add other Profile fields here
+            ]
+        
+    
+    def update(self, instance, validated_data):
+        # pop the nested user data to be handled separately
+        print("Validated data:", validated_data)
+        user_data = validated_data.pop('user')
+        print(user_data)
+
+        # Update profile fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Update user fields
+        if user_data:
+            user = instance.user
+            for attr, value, in user_data.items():
+                setattr(user, attr, value)
+            user.save()
+
+        return instance
 
     
