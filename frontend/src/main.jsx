@@ -5,16 +5,19 @@ import App from './App.jsx'
 import { AuthProvider } from './context/AuthProvider.jsx'
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom"
 import React from 'react'
+import { ProfileProvider } from './context/ProfileContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Router>
       <AuthProvider>
-      
-        <Routes>
-          <Route path='/*' element={<App />} />
-        </Routes>
-      
+        <ProfileProvider>
+          
+          <Routes>
+            <Route path='/*' element={<App />} />
+          </Routes> 
+                   
+        </ProfileProvider>
       </AuthProvider>  
     </Router>
     
