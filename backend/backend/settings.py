@@ -185,3 +185,53 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
+
+
+
+LOGGING = {
+    'version': 1, # the dictConfig format version
+    'disable_existing_loggers': False, # retain the default loggers
+
+    'formatters': {
+        'verbose': {
+            'format': '{name} {levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.getenv('DJANGO_LOG_FILE'),
+            'formatter': 'verbose'
+        },
+    },
+
+    'loggers': {
+        # '': {
+        #     'level': 'INFO',
+        #     'handlers': ['file']
+        # },
+        # 'django': {
+        #     'handlers': ['console', 'file'],
+        #     'level': 'INFO',
+        #     'propagate': True,
+        # },
+        'api': {  
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

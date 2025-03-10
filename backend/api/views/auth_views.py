@@ -1,3 +1,4 @@
+import logging
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
@@ -9,18 +10,25 @@ from django.conf import settings
 from datetime import timedelta
 
 
+logger = logging.getLogger(__name__)
+
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     """
     Custom view to obtain JWT access and refresh tokens and set them as HttpOnly cookies.
     """
     def post(self, request, *args, **kwargs):
-        print(f"Request object type: {type(request)}")
-        
+        logger.debug("Authentication attempt received")
+
         # parent class method to generate tokens
         response = super().post(request, *args, **kwargs)
 
+        # successful authentication
         access = response.data.get('access')
         refresh = response.data.get('refresh')
+
+        username = request.data.get('username', 'unknown_user')
+        logger.info(f"User {username} authenticated successfully")
 
         # set tokens as HttpOnly cookies
         response.set_cookie(
@@ -35,40 +43,51 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         response.set_cookie(
             key='refresh_token',
             value=refresh,
-            httponly=True,  # Prevents access to the token by JavaScript (XSS protection)
-            secure=settings.DEBUG == False,  # Only set Secure in production (HTTPS)
-            samesite='Strict',  # CSRF protection
+            httponly=True,  
+            secure=settings.DEBUG == False, 
+            samesite='Strict',  
             max_age=timedelta(minutes=10)
         )
-        print(f"Response object type: {type(response)}")
-        # return response with tokens set as cookies
+
+        del response.data['access']
+        del response.data['refresh']
+
+        response.data['success'] = True
+        response.data['message'] = 'Authentication successful'
+
+        logger.debug(f"Authentication cookies set successfully")
         return response
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def logout_view(request):
+    logger.info(f"Logout requested for user {request.user.username if request.user.is_authenticated else '-anonymous-'}")
     response = Response("Logged out successfully", status=status.HTTP_200_OK)
+    
     for cookie in request.COOKIES:
+        logger.debug(f"Deleting cookie: {cookie}")
         response.delete_cookie(cookie)
 
+    logger.info("User logged out successfully")
     return response
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def refresh_token_view(request):
+    logger.debug("Token refresh requested")
     refresh_token = request.COOKIES.get('refresh_token')
-    print(refresh_token)
+    
     if not refresh_token:
+        logger.warning("Token refresh failed: No refresh token in cookies")
         return Response({"error": "Refresh token is required"}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
         refresh = RefreshToken(refresh_token)
         new_access = refresh.access_token
-        print(refresh_token)
-        print(type(refresh), refresh)
-        print(type(new_access),new_access)
+
+        logger.info(f"Token refreshed successfully for user ID: {refresh.payload.get('user_id')}")
 
         response = Response({'message':'Token refreshed successfully'})
         response.set_cookie(
@@ -81,8 +100,13 @@ def refresh_token_view(request):
         )
 
         return response
+    
     except TokenError as e:
-        print('invalid refresh token')
+        logger.warning(f"Invalid refresh token: {str(e)}")
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    except Exception as e:
+        logger.exception("Unexpected error during token refresh")
+        return Response({"error": "An unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
