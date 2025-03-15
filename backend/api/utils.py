@@ -1,10 +1,41 @@
 import logging
+from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import HTTP_HEADER_ENCODING
 
 logger = logging.getLogger(__name__)
 
+
+def api_error_response(message, status_code=400, errors=None):
+    """
+    Generate a standardized error response
+    """
+    response_data = {
+        'success': False,
+        'message': message,
+    }
+    
+    if errors:
+        response_data['errors'] = errors
+        
+    return Response(response_data, status=status_code)
+
+def api_success_response(data=None, message=None, status_code=200):
+    """
+    Generate a standardized success response
+    """
+    response_data = {
+        'success': True
+    }
+    
+    if message:
+        response_data['message'] = message
+        
+    if data is not None:
+        response_data['data'] = data
+        
+    return Response(response_data, status=status_code)
 
 class CookieJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):

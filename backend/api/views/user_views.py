@@ -1,4 +1,5 @@
 import logging
+from api.utils import api_error_response, api_success_response
 from rest_framework import viewsets, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,22 +23,23 @@ class UserProfileView(APIView):
             serializer = ProfileSerializer(profile, context={"request": request})
             logger.info(f"Successfully retrieved profile for user: {request.user.username}")
 
-            return Response(
-                serializer.data,
-                status=status.HTTP_200_OK
+            return api_success_response(
+                data=serializer.data,
+                message="Profile retrieved successfully",
+                status_code=status.HTTP_200_OK
             )
         
         except Profile.DoesNotExist:
             logger.warning(f"Profile not found for user: {request.user.username}")
-            return Response(
-                {"error": "Profile not found"}, 
-                status=status.HTTP_404_NOT_FOUND
-                )
+            return api_error_response(
+                message="Profile not found", 
+                status_code=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
-            logger.exception(f"Profile not found for user: {request.user.username}")
-            return Response(
-                {"error": "An unexpected error occured"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            logger.exception(f"Error retreiving profile for user: {request.user.username}")
+            return api_error_response(
+                message="An unexpected error occured",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
     def put(self, request):
@@ -51,10 +53,10 @@ class UserProfileView(APIView):
             profile = Profile.objects.get(user=request.user)
         except Profile.DoesNotExist:
             logger.warning(f"Profile not found for user: {request.user.username}")
-            return Response(
-                {"error": "Profile not found"}, 
-                status=status.HTTP_404_NOT_FOUND
-                )
+            return api_error_response(
+                message="Profile not found", 
+                status_code=status.HTTP_404_NOT_FOUND
+            )
         
         serializer = ProfileSerializer(profile, data=request.data, partial=False)
         logger.debug("Serializer initial data: {serializer.initial_data}")
@@ -63,10 +65,18 @@ class UserProfileView(APIView):
             updated_profile = serializer.save()
             logger.info(f"Profile successfully updated for user: {request.user.username}")
 
-            return Response(ProfileSerializer(updated_profile).data, status=status.HTTP_200_OK)
+            return api_success_response(
+                data=ProfileSerializer(updated_profile).data, 
+                message="Profile updated successfully",
+                status_code=status.HTTP_200_OK
+            )
         
         logger.warning(f"Invalid data for profile update. \nErrors: {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return api_error_response(
+            message="Invalid data for profile update", 
+            errors=serializer.errors, 
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
     
     def patch(self, request):
         """
@@ -80,7 +90,10 @@ class UserProfileView(APIView):
             profile = Profile.objects.get(user=request.user)
         except Profile.DoesNotExist:
             logger.warning(f"Profile not found for user: {request.user.username}")
-            return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+            return api_error_response(
+                message="Profile not found", 
+                status_code=status.HTTP_404_NOT_FOUND
+            )
             
         serializer = ProfileSerializer(profile, data=request.data, partial=True)
         logger.debug(f"Serializer initial data: {serializer.initial_data}")
@@ -89,10 +102,18 @@ class UserProfileView(APIView):
             updated_profile = serializer.save()
             logger.info(f"Profile partially updated for user: {request.user.username}")
 
-            return Response(ProfileSerializer(updated_profile).data, status=status.HTTP_200_OK)
+            return api_success_response(
+                data=ProfileSerializer(updated_profile).data, 
+                message="Profile partially updated successfully",
+                status_code=status.HTTP_200_OK
+            )
 
         logger.warning(f"Invalid data for profile partial update. \nErrors: {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return api_error_response(
+            message="Invalid data for profile update", 
+            errors=serializer.errors, 
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
 
 class UserRegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -104,10 +125,11 @@ class UserRegistrationView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             logger.info(f"User successfully registered: {user.username}")
-            return Response({
-                'message': 'User created successfully',
-                'user': serializer.data
-            }, status=status.HTTP_201_CREATED)
+            return api_success_response(
+                data= serializer.data, 
+                message='User created successfully',
+                status_code=status.HTTP_201_CREATED
+            )
         
         logger.warning(f"User registration failed. \nErrors: {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return api_error_response(message="User registration failed.", errors=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)

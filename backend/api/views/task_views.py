@@ -1,3 +1,4 @@
+from api.utils import api_error_response, api_success_response
 from rest_framework import permissions, viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,9 +22,9 @@ class TaskViewSet(viewsets.ModelViewSet):
 
         # Ensure that the task belongs to the authenticated user
         if task.user != request.user:
-            return Response({"error": "You do not have permission to update this task."}, status=status.HTTP_403_FORBIDDEN)
+            return api_error_response(message="You do not have permission to update this task.", status_code=status.HTTP_403_FORBIDDEN)
         
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return api_success_response(data=serializer.data, message="Task successully updated", status_code=status.HTTP_200_OK)
+        return api_error_response(message="Invalid data for task update", errors=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)

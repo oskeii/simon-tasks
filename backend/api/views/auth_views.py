@@ -1,4 +1,5 @@
 import logging
+from api.utils import api_error_response, api_success_response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
@@ -63,7 +64,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 @permission_classes([AllowAny])
 def logout_view(request):
     logger.info(f"Logout requested for user {request.user.username if request.user.is_authenticated else '-anonymous-'}")
-    response = Response("Logged out successfully", status=status.HTTP_200_OK)
+    response = api_success_response(message="Logged out successfully", status_code=status.HTTP_200_OK)
     
     for cookie in request.COOKIES:
         logger.debug(f"Deleting cookie: {cookie}")
@@ -81,7 +82,7 @@ def refresh_token_view(request):
     
     if not refresh_token:
         logger.warning("Token refresh failed: No refresh token in cookies")
-        return Response({"error": "Refresh token is required"}, status=status.HTTP_400_BAD_REQUEST)
+        return api_error_response(message="Refresh token is required", status_code=status.HTTP_400_BAD_REQUEST)
     
     try:
         refresh = RefreshToken(refresh_token)
@@ -89,7 +90,7 @@ def refresh_token_view(request):
 
         logger.info(f"Token refreshed successfully for user ID: {refresh.payload.get('user_id')}")
 
-        response = Response({'message':'Token refreshed successfully'})
+        response = api_success_response(message="Token refreshed successfully", )
         response.set_cookie(
             key='access_token',
             value=new_access,
@@ -103,10 +104,10 @@ def refresh_token_view(request):
     
     except TokenError as e:
         logger.warning(f"Invalid refresh token: {str(e)}")
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return api_error_response(errors=str(e), status_code=status.HTTP_400_BAD_REQUEST)
     
     except Exception as e:
         logger.exception("Unexpected error during token refresh")
-        return Response({"error": "An unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return api_error_response(message="An unexpected error occurred", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 

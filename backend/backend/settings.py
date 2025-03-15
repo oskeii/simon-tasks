@@ -45,8 +45,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'crispy_forms',
-    'crispy_bootstrap5',
 
     'tasks.apps.TasksConfig',
     'users.apps.UsersConfig',
