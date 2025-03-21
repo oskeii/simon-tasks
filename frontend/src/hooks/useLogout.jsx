@@ -2,21 +2,19 @@ import axios from "../services/axios";
 import useAuth from "./useAuth";
 
 const useLogout = () => {
-    const { setAuth } = useAuth();
+    const { logout } = useAuth();
 
-    const logout = async () => {
-        setAuth({});
+    const handleLogout = async () => {
         try {
-            const response = await axios.post('/logout/', 
-                {}, {withCredentials: true}
-            );
-            console.log(response)
-            return response;
+            await axios.post('/logout/', {}, {withCredentials: true});
         } catch (err) {
             console.error(err);
+        } finally {
+            // Always update auth state even if API fails
+            logout();
         }
     }
-    return logout;
+    return handleLogout;
 }
 
 export default useLogout;
