@@ -1,31 +1,26 @@
 import axios from "../services/axios";
 import useAuth from "./useAuth";
+import useLogout from "./useLogout";
 
 const useRefreshToken = () => {
-    const { auth, setAuth } = useAuth();
+    const { setAuth } = useAuth();
+    const { handleLogout } = useLogout();
 
     const refresh = async () => {
         try {
             const response = await axios.post('/auth/refresh/', {}, {withCredentials:true})
-            if (response?.data?.access) {
-                console.log(prev);
-                console.log(response.data.access);
-                setAuth(prev => ({...prev, aT:true, rT:true}));
-            } else {
-                setAuth(prev => ({...prev, aT:false, rT:false}));
-                
-                throw new Error("No access token in response");
-            }
-            console.log("Updated auth state:", auth);
+            
+            // If we get here, token refresh was successful
+            setAuth(prev => ({...prev, isAuthenticated: true}));
+            return true;
         } catch (err) {
-            console.error("Refresh token failed:", err);
-            setAuth(prev => ({...prev, aT:false, rT:false}));
-            console.log("Updated auth state:", auth);
-            throw err
+            console.error("Token refresh failed:", err);
+            
+            // Logout on refresh failure
+            handleLogout();
+            throw err;
         }
-        return auth.aT; 
     };
-
     return refresh;
 };
 

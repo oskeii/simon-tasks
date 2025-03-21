@@ -8,64 +8,55 @@ import { useNavigate, useLocation } from "react-router-dom";
 const useAxiosPrivate = () => {
     const refresh = useRefreshToken();
     const { auth } = useAuth();
-    const logout = useLogout();
+    const username = auth.user?.username;
+    const handleLogout = useLogout();
+
     const navigate = useNavigate();
     const location = useLocation();
 
-
     useEffect(() => {
-
-        const requestIntercept = axiosPrivate.interceptors.request.use(
-            config => { // add authorization header to initial request, if missing
-                if (!config.headers['Authorization']) {
-                    config.headers['Authorization'] = `Bearer xyzzz`;
-                }
-                config.withCredentials = true;
-                console.log(config)
-                return config;
-            }, (error) => Promise.reject(error)
-        );
         
         const responseIntercept = axiosPrivate.interceptors.response.use(
-            (response) => response, // return as is if success
-            async (error) => {  // if error, get new access token and retry
+            // Success handler - simply return the response
+            (response) => response,
+            // Error handler - try to refresh token if status 401/403
+            async (error) => {  
                 const originalRequest = error?.config;
 
-                console.log(originalRequest)
-                console.log(`status: ${error.response.status}`)
-                console.log(`auth state:\n ${auth.aT}`)
+                if (!originalRequest) {
+                    return Promise.reject(error)
+                }
 
-                // If we get a 401 or 403, attempt to refresh (unless we already tried)
-                if ((error.response.status === 401 || error.response.status === 403) 
-                    && !originalRequest?.sent) {
-                    originalRequest.sent = true;
-                    try { // new access token and retry
-                        const validAT = await refresh();
-                        console.log(`auth state:\n ${auth.aT}`)
-                        // setAuth()
-                        originalRequest.withCredentials = true; 
+                // If we get a 401 or 403,and haven't attempted refresh
+                if ((error.response?.status === 401 || error.response.status === 403) 
+                    && !originalRequest?._retry) {
+
+                    originalRequest._retry = true;
+
+                    try {
+                        // Try to refresh token
+                        await refresh();
+
                         console.log(originalRequest)
-                        
+                        // If successful, retry the original request
                         return axiosPrivate(originalRequest);  
                     } catch (refreshErr) {
-                        // If refresh throws an error (token expired, server error, etc.)
-                        console.error("Refresh failed:", refreshErr);
-                        const username = auth.username;
-                        await logout();
+                        // If refresh fails, redirect to login
+                        await handleLogout();
+                        // save location for previous user
                         navigate('/login', { replace: true, state: { from: { location, user: username } } });
-
-                        //return Promise.reject(refreshErr); // other logout logic??
+                        return Promise.reject(refreshErr); 
                     } 
                 }
-                // If error is not 401/403 or the request was already retried, reject
+                // For errors other than 401/403, just reject
                 return Promise.reject(error);
             }
         );
         
+        // Clean up interceptors when component unmounts
         return () => {
-            axiosPrivate.interceptors.request.eject(requestIntercept);
             axiosPrivate.interceptors.response.eject(responseIntercept);
-        }
+        };
     }, [auth, refresh, navigate]);
 
     return axiosPrivate;
