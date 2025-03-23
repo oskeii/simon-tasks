@@ -38,7 +38,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             httponly=True,  # Prevents access to the token by JavaScript (XSS protection)
             secure=settings.DEBUG == False,  # Only set Secure in production (HTTPS)
             samesite='Strict',  # CSRF protection
-            max_age=timedelta(minutes=5)
+            max_age=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME']  # timedelta(minutes=5)
         )
 
         response.set_cookie(
@@ -47,7 +47,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             httponly=True,  
             secure=settings.DEBUG == False, 
             samesite='Strict',  
-            max_age=timedelta(minutes=10)
+            max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']  # timedelta(minutes=30)
         )
 
         del response.data['access']
@@ -85,19 +85,32 @@ def refresh_token_view(request):
         return api_error_response(message="Refresh token is required", status_code=status.HTTP_400_BAD_REQUEST)
     
     try:
+        # Create RefreshToken instance
         refresh = RefreshToken(refresh_token)
-        new_access = refresh.access_token
+        # Get the new access token
+        new_access = str(refresh.access_token)
+        # Get the new refresh token (generated when ROTATE_REFRESH_TOKENS is True)
+        new_refresh = str(refresh)
 
         logger.info(f"Token refreshed successfully for user ID: {refresh.payload.get('user_id')}")
 
-        response = api_success_response(message="Token refreshed successfully", )
+        response = api_success_response(message="Token refreshed successfully")
         response.set_cookie(
             key='access_token',
             value=new_access,
             httponly=True,  
             secure=settings.DEBUG == False,  
             samesite='Strict',  
-            max_age=timedelta(minutes=5)
+            max_age=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME']  # timedelta(minutes=5)
+        )
+
+        response.set_cookie(
+            key='refresh_token',
+            value=new_refresh,
+            httponly=True,  
+            secure=settings.DEBUG == False, 
+            samesite='Strict',  
+            max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']  # timedelta(minutes=30)
         )
 
         return response
