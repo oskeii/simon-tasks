@@ -1,4 +1,5 @@
 import logging
+from django.conf import settings
 from api.utils import api_error_response, api_success_response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -7,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from django.conf import settings
-from datetime import timedelta
+from users.models import User
+from api.serializers import UserSerializer
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,10 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
         username = request.data.get('username', 'unknown_user')
         logger.info(f"User {username} authenticated successfully")
+
+        # Get the user data
+        user = User.objects.get(username=username)
+        user_data = UserSerializer(user).data
 
         # set tokens as HttpOnly cookies
         response.set_cookie(
@@ -55,6 +60,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
         response.data['success'] = True
         response.data['message'] = 'Authentication successful'
+        response.data['user'] = user_data
 
         logger.debug(f"Authentication cookies set successfully")
         return response
