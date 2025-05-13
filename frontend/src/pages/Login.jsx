@@ -2,7 +2,7 @@ import React, {useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
-import axios from '../axios';
+import axios from '../services/axios';
 const LOGIN_URL = '/auth/'
 
 const Login = () => {
@@ -32,14 +32,16 @@ const Login = () => {
                 }
             );
             console.log(response)
-            login(username) // 
+            const user_data = response.data.user
+            console.log("This is USER_DATA:\n", user_data)
+            login(user_data) // set auth state
             alert('Login successful');
             
             //redirect here...
             const redirectedUser = location.state?.from?.user;
-            console.log(redirectedUser, username)
+            console.log(redirectedUser, user_data.username)
             
-            if (redirectedUser === username) {
+            if (redirectedUser === user_data.username) {
                 // previous user may be redirected back to their previous page
                 navigate(from, { replace: true, state: null })
             } else {

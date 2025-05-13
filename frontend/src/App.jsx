@@ -16,21 +16,26 @@ function App() {
     return (
         <Routes>
             <Route path='/' element={<Layout />}>
-                {/* public routes */}
-                <Route path='/' element={<Home key={"home"}/>} />  
+                {/* Auth routes */}
                 <Route path='/register' element={<Register key={"register"}/>} />
                 <Route path='/login' element={<Login key={"login"}/>} />
-
-                {/* protected routes */}
+            
+                {/* All content routes - (PersistLogin) */}
                 <Route element={<PersistLogin />}>
+                    {/* public routes */}
+                    <Route path='/' element={<Home key={"home"}/>} />  
+                    
+
+                    {/* protected routes */}
                     <Route element={<RequireAuth />}>
                         <Route path='/profile' element={<Profile key={"profile"}/>} />
                         <Route path='/tasks' element={<TaskList key={"tasks"}/>} />
                     </Route>
+                    
+                    {/* catch all */}
+                    <Route path='*' element={<Missing />} />
                 </Route>
 
-                {/* catch all */}
-                <Route path='*' element={<Missing />} />
             </Route>
         </Routes>
         

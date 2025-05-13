@@ -1,15 +1,11 @@
 import { axiosPrivate } from "../services/axios";
 import { useEffect } from "react";
-import useRefreshToken from "./useRefreshToken";
 import useAuth from "./useAuth";
-import useLogout from "./useLogout";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const useAxiosPrivate = () => {
-    const refresh = useRefreshToken();
-    const { auth } = useAuth();
+    const { auth, refreshToken } = useAuth();
     const username = auth.user?.username;
-    const handleLogout = useLogout();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -35,14 +31,11 @@ const useAxiosPrivate = () => {
 
                     try {
                         // Try to refresh token
-                        await refresh();
-
-                        console.log(originalRequest)
+                        await refreshToken();
                         // If successful, retry the original request
                         return axiosPrivate(originalRequest);  
                     } catch (refreshErr) {
-                        // If refresh fails, redirect to login
-                        await handleLogout();
+                        // refresh() already calls logout if it fails. just redirect to login
                         // save location for previous user
                         navigate('/login', { replace: true, state: { from: { location, user: username } } });
                         return Promise.reject(refreshErr); 
@@ -57,7 +50,7 @@ const useAxiosPrivate = () => {
         return () => {
             axiosPrivate.interceptors.response.eject(responseIntercept);
         };
-    }, [auth, refresh, navigate]);
+    }, []);
 
     return axiosPrivate;
 };

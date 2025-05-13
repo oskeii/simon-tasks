@@ -1,40 +1,34 @@
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
-import useRefreshToken from "../hooks/useRefreshToken";
 import useAuth from "../hooks/useAuth";
 
 const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const refresh = useRefreshToken(); // refresh function
-    const { auth } = useAuth();
+    const { auth, refreshToken } = useAuth();
 
     useEffect(() => {
-        let isMounted = true;
         const verifyRefreshToken = async () => {
             try {
-                await refresh();
-            }
-            catch (err) {
-                console.error(err);
+                await refreshToken();
+            } catch (err) {
+                // Token refresh failed - user must log in
+                console.error("Authentication verification failed:", err);
             }
             finally {
-                isMounted && setIsLoading(false);
+                setIsLoading(false);
             }
-        }
+        };
 
-        !auth?.aT ? verifyRefreshToken() : setIsLoading(false); // !! doesnt automatically updatewhen cookie expires
+        // Only attempt refresh if not already authenticated
+        auth?.isAuthenticated ? verifyRefreshToken() : setIsLoading(false);
         
-        return () => {isMounted = false;}
-    }, [])
+    }, []);
 
 
     useEffect(() => {
         console.log(`isLoading: ${isLoading}`);
         console.log("Auth state in PersistLogin:", auth);
     },[isLoading])
-    useEffect(() => {
-        console.log("Auth state in PersistLogin:", auth);
-    },[auth])
 
     return (
         <>
@@ -44,7 +38,7 @@ const PersistLogin = () => {
             }
             
         </>
-    )
-}
+    );
+};
 
 export default PersistLogin;

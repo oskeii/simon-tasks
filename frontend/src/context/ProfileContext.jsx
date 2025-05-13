@@ -7,18 +7,17 @@ const useProfile = () => useContext(ProfileContext);
 export const ProfileProvider = ({ children }) => {
     const [profile, setProfile] = useState([]);
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [refresh, setRefresh] = useState(false)
 
     const updateProfile = (data) => {
-        console.log("update Profile deets")
+        console.log("updatING Profile deets")
         setProfile(data)
         setUser(data.user)
         console.log("updateD Profile deets")
 
     }
     const refreshProfile = () => {
-        console.log("REFRESHHH")
+        console.log("REFRESHHH PROFILE")
         if (refresh){
             setRefresh(false)
         } else {
@@ -29,7 +28,6 @@ export const ProfileProvider = ({ children }) => {
     return (
         <ProfileContext.Provider value={{ profile, setProfile, 
         user, setUser, 
-        loading, setLoading, 
         refresh, refreshProfile, updateProfile }}>
             {children}
         </ProfileContext.Provider>

@@ -4,11 +4,12 @@ import useProfile from '../context/ProfileContext';
 
 const ProfileForm = () => {
     const axiosPrivate = useAxiosPrivate();
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [statusCode, setStatusCode] = useState(null);
     const [field_err, setField_err] = useState({});
 
-    const { profile, setProfile, user, setUser, setLoading, updateProfile, refreshProfile } = useProfile();
+    const { profile, setProfile, user, setUser, updateProfile, refreshProfile } = useProfile();
 
     const submitUpdate = async (e) => {
         e.preventDefault();

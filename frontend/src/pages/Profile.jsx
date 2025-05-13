@@ -6,14 +6,15 @@ import ProfileForm from '../components/ProfileForm';
 
 const Profile = () => {
     const axiosPrivate = useAxiosPrivate();
-    const { profile, setProfile, user, setUser, loading, setLoading, refresh, updateProfile } = useProfile();
+    const [loading, setLoading] = useState(true);
+    const { profile, user, refresh, updateProfile } = useProfile();
 
     const getProfile = async () => {
         setLoading(true);
 
         try {
             const response = await axiosPrivate.get('/profile/');
-            await updateProfile(response.data)
+            await updateProfile(response.data.data)
             
         } catch (err) {
             console.error('Error fetching user profile', err);

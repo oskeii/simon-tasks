@@ -4,17 +4,16 @@ import useLogout from '../hooks/useLogout';
 import useAuth from '../hooks/useAuth';
 
 const Home = () => {
-  const { auth } = useAuth()
+  const { auth, logout } = useAuth()
   const navigate = useNavigate();
-  const logout = useLogout();
 
   const handleLogout = async () => {
     await logout();
-    navigate('/');  // Redirect to login page
+    navigate('/');  // Redirect to login page?
   };
 
   const AuthButton = () => {
-    if (!auth?.username) {
+    if (!auth?.isAuthenticated) {
       return <Link to='/login'><button>Login here</button></Link>
     } else {
       return (<button onClick={handleLogout}>Logout</button>)
@@ -23,8 +22,8 @@ const Home = () => {
 
   return (
     <div>
-        {auth?.username
-        ?<h2>Hello, {auth.username}!</h2>
+        {auth?.isAuthenticated
+        ?<h2>Hello, {auth?.user.username}!</h2>
         :<h1>Welcome</h1>}
         
         <div>
