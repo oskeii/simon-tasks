@@ -178,7 +178,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
 
-
+DEFAULT_LOG_FILE = os.getenv('DJANGO_LOG_FILE')
 
 LOGGING = {
     'version': 1, # the dictConfig format version
@@ -205,21 +205,27 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.getenv('DJANGO_LOG_FILE'),
+            'filename': DEFAULT_LOG_FILE,
             'formatter': 'verbose'
         },
     },
 
     'loggers': {
-        # '': {
-        #     'level': 'INFO',
-        #     'handlers': ['file']
-        # },
-        # 'django': {
-        #     'handlers': ['console', 'file'],
-        #     'level': 'INFO',
-        #     'propagate': True,
-        # },
+        '': {  # Root logger
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True
+        },
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'users': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'api': {  
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
