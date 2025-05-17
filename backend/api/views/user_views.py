@@ -13,6 +13,27 @@ from api.serializers import (
 logger = logging.getLogger(__name__)
 
 
+class CurrentUserView(APIView):
+    """
+    Get current authenticated user's data
+    """
+    def get(self, request):
+        try:
+            user_data = UserSerializer(request.user).data
+
+            return api_success_response(
+                data=user_data,
+                message="User data retrieved successfully",
+                status_code=status.HTTP_200_OK
+            )
+        except Exception as e:
+            logger.exception(f"Error retrieving current user data for user: {request.user.username}")
+            return api_error_response(
+                message="An unexpected error occured",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
 class UserProfileView(APIView):
 
     def get(self, request):

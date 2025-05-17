@@ -1,7 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (CustomTokenObtainPairView, refresh_token_view, logout_view,
-                       TaskViewSet, 
+                       TaskViewSet,
+                       CurrentUserView, 
                        UserProfileView,
                        UserRegistrationView)
 
@@ -11,6 +12,7 @@ router.register(r'tasks', TaskViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('users/me/', CurrentUserView.as_view(), name='current_user'),
     path('profile/', UserProfileView.as_view(), name='profile'),
     path('register/', UserRegistrationView.as_view(), name='user_registration'),
     path('auth/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
