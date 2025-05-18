@@ -7,6 +7,8 @@ const PersistLogin = () => {
     const { auth, refreshToken } = useAuth();
 
     useEffect(() => {
+        let isMounted = true;
+
         const verifyRefreshToken = async () => {
             try {
                 await refreshToken();
@@ -15,13 +17,18 @@ const PersistLogin = () => {
                 console.error("Authentication verification failed:", err);
             }
             finally {
-                setIsLoading(false);
+                // Only update state if component is still mounted
+                if (isMounted) setIsLoading(false);
             }
         };
 
         // Only attempt refresh if not already authenticated
-        auth?.isAuthenticated ? verifyRefreshToken() : setIsLoading(false);
+        !auth?.isAuthenticated ? verifyRefreshToken() : setIsLoading(false);
         
+        // Cleanup to prevent state updates after unmount
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
 

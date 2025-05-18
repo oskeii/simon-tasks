@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       // 1. Try to refresh the token
       const tokenSuccess = await authService.refreshToken();
       
-      if (tokenSuccess) { // Token refresh failed, logout and return false
+      if (!tokenSuccess) { // Token refresh failed, logout and return false
         if (auth.isAuthenticated) await logout();
         return false;
       }
