@@ -4,8 +4,7 @@ import useAuth from "./useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const useAxiosPrivate = () => {
-    const { auth, refreshToken } = useAuth();
-    const username = auth.user?.username;
+    const { refreshToken } = useAuth();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -36,8 +35,10 @@ const useAxiosPrivate = () => {
                         return axiosPrivate(originalRequest);  
                     } catch (refreshErr) {
                         // refresh() already calls logout if it fails. just redirect to login
-                        // save location for previous user
-                        navigate('/login', { replace: true, state: { from: { location, user: username } } });
+                        navigate('/login', { 
+                            replace: true, 
+                            state: { from: { pathname: location.pathname }} 
+                        });
                         return Promise.reject(refreshErr); 
                     } 
                 }

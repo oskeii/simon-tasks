@@ -37,19 +37,32 @@ export const AuthProvider = ({ children }) => {
 
   const refreshToken = async () => {
     try {
-      const success = await authService.refreshToken();
+      // 1. Try to refresh the token
+      const tokenSuccess = await authService.refreshToken();
       
-      if (success && !auth.isAuthenticated) { // token refresh was successful
-          setAuth(prev => ({...prev, isAuthenticated: true}));
+      if (tokenSuccess) { // Token refresh failed, logout and return false
+        if (auth.isAuthenticated) await logout();
+        return false;
       }
-      // Handle unsuccessful refresh (API returned failure)
-      if (!auth.isAuthenticated) {await logout();}
-      return success;
+
+      // 2. Token is valid, handle user data
+      if (!auth.user) {
+        const userData = await authService.getCurrentUser();
+        if (userData) {
+          login(userData);
+          return true;
+        }
+      }
+
+      // 3. We have valid token, ensure authentication flag is set
+      if (!auth.isAuthenticated) { setAuth(prev => ({...prev, isAuthenticated: true})); }
+
+      return true;
 
     } catch (err) {
-      // Handle refresh exceptions (network error, etc.)
+      // Handle any errors (log out and return false)
       console.error("Token refresh failed:", err);
-      await logout();
+      if (auth.isAuthenticated) { await logout(); }
       return false;
     }
   };
@@ -77,7 +90,7 @@ export const AuthProvider = ({ children }) => {
       if (refreshTimer) clearInterval(refreshTimer);
     };
 
-  }, [auth.isAuthenticated, authService])
+  }, [auth.isAuthenticated])
 
   return (
     <AuthContext.Provider value={{ 

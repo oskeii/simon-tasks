@@ -10,7 +10,7 @@ const Login = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.location.pathname || '/';
+    const from = location.state?.from?.pathname || '/';
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -38,16 +38,7 @@ const Login = () => {
             alert('Login successful');
             
             //redirect here...
-            const redirectedUser = location.state?.from?.user;
-            console.log(redirectedUser, user_data.username)
-            
-            if (redirectedUser === user_data.username) {
-                // previous user may be redirected back to their previous page
-                navigate(from, { replace: true, state: null })
-            } else {
-                // different user has logged in; clear `from` and redirect to homepage
-                navigate('/', { replace: true, state: null })
-            }
+            navigate(from, { replace: true, state: null })
 
             setUsername('');
             setPassword('');
