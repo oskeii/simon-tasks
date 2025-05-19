@@ -9,7 +9,7 @@ const Header = () => {
       <header>
         <h3>To-Do</h3>
 
-        <div className="container">
+        <div>
           <nav>
             <ul>
               <NavLink to="/" end className="active">
