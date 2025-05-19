@@ -58,7 +58,7 @@ const TaskList = () => {
       </input>
       <button onClick={createTask}>Add</button>
       <hr/>
-      <div className='task-list'>
+      <div>
         <h3>My tasks:</h3>
         <ul>
           {Array.isArray(tasks) && tasks.map((task) => (

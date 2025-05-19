@@ -42,7 +42,7 @@ const Register = () => {
             <Link to={'/login'}>&larr; Back to Login</Link>
         </p>
         <h1>Create an Account!</h1> <hr/>
-        <div className='form-container'>
+        <div>
         {error && <p style={{color: "red"}}>{error}</p>}
             <form id='registration-form' method="POST" onSubmit={handleSubmit} autoComplete='off'> {/* ADD FORM VALIDATION*/}
                 <p>
