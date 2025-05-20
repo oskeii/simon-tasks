@@ -3,18 +3,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from tasks.models import Task
 from users.models import Profile
 from django.http.request import QueryDict
 
 logger = logging.getLogger(__name__)
-
-
-class TaskSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Task
-        fields = '__all__'
-
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -82,6 +74,7 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name'
         ]
+        read_only_fields = ['id']
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -95,6 +88,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             'image',
             # Add other Profile fields here
             ]
+        read_only_fields = ['id', 'user']
     
     def to_internal_value(self, data):
         logger.debug("Converting profile data to internal value")
