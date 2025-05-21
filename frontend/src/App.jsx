@@ -9,6 +9,7 @@ import TaskList from "./pages/TaskList"
 import Profile from './pages/Profile'
 import Register from './pages/Register'
 import Layout from './components/Layout'
+import TaskDetail from './pages/TaskDetail'
 
 
 
@@ -30,6 +31,8 @@ function App() {
                     <Route element={<RequireAuth />}>
                         <Route path='/profile' element={<Profile key={"profile"}/>} />
                         <Route path='/tasks' element={<TaskList key={"tasks"}/>} />
+                        <Route path='/tasks/:taskId' element={<TaskDetail key={"task-detail"}/>} />
+
                     </Route>
                     
                     {/* catch all */}
