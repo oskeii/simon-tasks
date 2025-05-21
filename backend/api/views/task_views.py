@@ -88,7 +88,7 @@ class TaskListCreateView(APIView):
         # Default ordering: due date, then creation date
         queryset = queryset.order_by(
             models.F('due_date').asc(nulls_last=True),
-            '-created at'
+            '-created_at'
         )
 
         serializer = TaskSerializer(queryset, many=True, context={'request':request})

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from users.models import Tag, Component
 from django.urls import reverse
+from django.utils import timezone
 
 # Create your models here.
 class Task(models.Model):
@@ -22,6 +23,17 @@ class Task(models.Model):
     component = models.ForeignKey(Component, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
     tags = models.ManyToManyField(Tag, blank=True)
 
+    def save(self, *args, **kwargs):
+        # Marking task complete, set completion date
+        if self.completed and not self.completed_at:
+            self.completed_at = timezone.now()
+        # Marking task incomplete, remove completion date
+        elif not self.completed and self.completed_at:
+            self.completed_at= None
+
+        return super().save(*args, **kwargs)
+    
+    
     def get_absolute_url(self):
         return reverse('task-detail', kwargs={'pk': self.pk})
     

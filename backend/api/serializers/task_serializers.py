@@ -1,8 +1,6 @@
 import logging
 from rest_framework import serializers
 from tasks.models import Task
-from users.models import Component, Tag
-from . import ComponentSerializer, TagSerializer
 
 
 logger = logging.getLogger(__name__)
