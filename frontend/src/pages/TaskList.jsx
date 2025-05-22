@@ -40,12 +40,20 @@ const TaskList = () => {
 
   // Toggle task completion status
   const toggleTaskCompletion = async (task) => {
+    // let updatedTask = {...task, completed: !task.completed}
+    // console.log('Sending data to API:', updatedTask)
     try {
-      const response = await axiosPrivate.put(`/tasks/${task.id}/`, updatedTask);
+      const response = await axiosPrivate.patch(`/tasks/${task.id}/`, {
+        completed: !task.completed
+      });
+      console.log('Response from API:', response)
+
       setTasks(tasks.map(t => t.id === task.id ? response.data.data : t));
     } catch (err) {
       console.error('Error updating task', err);
-      setError('Failed to update task. Please try again.');
+      console.log('Error response:', err.response?.data)
+
+      setError('Failed to update task completion status. Please try again.');
     }
   };
 
@@ -79,12 +87,6 @@ const TaskList = () => {
 
   if (loading) {
     return <div>Loading tasks...</div>;
-  }
-
-  
-  if (!Array.isArray(tasks)) {
-    console.log(tasks);
-    return <p>response not an array.</p>
   }
 
 

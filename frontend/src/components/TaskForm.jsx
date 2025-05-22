@@ -6,11 +6,9 @@ const TaskForm = ({ task=null, onSuccess, onCancel }) => {
     const axiosPrivate = useAxiosPrivate();
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        title:'',
-        description: '',
-        due_date: '',
         completed: false
     });
+    const [originalData, setOriginalData] = useState({});
     
     useEffect(() => {
         if (task) {
@@ -20,17 +18,76 @@ const TaskForm = ({ task=null, onSuccess, onCancel }) => {
                 const dueDate = new Date(task.due_date);
                 formattedTask.due_date = dueDate.toISOString().split('T')[0];
             }
+
+            setOriginalData(formattedTask);
             setFormData(formattedTask);
         }
     }, [task]);
 
+    useEffect(() => {
+        console.log('Original data updated:', originalData);
+    }, [originalData]);
+    useEffect(() => {
+        console.log('Form data updated:', formData);
+    }, [formData]);
+
+    const filterChanges = () => {
+        // reduce formData to only include modified fields
+        const formChanges = {};
+
+        // Compare ech field with the original data
+        for (const key in formData) {
+            console.log(`Checking field: ${key}...\n
+                formData: ${formData[key]}
+                originalData: ${originalData.hasOwnProperty(key) ? originalData?.[key] : 'NONE'}`)
+            if (formData[key] !== originalData?.[key]) {
+                console.log('Field changes detected.');
+                formChanges[key] = formData[key];
+            }
+        }
+        console.log('Form Changes:', formChanges)
+        return formChanges;
+    }
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+        let originalEmpty = (
+            !task || // originalData is an empty object
+            originalData?.[name] === null || // field is null in originalData
+            originalData?.[name] === '' // field is empty string in originalData
+        );
 
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
+        // debugging logs
+        // console.log(`empty? ${originalEmpty}`)
+        // if (task) {console.log(`value in original data? ${originalData?.[name]}`);}
+        // console.log(`editing...\nname: ${name}, value: ${value}
+        //     type: ${type}, checked: ${checked}`);
+        // -----------------------------------------------------------------------------
+        
+        if (type === 'checkbox') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: checked
+            }));
+        }
+        else if (value === '' && originalEmpty) { // empty field same as original data
+                console.log('empty field same as original data')
+                const { [name]: _, ...newFormData} = formData;
+                setFormData(newFormData);
+            }
+        else if (type === 'date' && value === '') { // change empty date value to null
+            console.log('change empty date value to null')
+            setFormData(prev => ({
+                ...prev,
+                [name]: null
+            }));
+        }    
+        else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -39,21 +96,28 @@ const TaskForm = ({ task=null, onSuccess, onCancel }) => {
 
         try {
             let response;
+            // console.log('Sending data to API:', formData)
+            
             if (task) { // Update existing task
-                response = await axiosPrivate.put(`/tasks/${task.id}/`, formData);
+                let formChanges = filterChanges(); // For updates, only include changed fields
+                console.log('Sending data to API:', formChanges);
+
+                response = await axiosPrivate.patch(`/tasks/${task.id}/`, formChanges);
             } else { // Create new task
+                console.log('Sending data to API:', formData);
                 response = await axiosPrivate.post('/tasks/', formData);
             }
+            console.log('Response from API:', response)
 
-            if (onSuccess) onSuccess(response.data);
+            if (onSuccess) onSuccess(response.data.data);
             setFormData({
-                title:'',
-                description: '',
-                due_date: '',
                 completed: false
             });
+            setOriginalData({});
+
         } catch (err) {
             console.error('Error updating/creating task:', err);
+            console.log('Error response:', err.response?.data)
             setError(err.response?.data?.message || 'An error occured');
         }
     };
@@ -71,7 +135,7 @@ const TaskForm = ({ task=null, onSuccess, onCancel }) => {
                     type='text'
                     id='title'
                     name='title'
-                    value={formData.title}
+                    value={formData.title || ''}
                     onChange={handleChange}
                     required
                 />
