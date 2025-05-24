@@ -15,14 +15,14 @@ const Home = () => {
     if (!auth?.isAuthenticated) {
       return <Link to='/login'><button>Login here</button></Link>
     } else {
-      return (<button onClick={handleLogout}>Logout</button>)
+      return (<button className='logout-btn' onClick={handleLogout}>Logout</button>)
     }
   }
 
   return (
     <div>
         {auth?.isAuthenticated
-        ?<h2>Hello, {auth?.user.username}!</h2>
+        ?<h2>Hello, {auth?.user.first_name || auth?.user.username}!</h2>
         :<h1>Welcome</h1>}
         
         <div>

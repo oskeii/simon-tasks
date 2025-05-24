@@ -175,7 +175,7 @@ const TaskForm = ({ task=null, onSuccess, onCancel }) => {
                 </label>
             </div>
 
-            <div className='form-group'>
+            <div className='form-actions'>
                 <button type='submit'>{task ? 'Update' : 'Create'}</button>
                 {onCancel && <button type='button' onClick={onCancel}>Cancel</button>}
             </div>

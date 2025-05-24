@@ -119,7 +119,7 @@ const TaskList = () => {
                   checked={task.completed || false}
                   onChange={() => toggleTaskCompletion(task)}
                 />
-                <h3>{task.title}</h3>
+                <h3 className='task-title'>{task.title}</h3>
                 </div>
 
                 {task.description && <p className='task-description'>{task.description}</p>}
