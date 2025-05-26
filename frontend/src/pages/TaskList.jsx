@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import TaskForm from '../components/TaskForm';
 
@@ -40,8 +41,6 @@ const TaskList = () => {
 
   // Toggle task completion status
   const toggleTaskCompletion = async (task) => {
-    // let updatedTask = {...task, completed: !task.completed}
-    // console.log('Sending data to API:', updatedTask)
     try {
       const response = await axiosPrivate.patch(`/tasks/${task.id}/`, {
         completed: !task.completed
@@ -69,7 +68,7 @@ const TaskList = () => {
   };
 
   // Edit task
-  const startEditingTask = (task) => {
+  const editTask = (task) => {
     setEditingTask(task);
     setShowForm(true);
   };
@@ -114,12 +113,15 @@ const TaskList = () => {
             {tasks.map((task) => (
               <li key={task.id} className={task.completed ? 'completed' : ''}>
                 <div className='task-header'>
-                <input 
-                  type='checkbox'
-                  checked={task.completed || false}
-                  onChange={() => toggleTaskCompletion(task)}
-                />
-                <h3 className='task-title'>{task.title}</h3>
+                  <input 
+                    type='checkbox'
+                    checked={task.completed || false}
+                    onChange={() => toggleTaskCompletion(task)}
+                  />
+
+                  <Link to={`/tasks/${task.id}`} className='task-title'>
+                    <h3>{task.title}</h3>
+                  </Link>
                 </div>
 
                 {task.description && <p className='task-description'>{task.description}</p>}
@@ -131,7 +133,7 @@ const TaskList = () => {
                 )}
 
                 <div className='task-actions'>
-                  <button onClick={() => startEditingTask(task)}>Edit</button>
+                  <button onClick={() => editTask(task)}>Edit</button>
                   <button onClick={() => deleteTask(task.id)}>Delete</button>
                 </div>
               </li>

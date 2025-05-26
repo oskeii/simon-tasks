@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import useAxiosPrivate from '../hooks/useAxiosPrivate'
 
 
-const TaskForm = ({ task=null, onSuccess, onCancel }) => {
+const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
     const axiosPrivate = useAxiosPrivate();
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
@@ -23,6 +23,12 @@ const TaskForm = ({ task=null, onSuccess, onCancel }) => {
             setFormData(formattedTask);
         }
     }, [task]);
+
+    useEffect(() => {
+        if (parentId) { // for creating a new sub-task
+            setFormData({...formData, parent_task: parentId});
+        }
+    }, [parentId])
 
     useEffect(() => {
         console.log('Original data updated:', originalData);
