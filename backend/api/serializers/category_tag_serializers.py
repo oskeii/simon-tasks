@@ -1,32 +1,32 @@
 import logging
 from rest_framework import serializers
-from users.models import Component, Tag
+from users.models import Category, Tag
 
 logger = logging.getLogger(__name__)
 
 
-class ComponentSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Component
+        model = Category
         fields = ['id', 'name', 'description', 'as_workload']
         read_only_fields = ['id']
     
     def create(self, validated_data):
-        logger.info(f"Creating new component: {validated_data.get('name')}")
+        logger.info(f"Creating new category: {validated_data.get('name')}")
         try:
             return super().create(validated_data)
         except Exception as e:
-            logger.exception(f"Failed to create component: {str(e)}")
-            raise serializers.ValidationError("Failed to create component")
+            logger.exception(f"Failed to create category: {str(e)}")
+            raise serializers.ValidationError("Failed to create category")
     
     def update(self, instance, validated_data):
-        logger.info(f"Updating component: {instance.name}")
+        logger.info(f"Updating category: {instance.name}")
         try:
             return super().update(instance, validated_data)
         except Exception as e:
-            logger.exception(f"Failed to update component: {str(e)}")
-            raise serializers.ValidationError("Failed to update component")
+            logger.exception(f"Failed to update category: {str(e)}")
+            raise serializers.ValidationError("Failed to update category")
 
 
 

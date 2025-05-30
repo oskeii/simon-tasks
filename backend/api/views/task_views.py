@@ -39,13 +39,13 @@ class TaskListCreateView(APIView):
             elif status_filter.lower() == 'false':
                 queryset = queryset.filter(completed=False)
             
-        # > Filter by component (category)
-        component_id = request.query_params.get('component')
-        if component_id:
-            if component_id.lower() == 'null':
-                queryset = queryset.filter(component__isnull=True)
+        # > Filter by category
+        category_id = request.query_params.get('category')
+        if category_id:
+            if category_id.lower() == 'null':
+                queryset = queryset.filter(category__isnull=True)
             else:
-                queryset = queryset.filter(component=component_id)
+                queryset = queryset.filter(category=category_id)
 
         # > Filter by due date
         due_date_filter = request.query_params.get('due_date')

@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class TaskSerializer(serializers.ModelSerializer):
     
     # Nested serializers for related objects
-    component_name = serializers.SerializerMethodField(read_only=True)
+    category_name = serializers.SerializerMethodField(read_only=True)
     tag_names = serializers.SerializerMethodField(read_only=True)
     has_subtasks = serializers.SerializerMethodField(read_only=True)
     
@@ -18,14 +18,14 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'estimated_time', 'due_date',
             'completed', 'created_at', 'updated_at', 'completed_at',
-            'user', 'parent_task', 'component', 'component_name',
+            'user', 'parent_task', 'category', 'category_name',
             'tags', 'tag_names', 'has_subtasks'
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 
-    def get_component_name(self, obj):
-        if obj.component:
-            return obj.component.name
+    def get_category_name(self, obj):
+        if obj.category:
+            return obj.category.name
         return None
     
     def get_tag_names(self, obj):
@@ -78,10 +78,10 @@ class TaskSerializer(serializers.ModelSerializer):
         if (self.instance and parent_task) and (parent_task.id == self.instance.id):
             raise serializers.ValidationError({"parent_task": "A task cannot be its own parent"})
         
-        # Check that component belongs to the user
-        component = data.get('component')
-        if component and component.user.id != self.context['request'].user.id:
-            raise serializers.ValidationError({"component": "Invalid component selection"})
+        # Check that category belongs to the user
+        category = data.get('category')
+        if category and category.user.id != self.context['request'].user.id:
+            raise serializers.ValidationError({"category": "Invalid category selection"})
         
         # Validate tags
         if 'tags' in data:

@@ -10,7 +10,7 @@ from .task_views import (
     TaskListCreateView, TaskDetailView,
     TaskSubtasksView, TopLevelTasksView
 )
-from .component_tag_views import (
-    ComponentListCreateView, ComponentDetailView,
+from .category_tag_views import (
+    CategoryListCreateView, CategoryDetailView,
     TagListCreateView, TagDetailView
 )

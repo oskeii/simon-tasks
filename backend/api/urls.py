@@ -9,8 +9,8 @@ from .views import (
     TaskDetailView,
     TaskSubtasksView, TopLevelTasksView,
 
-    ComponentListCreateView,
-    ComponentDetailView,
+    CategoryListCreateView,
+    CategoryDetailView,
 
     TagListCreateView,
     TagDetailView
@@ -33,9 +33,9 @@ urlpatterns = [
     path('tasks/<int:pk>/subtasks/', TaskSubtasksView.as_view(), name='task_subtasks'),
     path('tasks/top-level/', TopLevelTasksView.as_view(), name='task_toplevel'),
 
-    # Component URLs
-    path('components/', ComponentListCreateView.as_view(), name='component_list_create'),
-    path('components/<int:pk>/', ComponentDetailView.as_view(), name='component_detail'),
+    # Category URLs
+    path('categories/', CategoryListCreateView.as_view(), name='category_list_create'),
+    path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category_detail'),
 
     # Tag URLs
     path('tags/', TagListCreateView.as_view(), name='tag_list_create'),

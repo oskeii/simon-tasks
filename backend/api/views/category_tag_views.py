@@ -2,118 +2,118 @@ import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from users.models import Component, Tag
-from api.serializers import ComponentSerializer, TagSerializer
+from users.models import Category, Tag
+from api.serializers import CategorySerializer, TagSerializer
 from api.utils import api_error_response, api_success_response
 
 logger = logging.getLogger(__name__)
 
-# --------- COMPONENT VIEWS -----------
-class ComponentListCreateView(APIView):
+# --------- CATEGORY VIEWS -----------
+class CategoryListCreateView(APIView):
     """
-    View for creating and listing user's components (categories)
+    View for creating and listing user's categories
     """
     def get(self, request):
         """
-        List all components for the user
+        List all categories for the user
         """
-        components = Component.objects.filter(user=request.user).order_by('name')
-        serializer = ComponentSerializer(components, many=True, context={'request':request})
+        categories = Category.objects.filter(user=request.user).order_by('name')
+        serializer = CategorySerializer(categories, many=True, context={'request':request})
 
         return api_success_response(
             data=serializer.data,
-            message="Components retrieved successfully",
+            message="Categories retrieved successfully",
             status_code=status.HTTP_200_OK
         )
 
     def create(self, request):
-        serializer = ComponentSerializer(data=request.data, context={'request':request})
+        serializer = CategorySerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
             serializer.save(user=request.user)
 
             return api_success_response(
                 data=serializer.data,
-                message="Component created successfully",
+                message="Category created successfully",
                 status_code=status.HTTP_201_CREATED
             )
         return api_error_response(
-            message="Failed to create component",
+            message="Failed to create category",
             errors=serializer.errors,
             status_code=status.HTTP_400_BAD_REQUEST
         )
 
 
 
-class ComponentDetailView(APIView):
+class CategoryDetailView(APIView):
     """
-    API view for retrieving, updating and deleting a specific component
+    API view for retrieving, updating and deleting a specific category
     """
     def get_object(self, pk, user):
         """
-        Helper method to get component object
+        Helper method to get category object
         """
         try:
-            component = Component.objects.get(pk=pk)
+            category = Category.objects.get(pk=pk)
 
-            if component.user != user:
+            if category.user != user:
                 return None
-            return component
-        except Component.DoesNotExist:
+            return category
+        except Category.DoesNotExist:
             return None
     
     def get(self, request, pk):
         """
-        Retrieve a component
+        Retrieve a category
         """
-        component = self.get_object(pk, request.user)
-        if not component:
+        category = self.get_object(pk, request.user)
+        if not category:
             return api_error_response(
-                message="Component not found for this user",
+                message="Category not found for this user",
                 status_code=status.HTTP_404_NOT_FOUND
             )
         
-        serializer = ComponentSerializer(component, context={'request':request})
+        serializer = CategorySerializer(category, context={'request':request})
         return api_success_response(
             data=serializer.data,
-            message="Component retrieved successfully",
+            message="Category retrieved successfully",
             status_code=status.HTTP_200_OK
         )
 
     def patch(self, request, pk):
         """
-        Component partial update
+        Category partial update
         """
-        component = self.get_object(pk, request.user)
-        if not component:
+        category = self.get_object(pk, request.user)
+        if not category:
             return api_error_response(
-                message="Component not found for this user",
+                message="Category not found for this user",
                 status_code=status.HTTP_404_NOT_FOUND
             )
         
-        serializer = ComponentSerializer(component, data=request.data, partial=True, context={'request':request})
+        serializer = CategorySerializer(category, data=request.data, partial=True, context={'request':request})
         if serializer.is_valid():
             serializer.save()
             return api_success_response(
                 data=serializer.data,
-                message="Component updated successfully",
+                message="Category updated successfully",
                 status_code=status.HTTP_200_OK
             )
         return api_error_response(
-            message="Failed to update component",
+            message="Failed to update category",
             status_code=status.HTTP_400_BAD_REQUEST
         )
 
     def delete( self, request, pk):
-        component = self.get_object(pk, request.user)
-        if not component:
+        category = self.get_object(pk, request.user)
+        if not category:
             return api_error_response(
-                message="Component not found for this user",
+                message="Category not found for this user",
                 status_code=status.HTTP_404_NOT_FOUND
             )
         
-        component.delete()
+        category.delete()
         return api_success_response(
-            message="Component deleted successfully",
+            message="Category deleted successfully",
             status_code=status.HTTP_204_NO_CONTENT
         )
 

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from users.models import Tag, Component
+from users.models import Tag, Category
 from django.urls import reverse
 from django.utils import timezone
 
@@ -20,7 +20,7 @@ class Task(models.Model):
     parent_task = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, 
                                     blank=True, related_name='sub_tasks')
     # dependencies = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='dependent_tasks')
-    component = models.ForeignKey(Component, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
     tags = models.ManyToManyField(Tag, blank=True)
 
     def save(self, *args, **kwargs):

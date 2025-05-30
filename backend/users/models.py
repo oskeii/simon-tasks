@@ -46,12 +46,12 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
     
 
-class Component(models.Model):
+class Category(models.Model):
     # might rename...
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='components')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='categories')
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
-    as_workload = models.BooleanField(default=True)  # should this component be counted towards workload limit?
+    as_workload = models.BooleanField(default=True)  # should this category be counted towards workload limit?
 
     def __str__(self):
         return self.name
