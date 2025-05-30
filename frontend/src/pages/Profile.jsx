@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import useProfile from '../context/ProfileContext';
 import ProfileForm from '../components/ProfileForm';
+import useApiService from '../services/apiService';
 
 
 const Profile = () => {
-    const axiosPrivate = useAxiosPrivate();
+    const apiService = useApiService();
     const [loading, setLoading] = useState(true);
     const { profile, user, refresh, updateProfile } = useProfile();
 
@@ -13,7 +13,7 @@ const Profile = () => {
         setLoading(true);
 
         try {
-            const response = await axiosPrivate.get('/profile/');
+            const response = await apiService.profile.get();
             await updateProfile(response.data.data)
             
         } catch (err) {

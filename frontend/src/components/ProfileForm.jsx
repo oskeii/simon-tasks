@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import useProfile from '../context/ProfileContext';
+import useApiService from '../services/apiService';
 
 const ProfileForm = () => {
-    const axiosPrivate = useAxiosPrivate();
+    const apiService = useApiService();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [statusCode, setStatusCode] = useState(null);
@@ -22,9 +22,7 @@ const ProfileForm = () => {
         }
 
         try {
-            const { data } = await axiosPrivate.patchForm('/profile/', 
-                formData
-            );
+            const { data } = await apiService.profile.update(formData);
             console.log(data)
             await updateProfile(data);
             alert('Profile update successful');

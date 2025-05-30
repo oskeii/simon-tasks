@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import useAxiosPrivate from '../hooks/useAxiosPrivate'
 import TaskForm from './TaskForm'
+import useApiService from '../services/apiService'
 
 const SubTaskList = ({ parentTask, onUpdate }) => {
-  const axiosPrivate = useAxiosPrivate();
+  const apiService = useApiService();
   const [subTasks, setSubTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -14,7 +14,7 @@ const SubTaskList = ({ parentTask, onUpdate }) => {
   const fetchSubTasks = async () => {
     try {
         setLoading(true);
-        const response = await axiosPrivate.get(`/tasks/${parentTask.id}/subtasks/`);
+        const response = await apiService.tasks.subtasks(parentTask.id);
         setSubTasks(response.data.data);
         setError('');
     } catch (err) {
@@ -38,7 +38,7 @@ const SubTaskList = ({ parentTask, onUpdate }) => {
   const deleteSubTask = async (taskId) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
       try {
-        await axiosPrivate.delete(`/tasks/${taskId}/`);
+        await apiService.tasks.delete(taskId);
         setSubTasks(subTasks.filter(t => t.id !== taskId));
 
         if (onUpdate) onUpdate();
@@ -51,7 +51,7 @@ const SubTaskList = ({ parentTask, onUpdate }) => {
 
   const toggleTaskCompletion = async (task) => {
     try {
-        const response = await axiosPrivate.patch(`/tasks/${task.id}/`, {
+      const response = await apiService.tasks.update(task.id, {
             completed: !task.completed
         });
         console.log('Response from API:', response)

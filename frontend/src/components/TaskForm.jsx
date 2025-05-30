@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import useAxiosPrivate from '../hooks/useAxiosPrivate'
+import useApiService from '../services/apiService';
 
 
 const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
-    const axiosPrivate = useAxiosPrivate();
+    const apiService = useApiService();
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         completed: false
@@ -36,6 +36,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
     useEffect(() => {
         console.log('Form data updated:', formData);
     }, [formData]);
+
 
     const filterChanges = () => {
         // reduce formData to only include modified fields
@@ -108,10 +109,10 @@ const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
                 let formChanges = filterChanges(); // For updates, only include changed fields
                 console.log('Sending data to API:', formChanges);
 
-                response = await axiosPrivate.patch(`/tasks/${task.id}/`, formChanges);
+                response = await apiService.tasks.update(task.id, formChanges);
             } else { // Create new task
                 console.log('Sending data to API:', formData);
-                response = await axiosPrivate.post('/tasks/', formData);
+                response = await apiService.tasks.create(formData);
             }
             console.log('Response from API:', response)
 
