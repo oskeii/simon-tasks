@@ -26,7 +26,7 @@ class CategoryListCreateView(APIView):
             status_code=status.HTTP_200_OK
         )
 
-    def create(self, request):
+    def post(self, request):
         serializer = CategorySerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
             serializer.save(user=request.user)
@@ -136,7 +136,7 @@ class TagListCreateView(APIView):
             status_code=status.HTTP_200_OK
         )
     
-    def create(self, request):
+    def post(self, request):
         """
         Create a new tag
         """

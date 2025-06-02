@@ -10,6 +10,7 @@ import Profile from './pages/Profile'
 import Register from './pages/Register'
 import Layout from './components/Layout'
 import TaskDetail from './pages/TaskDetail'
+import Organizer from './pages/Organizer'
 
 
 
@@ -32,7 +33,7 @@ function App() {
                         <Route path='/profile' element={<Profile key={"profile"}/>} />
                         <Route path='/tasks' element={<TaskList key={"tasks"}/>} />
                         <Route path='/tasks/:taskId' element={<TaskDetail key={"task-detail"}/>} />
-
+                        <Route path='/organizer' element={<Organizer key={"organizer"}/>} />
                     </Route>
                     
                     {/* catch all */}

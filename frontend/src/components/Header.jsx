@@ -13,17 +13,15 @@ const Header = () => {
   return (
     <header className='app-header'>
       <div className='header-branding'>
-        <h2>ToDo App</h2>
+        <h2>
+          <NavLink to="/" end>
+            ToDo App
+          </NavLink>
+        </h2>
       </div>
 
       <nav className='main-nav'> 
         <ul className='nav-links'>
-          <li>
-            <NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>
-            Home
-            </NavLink>
-          </li>
-          
           <li>
             <NavLink to="/profile" end className={({ isActive }) => isActive ? 'active' : ''}>
             Profile

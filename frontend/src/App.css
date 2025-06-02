@@ -21,6 +21,10 @@
   margin: 0;
   font-size: 1.5rem;
 }
+.header-branding a {
+  color: white;
+  text-decoration: none;
+}
 
 .main-nav {
   flex-grow: 1;
@@ -251,4 +255,20 @@ button.danger:hover {
   display: flex;
   gap: 10px;
   margin-top: 20px;
+}
+
+/* Organizer Styles */
+.organizer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content:space-between;
+}
+
+.organizer-section {
+  padding: 20px;
+  margin: 10px;
+  width: 40%;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }

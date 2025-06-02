@@ -49,7 +49,7 @@ export const useApiService = () => {
         },
 
         update: async (tagId, tagData) => {
-            return axiosPrivate.patch(`/tags/${tagId}/`, tagData)
+            return axiosPrivate.patch(`/tags/${tagId}/`, tagData);
         },
 
         delete: async (tagId) => {
@@ -71,7 +71,7 @@ export const useApiService = () => {
         },
 
         update: async (catId, catData) => {
-            return axiosPrivate.patch(`/categories/${catId}/`, catData)
+            return axiosPrivate.patch(`/categories/${catId}/`, catData);
         },
 
         delete: async (catId) => {

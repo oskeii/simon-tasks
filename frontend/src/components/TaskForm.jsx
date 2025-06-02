@@ -125,7 +125,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
         } catch (err) {
             console.error('Error updating/creating task:', err);
             console.log('Error response:', err.response?.data)
-            setError(err.response?.data?.message || 'An error occured');
+            setError(err.response?.data?.message || 'An error occurred');
         }
     };
 
