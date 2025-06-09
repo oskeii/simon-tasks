@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import useApiService from '../services/apiService';
+import { toLocalMidnight } from '../utils/dateHelpers';
 
 
 const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
@@ -38,18 +39,39 @@ const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
     }, [formData]);
 
 
-    const filterChanges = () => {
+    const filterChanges = (isNew=false) => {
         // reduce formData to only include modified fields
-        const formChanges = {};
+        let formChanges = {};
 
-        // Compare ech field with the original data
-        for (const key in formData) {
-            console.log(`Checking field: ${key}...\n
-                formData: ${formData[key]}
-                originalData: ${originalData.hasOwnProperty(key) ? originalData?.[key] : 'NONE'}`)
-            if (formData[key] !== originalData?.[key]) {
-                console.log('Field changes detected.');
-                formChanges[key] = formData[key];
+        // New task: Format date fields
+        if (isNew) {
+            for (const key in formData) {
+                if (key.includes('date') && formData[key]) {
+                    formChanges[key] = toLocalMidnight(formData[key]);
+                    console.log(`Formatting date field (${key}) for submission:\n${formData[key]}\t--->\t${formChanges[key]}`)
+                } else {
+                    formChanges[key] = formData[key];
+                }
+            }
+        }
+
+        // Update task: Compare each field with the original data
+        else {
+            for (const key in formData) {
+                console.log(`Checking field: ${key}...\n
+                    formData: ${formData[key]}
+                    originalData: ${originalData.hasOwnProperty(key) ? originalData?.[key] : 'NONE'}`)
+                if (formData[key] !== originalData?.[key]) {
+                    console.log('Field changes detected.');
+
+                    // Format date fields
+                    if (key.includes('date') && formData[key]) {
+                        formChanges[key] = toLocalMidnight(formData[key]);
+                        console.log(`Formatting date field (${key}) for submission:\n${formData[key]}\t--->\t${formChanges[key]}`)
+                    } else {
+                        formChanges[key] = formData[key];
+                    }
+                }
             }
         }
         console.log('Form Changes:', formChanges)
@@ -111,8 +133,11 @@ const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
 
                 response = await apiService.tasks.update(task.id, formChanges);
             } else { // Create new task
-                console.log('Sending data to API:', formData);
-                response = await apiService.tasks.create(formData);
+                let formChanges = filterChanges(true); // 
+                console.log('Sending data to API:', formChanges);
+
+                // console.log('Sending data to API:', formData);
+                response = await apiService.tasks.create(formChanges);
             }
             console.log('Response from API:', response)
 
