@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from tasks.models import Task
-from api.serializers import TaskSerializer
+from api.serializers import TaskSerializer, SubtaskSerializer
 from api.utils import api_error_response, api_success_response
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ class TaskListCreateView(APIView):
     """
     def get(self, request):
         user = request.user
-        queryset = Task.objects.filter(user=user)
+        queryset = Task.objects.filter(user=user, parent_task__isnull=True)  # will prefetch subtasks
 
         # --- APPLY FILTERS based on query parameters ---
         # > Filter by parent task (for subtasks)
@@ -76,7 +76,7 @@ class TaskListCreateView(APIView):
         if tag_id:
             queryset = queryset.filter(tags__id=tag_id)
             
-        # > Search by title or description
+        # > SEARCH by title or description
         search = request.query_params.get('search')
         if search:
             queryset = queryset.filter(
@@ -84,16 +84,39 @@ class TaskListCreateView(APIView):
                 models.Q(description__icontains=search)
             )
         # -----------------------------------------------
+        # PRE-FETCH all related data
+        queryset = queryset.select_related('category').prefetch_related(
+            'tags',
+            'sub_tasks__tags'
+        ).annotate(
+            subtask_count=models.Count('sub_tasks')
+        )
 
-        # Default ordering: due date, then creation date
+        # Default ORDERING: due date, then creation date
         queryset = queryset.order_by(
             models.F('due_date').asc(nulls_last=True),
             '-created_at'
         )
 
         serializer = TaskSerializer(queryset, many=True, context={'request':request})
+        # ORGANIZE for the response data structure
+        incomplete_tasks = []
+        complete_tasks = []
+
+        for task in serializer.data:
+            if task['completed']:
+                complete_tasks.append(task)
+            else:
+                incomplete_tasks.append(task)
+        
+        response_data = {
+            'incomplete_tasks': incomplete_tasks,
+            'complete_tasks': complete_tasks,
+            'total_count': len(serializer.data)
+        } 
+        
         return api_success_response(
-            data=serializer.data,
+            data=response_data,
             message="Tasks retrieved successfully",
             status_code=status.HTTP_200_OK
         )
@@ -123,7 +146,9 @@ class TaskDetailView(APIView):
         Helper method to get task object
         """
         try:
-            task = Task.objects.get(pk=pk)
+            task = Task.objects.select_related('category').prefetch_related('tags', 'sub_tasks__tags').annotate(
+                subtask_count=models.Count('sub_tasks')
+            ).get(pk=pk)
 
             if task.user != user:
                 return None

@@ -6,20 +6,36 @@ from tasks.models import Task
 logger = logging.getLogger(__name__)
 
 
+class SubtaskSerializer(serializers.ModelSerializer):
+    tag_names = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = Task
+        fields = [
+            'id', 'title', 'description', 'estimated_time', 'due_date',
+            'completed', 'tag_names'
+        ]
+
+    def get_tag_names(self, obj):
+        return [tag.name for tag in obj.tags.all()]
+
+
+
 class TaskSerializer(serializers.ModelSerializer):
     
     # Nested serializers for related objects
+    has_subtasks = serializers.SerializerMethodField(read_only=True)
+    sub_tasks = serializers.SerializerMethodField()
     category_name = serializers.SerializerMethodField(read_only=True)
     tag_names = serializers.SerializerMethodField(read_only=True)
-    has_subtasks = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Task
         fields = [
             'id', 'title', 'description', 'estimated_time', 'due_date',
             'completed', 'created_at', 'updated_at', 'completed_at',
-            'user', 'parent_task', 'category', 'category_name',
-            'tags', 'tag_names', 'has_subtasks'
+            'user', 'parent_task', 'has_subtasks', 'sub_tasks', 
+            'category', 'category_name', 'tags', 'tag_names'
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 
@@ -32,7 +48,10 @@ class TaskSerializer(serializers.ModelSerializer):
         return [tag.name for tag in obj.tags.all()]
     
     def get_has_subtasks(self, obj):
-        return obj.sub_tasks.exists()
+        return obj.subtask_count > 0
+    
+    def get_sub_tasks(self, obj):
+        return SubtaskSerializer(obj.sub_tasks.all(), many=True, context=self.context).data
     
     def create(self, validated_data):
         logger.info(f"Creating new task: {validated_data.get('title')}")
