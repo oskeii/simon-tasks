@@ -7,17 +7,25 @@ logger = logging.getLogger(__name__)
 
 
 class SubtaskSerializer(serializers.ModelSerializer):
+    category_name = serializers.SerializerMethodField(read_only=True)
     tag_names = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Task
         fields = [
             'id', 'title', 'description', 'estimated_time', 'due_date',
-            'completed', 'tag_names'
+            'completed', 'category_name', 'tag_names'
         ]
 
     def get_tag_names(self, obj):
         return [tag.name for tag in obj.tags.all()]
+    
+    def get_category_name(self, obj):
+        if obj.category:
+            return obj.category.name
+        elif obj.parent_task and obj.parent_task.category:
+            return obj.parent_task.category.name
+        return None
 
 
 
@@ -48,7 +56,7 @@ class TaskSerializer(serializers.ModelSerializer):
         return [tag.name for tag in obj.tags.all()]
     
     def get_has_subtasks(self, obj):
-        return obj.subtask_count > 0
+        return obj.sub_tasks.exists()
     
     def get_sub_tasks(self, obj):
         return SubtaskSerializer(obj.sub_tasks.all(), many=True, context=self.context).data
@@ -92,10 +100,13 @@ class TaskSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Failed to update task")
 
     def validate(self, data):
-        # Check that parent_task is not setting itself as parent
         parent_task = data.get('parent_task')
+        # Check that parent_task is not setting itself as parent
         if (self.instance and parent_task) and (parent_task.id == self.instance.id):
             raise serializers.ValidationError({"parent_task": "A task cannot be its own parent"})
+        # Check that sub_task is not exceeding max depth of 1
+        if parent_task and parent_task.parent_task:
+            raise serializers.ValidationError({"parent_task": "Subtasks cannot have their own subtasks"})
         
         # Check that category belongs to the user
         category = data.get('category')

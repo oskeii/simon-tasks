@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from users.models import Tag, Category
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import timezone
 
@@ -22,6 +23,12 @@ class Task(models.Model):
     # dependencies = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='dependent_tasks')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
     tags = models.ManyToManyField(Tag, blank=True)
+
+
+    def clean(self):
+        super().clean()
+        if self.parent_task and self.parent_task.parent_task:
+            raise ValidationError("Subtasks cannot have their own subtasks (max depth: 1)")
 
     def save(self, *args, **kwargs):
         # Marking task complete, set completion date

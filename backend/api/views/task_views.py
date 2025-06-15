@@ -85,11 +85,11 @@ class TaskListCreateView(APIView):
             )
         # -----------------------------------------------
         # PRE-FETCH all related data
-        queryset = queryset.select_related('category').prefetch_related(
+        queryset = queryset.select_related(
+            'category', 'parent_task__category'
+        ).prefetch_related(
             'tags',
             'sub_tasks__tags'
-        ).annotate(
-            subtask_count=models.Count('sub_tasks')
         )
 
         # Default ORDERING: due date, then creation date
