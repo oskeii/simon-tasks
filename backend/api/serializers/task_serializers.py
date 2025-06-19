@@ -33,7 +33,6 @@ class TaskSerializer(serializers.ModelSerializer):
     
     # Nested serializers for related objects
     has_subtasks = serializers.SerializerMethodField(read_only=True)
-    sub_tasks = serializers.SerializerMethodField()
     category_name = serializers.SerializerMethodField(read_only=True)
     tag_names = serializers.SerializerMethodField(read_only=True)
     
@@ -45,11 +44,13 @@ class TaskSerializer(serializers.ModelSerializer):
             'user', 'parent_task', 'has_subtasks', 'sub_tasks', 
             'category', 'category_name', 'tags', 'tag_names'
         ]
-        read_only_fields = ['id', 'user', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at', 'sub_tasks']
 
     def get_category_name(self, obj):
         if obj.category:
             return obj.category.name
+        elif obj.parent_task and obj.parent_task.category:
+            return obj.parent_task.category.name
         return None
     
     def get_tag_names(self, obj):
@@ -57,9 +58,7 @@ class TaskSerializer(serializers.ModelSerializer):
     
     def get_has_subtasks(self, obj):
         return obj.sub_tasks.exists()
-    
-    def get_sub_tasks(self, obj):
-        return SubtaskSerializer(obj.sub_tasks.all(), many=True, context=self.context).data
+
     
     def create(self, validated_data):
         logger.info(f"Creating new task: {validated_data.get('title')}")

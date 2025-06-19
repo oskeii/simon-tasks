@@ -18,7 +18,7 @@ class TaskListCreateView(APIView):
     """
     def get(self, request):
         user = request.user
-        queryset = Task.objects.filter(user=user, parent_task__isnull=True)  # will prefetch subtasks
+        queryset = Task.objects.filter(user=user)  # will prefetch subtasks
 
         # --- APPLY FILTERS based on query parameters ---
         # > Filter by parent task (for subtasks)
@@ -89,7 +89,7 @@ class TaskListCreateView(APIView):
             'category', 'parent_task__category'
         ).prefetch_related(
             'tags',
-            'sub_tasks__tags'
+            'sub_tasks'
         )
 
         # Default ORDERING: due date, then creation date
@@ -99,20 +99,28 @@ class TaskListCreateView(APIView):
         )
 
         serializer = TaskSerializer(queryset, many=True, context={'request':request})
+        
         # ORGANIZE for the response data structure
-        incomplete_tasks = []
-        complete_tasks = []
+        incomplete_sorted = []
+        complete_sorted = []
+        all_tasks = {}
 
         for task in serializer.data:
-            if task['completed']:
-                complete_tasks.append(task)
-            else:
-                incomplete_tasks.append(task)
+            all_tasks[task['id']] = task  # insert dictionary values as {task_id: task_data}
+            if not task['parent_task']:  # This task is not a subtask
+                if task['completed']:
+                    complete_sorted.append(task['id'])
+                else:
+                    incomplete_sorted.append(task['id'])
         
         response_data = {
-            'incomplete_tasks': incomplete_tasks,
-            'complete_tasks': complete_tasks,
-            'total_count': len(serializer.data)
+            'total_count': len(serializer.data),
+            'parent_count': len(incomplete_sorted) + len(complete_sorted),
+            'incomplete_count': len(incomplete_sorted),
+            'complete_count': len(complete_sorted),
+            'incomplete_tasks': incomplete_sorted,
+            'complete_tasks': complete_sorted,
+            'tasks': all_tasks
         } 
         
         return api_success_response(
@@ -146,9 +154,7 @@ class TaskDetailView(APIView):
         Helper method to get task object
         """
         try:
-            task = Task.objects.select_related('category').prefetch_related('tags', 'sub_tasks__tags').annotate(
-                subtask_count=models.Count('sub_tasks')
-            ).get(pk=pk)
+            task = Task.objects.select_related('category').prefetch_related('tags', 'sub_tasks__tags').get(pk=pk)
 
             if task.user != user:
                 return None
@@ -222,17 +228,68 @@ class TaskDetailView(APIView):
             status_code=status.HTTP_400_BAD_REQUEST
         )
 
+    def cleanup_object(self, request, subtask_ids):
+        """
+        Helper method for task deletion
+        Returns dictionary with updated data for subtasks.
+        """
+        if not subtask_ids:
+            return None
+        
+        # Query subtasks by ID to get their updated state
+        updated_subtasks = Task.objects.filter(id__in=subtask_ids).select_related(
+                'category'
+            ).prefetch_related('tags').order_by(
+                models.F('due_date').asc(nulls_last=True),
+                '-created_at'
+            )
+        
+        serializer = TaskSerializer(updated_subtasks, many=True, context={'request':request})
+        # ORGANIZE for the response data structure
+        incomplete_sorted = []
+        complete_sorted = []
+        subtasks = {}
+
+        for item in serializer.data:
+            subtasks[item['id']] = item
+            if item['completed']:
+                complete_sorted.append(item['id'])
+            else:
+                incomplete_sorted.append(item['id'])
+        
+        response_data = {
+            'total_count': len(serializer.data),
+            'incomplete_count': len(incomplete_sorted),
+            'complete_count': len(complete_sorted),
+            'incomplete_tasks': incomplete_sorted,
+            'complete_tasks': complete_sorted,
+            'tasks': subtasks
+        }
+        return response_data
+    
+
     def delete(self, request, pk):
         task = self.get_object(pk, request.user)
+        logger.debug(f"task to delete: {task}")
         if not task:
             return api_error_response(
                 message="Task not found for this user",
                 status_code=status.HTTP_404_NOT_FOUND
             )
         
+        # Get subtask IDs before task deletion
+        subtask_ids = None
+        if task.sub_tasks.exists():
+            logger.debug("Task to be deleted has subtasks")
+            subtask_ids = list(task.sub_tasks.values_list('id', flat=True))
+        
         task.delete()
+
+        # Send updated subtask data in response
+        response_data = self.cleanup_object(request.user, subtask_ids)
         return api_success_response(
-            message="task deleted successfully",
+            data=response_data,
+            message="Task deleted successfully",
             status_code=status.HTTP_204_NO_CONTENT
         )
 

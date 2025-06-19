@@ -1,18 +1,19 @@
-from django.db.models.signals import post_delete
+from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from .models import Task
 
-@receiver(post_delete, sender=Task)
+@receiver(pre_delete, sender=Task)
 def reassign_subtasks_to_parent(sender, instance, **kwargs):
     """
     Reassign sub-tasks of a deleted parent task (Task A) to its parent task (Task B).
-    If no parent task exists, set sub-tasks' parent to NULL. If no sub-tasks exist, no action is taken.
+    If no parent task exists, set sub-tasks' category to parent's category. If no sub-tasks exist, no action is taken.
     """
 
     if instance.sub_tasks.exists():
         parent_task = instance.parent_task
+        parent_category = instance.category
 
-        if parent_task:
+        if parent_task:  # No longer allowing subtask depth > 1... for the time being
             for subtask in instance.sub_tasks.all():
                 subtask.parent_task = parent_task
                 subtask.save()
@@ -20,7 +21,7 @@ def reassign_subtasks_to_parent(sender, instance, **kwargs):
         
         else: 
             for subtask in instance.sub_tasks.all():
-                subtask.parent_task = None
+                subtask.category = parent_category  # inherit parent's category
                 subtask.save()
             print(f"Sub-tasks of {instance.title} have been disassociated.")
 
