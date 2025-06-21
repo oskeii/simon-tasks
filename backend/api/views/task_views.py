@@ -228,13 +228,22 @@ class TaskDetailView(APIView):
             status_code=status.HTTP_400_BAD_REQUEST
         )
 
-    def cleanup_object(self, request, subtask_ids):
+    def cleanup_object(self, request, subtask_ids, keep_subtasks=True):
         """
         Helper method for task deletion
         Returns dictionary with updated data for subtasks.
         """
         if not subtask_ids:
-            return None
+            return {'sub_count': 0, 'keep_subtasks': True}
+        
+        if not keep_subtasks:
+            Task.objects.filter(id__in=subtask_ids).delete()
+            response_data = {
+                'keep_subtasks': False,
+                'sub_count': len(subtask_ids),
+                'deleted_subtasks': subtask_ids
+            }
+            return response_data
         
         # Query subtasks by ID to get their updated state
         updated_subtasks = Task.objects.filter(id__in=subtask_ids).select_related(
@@ -258,7 +267,8 @@ class TaskDetailView(APIView):
                 incomplete_sorted.append(item['id'])
         
         response_data = {
-            'total_count': len(serializer.data),
+            'keep_subtasks': True,
+            'sub_count': len(serializer.data),
             'incomplete_count': len(incomplete_sorted),
             'complete_count': len(complete_sorted),
             'incomplete_tasks': incomplete_sorted,
@@ -276,7 +286,8 @@ class TaskDetailView(APIView):
                 message="Task not found for this user",
                 status_code=status.HTTP_404_NOT_FOUND
             )
-        
+        # Get the keep_subtasks parameter from query params (defaults to True)
+        keep_subtasks = request.query_params.get('keep_subtasks', 'true').lower() == 'true'
         # Get subtask IDs before task deletion
         subtask_ids = None
         if task.sub_tasks.exists():
@@ -286,11 +297,11 @@ class TaskDetailView(APIView):
         task.delete()
 
         # Send updated subtask data in response
-        response_data = self.cleanup_object(request.user, subtask_ids)
+        response_data = self.cleanup_object(request, subtask_ids, keep_subtasks)
         return api_success_response(
             data=response_data,
             message="Task deleted successfully",
-            status_code=status.HTTP_204_NO_CONTENT
+            status_code=status.HTTP_200_OK
         )
 
 
