@@ -29,9 +29,11 @@ const TaskDetail = () => {
   };
 
   const deleteTask = async () => {
-    if (window.confirm('Are you sure you want to delete this task? All subtasks will be reassigned to the parent task, if any.')) {
+    if (window.confirm('Are you sure you want to delete this task?')) {
+      let delete_subtasks = task.has_subtasks && window.confirm('Delete SUBTASKS too?');
+
       try {
-        await apiService.tasks.delete(taskId);
+        await apiService.tasks.delete(taskId, { keep_subtasks: !delete_subtasks });
         navigate('/tasks', { replace: true });
       } catch (err) {
         console.error('Error deleting task', err);
@@ -60,7 +62,7 @@ const TaskDetail = () => {
   }
 
   useEffect(() => {
-    if (taskId) { fetchTask(); }
+    if (taskId) fetchTask();
   }, [taskId]);
 
 
@@ -68,27 +70,24 @@ const TaskDetail = () => {
     return (<div className='loading'>Loading task details...</div>);
   }
 
-  if (error && !task) {
-    return (
-      <div className='error'>
-        <h2>Error</h2>
-        <p>{error}</p>
-        <button onClick={() => navigate('/tasks')}>Return to Task List</button>
-      </div>
-    );
-  }
-
   if (!task) {
-    return (<div>Task not found</div>);
+    error
+      ? (
+        <div className='error'>
+          <h2>Error</h2>
+          <p>{error}</p>
+          <button onClick={() => navigate('/tasks')}>Return to Task List</button>
+        </div>
+      )
+      : (<div>Task not found</div>);
   }
-  
 
   return (
     <div className='task-detail'>
+
       <div className='task-detail-header'>
         <button onClick={() => navigate('/tasks')}> &larr; Back to Tasks</button>
       </div>
-
       {error && <p className='error'>{error}</p>}
 
       {editing ? (
@@ -147,9 +146,11 @@ const TaskDetail = () => {
         </div>
       )}
 
-      <div className='subtasks-section'>
-        <SubTaskList parentTask={task} />
-      </div>
+      {!task.parent_task && (
+        <div className='subtasks-section'>
+          <SubTaskList parentTask={ {id: task.id, hasSubtasks: task.has_subtasks} } />
+        </div>
+      )}
     </div>
   );
 };

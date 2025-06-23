@@ -318,8 +318,15 @@ class TaskSubtasksView(APIView):
                 '-created_at'
             )
             serializer = TaskSerializer(subtasks, many=True, context={'request': request})
+
+            subtasks_sorted = []
+            subtasks_data = {}
+            for task in serializer.data:
+                subtasks_sorted.append(task['id'])
+                subtasks_data[task['id']] = task  # insert dictionary values as {task_id: task_data}
+
             return api_success_response(
-                data=serializer.data,
+                data={'task_ids': subtasks_sorted, 'tasks': subtasks_data},
                 message="Subtasks retrieved successfully",
                 status_code=status.HTTP_200_OK
             )

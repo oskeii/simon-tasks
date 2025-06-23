@@ -2,20 +2,23 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import TaskForm from './TaskForm'
 import useApiService from '../services/apiService'
+import TaskItem from './TaskItem'
 
-const SubTaskList = ({ parentTask, onUpdate }) => {
+const SubTaskList = ({ parentTask={id: null, hasSubtasks: false}, onUpdate }) => {
   const apiService = useApiService();
-  const [subTasks, setSubTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [subtasks, setSubtasks] = useState({});
+  const [sortIds, setSortIds] = useState([]);
+  const [loading, setLoading] = useState(parentTask.hasSubtasks);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
 
-  const fetchSubTasks = async () => {
+  const fetchSubtasks = async () => {
     try {
         setLoading(true);
-        const response = await apiService.tasks.subtasks(parentTask.id);
-        setSubTasks(response.data.data);
+        const response = (await apiService.tasks.subtasks(parentTask.id)).data.data;
+        setSortIds(response.task_ids);
+        setSubtasks(response.tasks);
         setError('');
     } catch (err) {
         console.error('Error fetching subtasks:', err);
@@ -25,8 +28,8 @@ const SubTaskList = ({ parentTask, onUpdate }) => {
     }
   };
 
-  const editSubTask = (task) => {
-    setEditingTask(task);
+  const editSubtask = (taskId) => {
+    setEditingTask(taskId);
     setShowForm(true);
   };
 
@@ -35,11 +38,14 @@ const SubTaskList = ({ parentTask, onUpdate }) => {
     setShowForm(false);
   };
 
-  const deleteSubTask = async (taskId) => {
+  const deleteSubtask = async (taskId) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
       try {
         await apiService.tasks.delete(taskId);
-        setSubTasks(subTasks.filter(t => t.id !== taskId));
+        let newTasks = { ...subtasks };
+        delete subtasks[taskId];
+        setSubtasks(newTasks);
+        setSortIds(sortIds.filter(id => id !== taskId));
 
         if (onUpdate) onUpdate();
       } catch (err) {
@@ -49,14 +55,14 @@ const SubTaskList = ({ parentTask, onUpdate }) => {
     }
   };
 
-  const toggleTaskCompletion = async (task) => {
+  const toggleTaskCompletion = async (taskId) => {
     try {
-      const response = await apiService.tasks.update(task.id, {
-            completed: !task.completed
+      const response = await apiService.tasks.update(taskId, {
+            completed: !subtasks[taskId].completed
         });
         console.log('Response from API:', response)
 
-        setSubTasks(subTasks.map(t => t.id === task.id ? response.data.data : t));
+        setSubtasks({ ...subtasks, [taskId]: response.data.data });
         if (onUpdate) onUpdate();  
     } catch (err) {
         console.error('Error updating task', err);
@@ -65,22 +71,19 @@ const SubTaskList = ({ parentTask, onUpdate }) => {
   };
 
   const handleFormSuccess = (task) => { // Recieving response data from TaskForm component, render updated list
-    if (editingTask) {
-        setSubTasks(subTasks.map(t => t.id === task.id ? task : t));
-        setEditingTask(null);
-    } else {
-        setSubTasks([...subTasks, task]);
-    }
-    setShowForm(false);
+    setSubtasks({ ...subtasks, [task.id]: task });
+    !editingTask && setSortIds([...sortIds, task.id])
+
+    cancelForm();
     if (onUpdate) onUpdate();
   }
 
 
   useEffect(() => {
-    if (parentTask?.id) { fetchSubTasks(); }
+    if (parentTask.id && parentTask.hasSubtasks) fetchSubtasks();
   }, [parentTask])
 
-  if (!parentTask) return null;
+  if (!parentTask.id) return null;
 
   if (loading) {
     return (<div className='subtask-list loading'>Loading subtasks...</div>)
@@ -90,7 +93,7 @@ const SubTaskList = ({ parentTask, onUpdate }) => {
   return (
     <div className='task-list'>
         <div className='subtask-header'>
-          <h2>Sub-tasks</h2>
+          <h2>Sub-tasks ({sortIds.length})</h2>
         </div>
 
         {error && (<p className='error'>{error}</p>)}
@@ -99,43 +102,38 @@ const SubTaskList = ({ parentTask, onUpdate }) => {
 
         {showForm && (
             <TaskForm
-            task={editingTask}
+            task={subtasks[editingTask]}
             parentId={editingTask ? null : parentTask.id }
             onSuccess={handleFormSuccess}
             onCancel={cancelForm}
             />
         )}
 
-        {subTasks.length === 0 ? (
+        {sortIds.length === 0 ? (
             <p className='no-subtasks'>No subtasks yet</p>
         ) : (
+          <div>
+            <hr/>
             <ul>
-                {subTasks.map((task) => (
-                    <li key={task.id} className={task.completed ? 'completed' : ''}>
+                {sortIds.map((tId) => {
+                  const task = subtasks[tId];
+                  if (!task) return null;
+
+                  return (
+                    <li key={tId} className={task.completed ? 'completed' : ''}>
                         <div className='subtask-item'>
-                            <input 
-                                type='checkbox'
-                                checked={task.completed || false}
-                                onChange={() => toggleTaskCompletion(task)}
-                            />
-
-                            <Link to={`/tasks/${task.id}`} className='task-title'>
-                                <span>{task.title}</span>
-                            </Link>
-                            {task.due_date && (
-                                <p className='task-due-date'>
-                                    Due: {new Date(task.due_date).toLocaleDateString()}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className='task-actions'>
-                            <button onClick={() => editSubTask(task)}>Edit</button>
-                            <button onClick={() => deleteSubTask(task.id)}>Delete</button>
+                          <TaskItem
+                            task={task}
+                            onEdit={editSubtask}
+                            onDelete={deleteSubtask}
+                            onToggle={toggleTaskCompletion}
+                          />
                         </div>
                     </li>
-                ))}
+                  )
+                })}
             </ul>
+          </div>
         )}
 
         

@@ -127,12 +127,12 @@ const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
             let response;
             // console.log('Sending data to API:', formData)
             
-            if (task) { // Update existing task
+            if (task) { // UPDATE existing task
                 let formChanges = filterChanges(); // For updates, only include changed fields
                 console.log('Sending data to API:', formChanges);
 
                 response = await apiService.tasks.update(task.id, formChanges);
-            } else { // Create new task
+            } else { // CREATE new task
                 let formChanges = filterChanges(true); // 
                 console.log('Sending data to API:', formChanges);
 

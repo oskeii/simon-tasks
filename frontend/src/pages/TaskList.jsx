@@ -1,85 +1,35 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react'
 import TaskForm from '../components/TaskForm';
-import useApiService from '../services/apiService';
+import TaskItem from '../components/TaskItem';
+import { useTaskManager } from '../hooks/useTaskManager';
 
 const TaskList = () => {
-  const apiService = useApiService();
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [editingTask, setEditingTask] = useState(null);
+  const [toggleCompleteList, setToggleCompleteList] = useState(false);
+  const targetRef = useRef(null);
+  const {
+    // State
+    tasks, data,
+    loading, error, showForm, editingTask,
 
-  // Fetch tasks
-  const getTasks = async () => {
-    try {
-      setLoading(true);
-      const response = await apiService.tasks.getAll();
-      setTasks(response.data.data);
-      setError('');
-    } catch (err) {
-      console.error('Error fetching tasks:', err);
-      setError('Failed to load tasks. Please try again.')
-    } finally {
-      setLoading(false);
+    // API Actions
+    getTasks,
+    deleteTask,
+    toggleTaskCompletion,
+    handleFormSuccess, // task creation and updates
+
+    // UI Actions
+    editTask,
+    cancelForm,
+    showNewTaskForm
+  } = useTaskManager();
+  
+
+  const scrollToTarget = () => {
+    if (targetRef.current) {
+      targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
-
-  // Delete task
-  const deleteTask = async (taskId) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      try {
-        await apiService.tasks.delete(taskId);
-        setTasks(tasks.filter(t => t.id !== taskId));
-      } catch (err) {
-        console.error('Error deleting task', err);
-        setError('Failed to delete task. Please try again.')
-      }
-    }
-  };
-
-  // Toggle task completion status
-  const toggleTaskCompletion = async (task) => {
-    try {
-      const response = await apiService.tasks.update(task.id, {
-        completed: !task.completed
-      });
-      console.log('Response from API:', response)
-
-      setTasks(tasks.map(t => t.id === task.id ? response.data.data : t));
-    } catch (err) {
-      console.error('Error updating task', err);
-      console.log('Error response:', err.response?.data)
-
-      setError('Failed to update task completion status. Please try again.');
-    }
-  };
-
-  // Handle form submission success (rendering updates)
-  const handleFormSuccess = (task) => {
-    if (editingTask) { // Update task in list
-      setTasks(tasks.map(t => t.id === task.id ? task : t));    // traversing tasks and updating the matching task
-      setEditingTask(null);
-    } else { // Add new task to list
-      setTasks([...tasks, task]);
-    }
-    setShowForm(false);
-  };
-
-  // Edit task
-  const editTask = (task) => {
-    setEditingTask(task);
-    setShowForm(true);
-  };
-
-  // Cancel form
-  const cancelForm = () => {
-    setShowForm(false);
-    setEditingTask(null);
-  };
-
-
+  
   useEffect(() => {
     getTasks();
   }, []);
@@ -95,50 +45,74 @@ const TaskList = () => {
       <hr/>
       {error && <p className='error'>{error}</p>}
 
-      <button onClick={() => setShowForm(true)}>Add New Task</button>
+      <button onClick={showNewTaskForm}>Add New Task</button>
 
       {showForm && (
-        <TaskForm
-          task={editingTask}
-          onSuccess={handleFormSuccess}
-          onCancel={cancelForm}
-        />
+        <div ref={targetRef}>
+          <TaskForm
+            task={tasks[editingTask]}
+            onSuccess={handleFormSuccess}
+            onCancel={cancelForm}
+          />
+        </div>
       )}
 
       <div className='task-list'> 
-        {tasks.length === 0 ? (
+        {data.total_count === 0 ? (
           <p>No tasks yet. Create one to get started!</p>
         ): (
-          <ul>
-            {tasks.map((task) => (
-              <li key={task.id} className={task.completed ? 'completed' : ''}>
-                <div className='task-header'>
-                  <input 
-                    type='checkbox'
-                    checked={task.completed || false}
-                    onChange={() => toggleTaskCompletion(task)}
-                  />
+          <>
+          <div className='incomplete-list'>
+            <h3>Incomplete Tasks ({data.incomplete_count})</h3>
+            <ul>
+              {data.incomplete_tasks.map((tId) => {
+                const task = tasks[tId];
+                if (!task) return null;
 
-                  <Link to={`/tasks/${task.id}`} className='task-title'>
-                    <h3>{task.title}</h3>
-                  </Link>
-                </div>
+                return (
+                  <li key={tId}>
+                    <TaskItem 
+                      task={task}
+                      subtasks={task.sub_tasks ? task.sub_tasks.map(id => tasks[id]) : []}
+                      onEdit={editTask}
+                      onDelete={deleteTask}
+                      onToggle={toggleTaskCompletion}
+                    />
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
 
-                {task.description && <p className='task-description'>{task.description}</p>}
+          <hr/>
+          <div className='completed-list'>
+            <h3>Complete Tasks ({data.complete_count})</h3>
+            <button onClick={() => setToggleCompleteList(!toggleCompleteList)}>
+              {toggleCompleteList ? '▼ Hide' : '▶ Show'}
+            </button>
+            {toggleCompleteList && (
+              <ul>
+                {data.complete_tasks.map((tId) => {
+                  const task = tasks[tId];
+                  if (!task) return null;
 
-                {task.due_date && (
-                  <p className='task-due-date'>
-                    Due: {new Date(task.due_date).toLocaleDateString()}
-                  </p>
-                )}
+                  return (
+                    <li key={tId} className='completed'>
+                      <TaskItem 
+                        task={task}
+                        subtasks={task.sub_tasks ? task.sub_tasks.map(id => tasks[id]) : []}
+                        onEdit={editTask}
+                        onDelete={deleteTask}
+                        onToggle={toggleTaskCompletion}
+                      />
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
 
-                <div className='task-actions'>
-                  <button onClick={() => editTask(task)}>Edit</button>
-                  <button onClick={() => deleteTask(task.id)}>Delete</button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          </>
         )}
       </div>
     </div>

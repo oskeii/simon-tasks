@@ -29,8 +29,8 @@ export const useApiService = () => {
             return await axiosPrivate.patch(`/tasks/${taskId}/`, taskData);
         },
 
-        delete: async (taskId) => {
-            return await axiosPrivate.delete(`/tasks/${taskId}/`);
+        delete: async (taskId, params={}) => {
+            return await axiosPrivate.delete(`/tasks/${taskId}/`, { params });
         }
     };
 
