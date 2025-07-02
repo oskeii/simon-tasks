@@ -1,0 +1,242 @@
+{
+  "user": {
+    "username": "demo", 
+    "email": "demo@example.com", 
+    "password": "demopass123"
+  },
+  
+  "categories": [
+    {"name": "Work", "description": "Professional tasks and projects", "as_workload": true},
+    {"name": "Personal", "description": "Personal life tasks", "as_workload": false},
+    {"name": "Learning", "description": "Study, courses, and skill development", "as_workload": true},
+    {"name": "Health", "description": "Exercise, medical, and wellness tasks", "as_workload": false},
+    {"name": "Finance", "description": "Budget, bills, and financial planning", "as_workload": false},
+    {"name": "Side Projects", "description": "Personal coding projects and experiments", "as_workload": true}
+  ],
+
+  "tags": [
+    // Context
+    {"name": "urgent"}, {"name": "quick-win"}, {"name": "deep-work"},
+    // Energy level
+    {"name": "high-energy"}, {"name": "low-energy"}, 
+    {"name": "creative"}, {"name": "admin"},
+    // Time-based
+    {"name": "morning"}, {"name": "evening"}, {"name": "weekend"},
+    // Project
+    {"name": "portfolio"}, {"name": "job-search"}, {"name": "networking"}, 
+    {"name": "research"},
+    // Process
+    {"name": "brainstorm"}, {"name": "planning"}, {"name": "review"}, {"name": "follow-up"}
+  ],
+
+  "tasks": [
+    // WORK TASKS
+    {
+        "title": "Review Q1 project requirements",
+        "description": "Go through the project brief and identify key deliverables for the first quarter",
+        "category": "Work",
+        "tags": ["deep-work", "planning"],
+        "estimated_time": "2h",
+        "due_date": "+2 days",
+        "completed": false
+    },
+    {
+        "title": "Prepare presentation slides",
+        "description": "Create slides for the weekly team meeting on project progress",
+        "category": "Work",
+        "tags": ["creative", "urgent"],
+        "estimated_time": "1h30m",
+        "due_date": "+1 day",
+        "completed": false
+    },
+    {
+        "title": "Send follow-up emails to clients",
+        "description": "Check in with clients about their satisfaction with recent deliverables",
+        "category": "Work",
+        "tags": ["follow-up", "quick-win", "low-energy"],
+        "estimated_time": "30m",
+        "due_date": "+8 hours",
+        "completed": true
+    },
+    
+    // LEARNING TASKS
+    {
+        "title": "Complete Django testing tutorial",
+        "description": "Work through the pytest and Django testing documentation",
+        "category": "Learning",
+        "tags": ["deep-work", "portfolio"],
+        "estimated_time": "3h",
+        "due_date": "+5 days",
+        "completed": false
+    },
+    {
+        "title": "Read React hooks best practices",
+        "description": "Review latest articles on React hook patterns and performance optimization",
+        "category": "Learning",
+        "tags": ["research", "evening"],
+        "estimated_time": "1h",
+        "due_date": None,
+        "completed": false
+    },
+    
+    // PERSONAL TASKS
+    {
+        "title": "Schedule dentist appointment",
+        "description": "Call Dr. Smith's office to book routine cleaning",
+        "category": "Personal",
+        "tags": ["quick-win", "admin"],
+        "estimated_time": "15m",
+        "due_date": "+3 days",
+        "completed": false
+    },
+    {
+        "title": "Buy groceries for the week",
+        "description": "Milk, eggs, bread, coffee, vegetables, chicken, rice",
+        "category": "Personal",
+        "tags": ["weekend", "low-energy"],
+        "estimated_time": "1h",
+        "due_date": "+4 days",
+        "completed": true
+    },
+    {
+        "title": "Organize home office",
+        "description": "Clean desk, organize cables, file important documents",
+        "category": "Personal",
+        "tags": ["weekend", "high-energy"],
+        "estimated_time": "2h",
+        "due_date": None,
+        "completed": false
+    },
+    
+    // HEALTH TASKS
+    {
+        "title": "Morning workout routine",
+        "description": "30 minutes cardio + strength training",
+        "category": "Health",
+        "tags": ["morning", "high-energy"],
+        "estimated_time": "45m",
+        "due_date": "+12 hours",
+        "completed": false
+    },
+    {
+        "title": "Plan weekly meal prep",
+        "description": "Choose healthy recipes and create shopping list",
+        "category": "Health",
+        "tags": ["planning", "creative"],
+        "estimated_time": "30m",
+        "due_date": "+6 days",
+        "completed": false
+    },
+    
+    // FINANCE TASKS
+    {
+        "title": "Review monthly budget",
+        "description": "Check spending against budget categories and adjust if needed",
+        "category": "Finance",
+        "tags": ["review", "admin"],
+        "estimated_time": "45m",
+        "due_date": "+7 days",
+        "completed": false
+    },
+    {
+        "title": "Pay credit card bill",
+        "description": "Make payment before due date to avoid interest",
+        "category": "Finance",
+        "tags": ["urgent", "quick-win"],
+        "estimated_time": "10m",
+        "due_date": "-1 day",  // Overdue
+        "completed": false
+    },
+    
+    // SIDE PROJECTS
+    {
+        "title": "Add testing to todo app",
+        "description": "Implement pytest for Django backend and Jest for React frontend",
+        "category": "Side Projects",
+        "tags": ["portfolio", "deep-work", "job-search"],
+        "estimated_time": "4h",
+        "due_date": "+10 days",
+        "completed": false
+    },
+    {
+        "title": "Update GitHub profile README",
+        "description": "Add recent projects and improve presentation",
+        "category": "Side Projects",
+        "tags": ["job-search", "creative", "quick-win"],
+        "estimated_time": "45m",
+        "due_date": "+3 days",
+        "completed": false
+    },
+    
+    // SOME COMPLETED TASKS FOR DEMO
+    {
+        "title": "Research job interview techniques",
+        "description": "Read articles about technical interviews and behavioral questions",
+        "category": "Learning",
+        "tags": ["job-search", "research"],
+        "estimated_time": "2h",
+        "due_date": "-2 days",
+        "completed": true
+    },
+    {
+        "title": "Water plants",
+        "description": "Weekly plant watering and check for pests",
+        "category": "Personal",
+        "tags": ["quick-win", "morning"],
+        "estimated_time": "15m",
+        "due_date": "-1 day",
+        "completed": true
+    }
+  ],
+
+  "subtasks": [
+    {
+      "parent_title": "Review Q1 project requirements",
+      "subtasks": [
+        {
+            "title": "Read project brief document",
+            "description": "Thoroughly review the 15-page project specification",
+            "estimated_time": "45m",
+            "completed": true
+        },
+        {
+            "title": "Identify key stakeholders",
+            "description": "List all people involved and their roles",
+            "estimated_time": "30m",
+            "completed": false
+        },
+        {
+            "title": "Create timeline draft",
+            "description": "Outline major milestones and deadlines",
+            "estimated_time": "45m",
+            "completed": false
+        }
+      ]
+    },
+    {
+      "parent_title": "Add testing to todo app",
+      "subtasks": [
+        {
+            "title": "Set up pytest configuration",
+            "description": "Install pytest-django and configure test settings",
+            "estimated_time": "30m",
+            "completed": false
+        },
+        {
+            "title": "Write model tests",
+            "description": "Test Task, Category, and Tag models",
+            "estimated_time": "1hr30m",
+            "completed": false
+        },
+        {
+            "title": "Write API endpoint tests",
+            "description": "Test all CRUD operations and authentication",
+            "estimated_time": "2hr",
+            "completed": false
+        }
+      ]
+    }
+
+  ]
+
+}

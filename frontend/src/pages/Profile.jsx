@@ -42,7 +42,6 @@ const Profile = () => {
 
     return (
         <div>
-            <h1>Profile here...</h1>
             <div className='user-info-card'>
                 <img className='profile-pic' src={`${profile.image}?${new Date().getTime()}`} alt='profile picture' />
                 <h3>@{user.username}</h3>

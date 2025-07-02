@@ -121,7 +121,23 @@ The application will be available at:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
 
-<!-- ### Demo Access
+### Demo Access
+You may create a user account from the login page. However, if you would like to load some demo data into the application first, the following will create a demo user with tasks and everything. It will also create an admin account for you to access Django's admin panel.
+```bash
+# Navigate to backend (from root directory)
+cd backend
+# Run this command
+python manage.py setup_demo
+# NOTE: 
+  # append with `--no-reset` to keep current database
+  # append with `--skip-admin` if you don't want to create an admin user, or would prefer to set this up manually
+```
+>[!WARNING]
+> Once again, if you do not want to wipe the entire database with this command, please be sure to enter `python manage.py setup_demo --no-reset`
+
 - **Admin Panel**: http://localhost:8000/admin/
   - Username: `admin`
-  - Password: `adminpass123` -->
+  - Password: `adminpass123`
+- **Demo User**:
+  - Username: `demo`
+  - Password: `demopass123`

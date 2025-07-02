@@ -1,0 +1,115 @@
+{
+  "user": {
+    "username": "demo", 
+    "email": "demo@example.com", 
+    "password": "demopass123"
+  },
+  
+  "categories": [
+    {"name": "Work", "description": "Professional tasks", "as_workload": true},
+    {"name": "Personal", "description": "Personal life tasks", "as_workload": false},
+    {"name": "Learning", "description": "Study and skill development", "as_workload": true}
+  ],
+
+  "tags": [
+    {"name": "urgent"},
+    {"name": "quick-win"},
+    {"name": "deep-work"},
+    {"name": "planning"},
+    {"name": "low-energy"}
+  ],
+
+  "tasks": [
+    {
+      "title": "Review project requirements",
+      "description": "Go through Q1 deliverables and create timeline",
+      "category": "Work",
+      "tags": ["deep-work", "planning"],
+      "estimated_time": "2h30m",
+      "due_date": "+2 days",
+      "completed": false
+    },
+    {
+      "title": "Buy groceries",
+      "description": "Milk, eggs, bread, coffee, vegetables",
+      "category": "Personal", 
+      "tags": ["quick-win", "low-energy"],
+      "estimated_time": "1h",
+      "due_date": "+4 days",
+      "completed": true
+    },
+    {
+      "title": "Complete Django testing tutorial",
+      "description": "Learn pytest and write tests for todo app",
+      "category": "Learning",
+      "tags": ["deep-work"],
+      "estimated_time": "3h",
+      "due_date": "+7 days",
+      "completed": false
+    },
+    {
+      "title": "Pay credit card bill",
+      "description": "Make payment before due date to avoid interest",
+      "category": "Personal",
+      "tags": ["urgent", "quick-win"],
+      "estimated_time": "10m",
+      "due_date": "-1 day",
+      "completed": false
+    },
+    {
+      "title": "Weekly team standup",
+      "description": "Discuss progress and blockers with team",
+      "category": "Work",
+      "tags": ["quick-win"],
+      "estimated_time": "30m",
+      "due_date": "today",
+      "completed": true
+    },
+    {
+      "title": "Plan weekend project",
+      "description": "Decide what to work on this weekend",
+      "category": "Personal",
+      "tags": ["planning"],
+      "estimated_time": "45m",
+      "due_date": null,
+      "completed": false
+    },
+    {
+      "title": "Update GitHub profile",
+      "description": "Add recent projects and improve README",
+      "category": "Learning",
+      "tags": ["quick-win"],
+      "estimated_time": "45m",
+      "due_date": "2025-07-10T18:00:00Z",
+      "completed": false
+    }
+  ],
+
+  "subtasks": [
+    {
+      "parent_title": "Review project requirements",
+      "subtasks": [
+        {
+          "title": "Read project brief",
+          "description": "Go through the 15-page specification document",
+          "estimated_time": "45m",
+          "completed": true
+        },
+        {
+          "title": "Identify stakeholders",
+          "description": "List all people involved and their roles",
+          "estimated_time": "30m", 
+          "completed": false
+        },
+        {
+          "title": "Create timeline draft",
+          "description": "Outline major milestones and deadlines",
+          "estimated_time": "1h15m",
+          "completed": false
+        }
+      ]
+    }
+
+  ]
+
+}
