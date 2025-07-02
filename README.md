@@ -3,9 +3,9 @@ A full-stack task management application built in the hopes of simplifying my ow
 
 Projected features include smart task suggestions, time-logging, activity tracking with time/energy/context correlations, and daily check-ins for workflow optimization.
 ## Contents
-- [Project Overview](/README.md#overview)
-- [Development Roadmap](/README.md#project-status)
-- [Quick Start](/README.md#quick-start)
+- [Project Overview](#overview)
+- [Development Roadmap](#project-status)
+- [Quick Start](#quick-start)
 
 ## Overview
 ### Screenshots
