@@ -141,3 +141,10 @@ python manage.py setup_demo
 - **Demo User**:
   - Username: `demo`
   - Password: `demopass123`
+
+
+## License
+This project is licensed under the GNU GPL v3 License - see the [LICENSE](LICENSE) file for details.
+
+While this code is open source, please note that it represents my personal portfolio work. 
+If you're a potential employer reviewing my code, welcome! If you're someone looking to build something similar, I encourage you to develop your own implementation rather than copying this project. 😅
