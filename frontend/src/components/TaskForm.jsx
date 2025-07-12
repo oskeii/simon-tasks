@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import useApiService from '../services/apiService';
 import { toLocalMidnight } from '../utils/dateHelpers';
+import { useTasksManager } from '../context/TasksContext';
 
 
-const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
+const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) => {
+    const { handleFormSuccess, cancelForm } = useTasksManager();
     const apiService = useApiService();
+    
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         completed: false
@@ -141,7 +144,8 @@ const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
             }
             console.log('Response from API:', response)
 
-            if (onSuccess) onSuccess(response.data.data);
+            onSuccess ? onSuccess(response.data.data) : handleFormSuccess(response.data.data);
+
             setFormData({
                 completed: false
             });
@@ -209,7 +213,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess, onCancel }) => {
 
             <div className='form-actions'>
                 <button type='submit'>{task ? 'Update' : 'Create'}</button>
-                {onCancel && <button type='button' onClick={onCancel}>Cancel</button>}
+                <button type='button' onClick={() => onCancel ? onCancel() : cancelForm()}>Cancel</button>
             </div>
         </form>
     </div>

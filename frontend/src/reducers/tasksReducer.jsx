@@ -13,14 +13,15 @@ export const initialState = {
   loading: true,
   error: '',
   showForm: false,
-  editingTask: null
+  editingTask: null,
+  linkingParent: null
 };
 
 // Action creators
 export const taskActions = {
     setLoading: (loading) => ({ type: 'SET_LOADING', loading }),
     setError: (error) => ({ type: 'SET_ERROR', error }),
-    showForm: () => ({ type: 'SHOW_FORM' }),
+    showForm: (parentId) => ({ type: 'SHOW_FORM', parentId }),
     hideForm: () => ({ type: 'HIDE_FORM' }),
     setEditingTask: (id) => ({ type: 'SET_EDITING_TASK', id }),
 
@@ -34,11 +35,19 @@ export const taskActions = {
 // Helper Functions
 
 const addParentTask = (state, task) => {
-    const newData = {
+    let newData = {
         ...state.data,
         total_count: state.data.total_count +1,
         parent_count: state.data.parent_count +1
     };
+
+    if (task.completed) {
+        newData.complete_count++;
+        newData.complete_tasks = [task.id, ...newData.complete_tasks];        
+    } else {
+        newData.incomplete_count++;
+        newData.incomplete_tasks = [task.id, ...newData.incomplete_tasks];
+    }
 
     return {
         tasks: { ...state.tasks, [task.id]: task },
@@ -47,7 +56,7 @@ const addParentTask = (state, task) => {
 };
 
 const addSubtask = (state, task) => {
-    const parentTask = state.tasks[task.parent_count];
+    const parentTask = state.tasks[task.parent_task];
     const updatedParent = {
         ...parentTask,
         has_subtasks: true,
@@ -76,7 +85,7 @@ const updateTaskCompletion = (state, newTask, oldTask) => {
         };
     }
 
-    const newData = { ...state.data };
+    let newData = { ...state.data };
 
     if (newTask.completed) {
         // Task marked complete
@@ -176,7 +185,7 @@ const deleteAllSubtasks = (tasks, data, subtaskIds) => {
 
 
 // Main Reducer Function
-export function taskReducer(state, action) {
+export function tasksReducer(state, action) {
     switch (action.type) {
         case 'SET_LOADING': {
             return { ...state, loading: action.loading };
@@ -187,15 +196,15 @@ export function taskReducer(state, action) {
         }
 
         case 'SHOW_FORM': {
-            return { ...state, showForm: true };
+            return { ...state, showForm: true, linkingParent: action.parentId };
         }
 
         case 'HIDE_FORM': {
-            return { ...state, showForm: false, editingTask: null };
+            return { ...state, showForm: false, editingTask: null, linkingParent: null };
         }
         
         case 'SET_EDITING_TASK': {
-            return { ...state, editingTask: action.id, showForm: true };
+            return { ...state, editingTask: action.id, linkingParent: null, showForm: true };
         }
         
         case 'SET_TASKS': {

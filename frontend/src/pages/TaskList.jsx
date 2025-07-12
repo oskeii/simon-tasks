@@ -1,40 +1,32 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import TaskForm from '../components/TaskForm';
 import TaskItem from '../components/TaskItem';
-import { useTaskManager } from '../hooks/useTaskManager';
+import { useTasksManager, useTasks } from '../context/TasksContext';
 
 const TaskList = () => {
   const [toggleCompleteList, setToggleCompleteList] = useState(false);
-  const targetRef = useRef(null);
+  const state = useTasks();
+
+  const { tasks, data } = state;
+  console.log('LOCAL TASKS SET:', tasks)
+  console.log('LOCAL DATA:', data)
+  console.log('editing:', state.editingTask)
+  console.log('linking parent:', state.linkingParent)
+
   const {
-    // State
-    tasks, data,
-    loading, error, showForm, editingTask,
-
-    // API Actions
     getTasks,
-    deleteTask,
-    toggleTaskCompletion,
-    handleFormSuccess, // task creation and updates
-
-    // UI Actions
-    editTask,
-    cancelForm,
-    showNewTaskForm
-  } = useTaskManager();
+    showNewTaskForm,
+    cancelForm
+  } = useTasksManager();
   
-
-  const scrollToTarget = () => {
-    if (targetRef.current) {
-      targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
   
   useEffect(() => {
     getTasks();
+    cancelForm();
   }, []);
 
-  if (loading) {
+
+  if (state.loading) {
     return <div>Loading tasks...</div>;
   }
 
@@ -43,16 +35,15 @@ const TaskList = () => {
     <div className='task-list-container'>
       <h2>My Tasks</h2>
       <hr/>
-      {error && <p className='error'>{error}</p>}
+      {state.error && <p className='error'>{state.error}</p>}
 
       <button onClick={showNewTaskForm}>Add New Task</button>
 
-      {showForm && (
-        <div ref={targetRef}>
+      {state.showForm && (
+        <div>
           <TaskForm
-            task={tasks[editingTask]}
-            onSuccess={handleFormSuccess}
-            onCancel={cancelForm}
+            task={tasks[state.editingTask]}
+            parentId={state.linkingParent}
           />
         </div>
       )}
@@ -74,9 +65,6 @@ const TaskList = () => {
                     <TaskItem 
                       task={task}
                       subtasks={task.sub_tasks ? task.sub_tasks.map(id => tasks[id]) : []}
-                      onEdit={editTask}
-                      onDelete={deleteTask}
-                      onToggle={toggleTaskCompletion}
                     />
                   </li>
                 )
@@ -101,9 +89,6 @@ const TaskList = () => {
                       <TaskItem 
                         task={task}
                         subtasks={task.sub_tasks ? task.sub_tasks.map(id => tasks[id]) : []}
-                        onEdit={editTask}
-                        onDelete={deleteTask}
-                        onToggle={toggleTaskCompletion}
                       />
                     </li>
                   )

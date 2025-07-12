@@ -1,9 +1,54 @@
-import { useReducer } from "react";
-import { taskReducer, initialState, taskActions } from "../reducers/taskReducer";
-import useApiService from "../services/apiService";
+import { createContext, useContext, useReducer } from 'react';
+import { tasksReducer, initialState, taskActions } from '../reducers/tasksReducer';
+import useApiService from '../services/apiService';
 
-export const useTaskManager = () => {
-    const [state, dispatch] = useReducer(taskReducer, initialState);
+export const TasksContext = createContext(null);
+export const TasksDispatchContext = createContext(null);
+
+
+export const TasksProvider = ({ children }) => {
+    const [state, dispatch] = useReducer(tasksReducer, initialState);
+
+
+    return (
+        <TasksContext.Provider value={state}>
+            <TasksDispatchContext.Provider value={dispatch}>
+                {children}
+            </TasksDispatchContext.Provider>
+        </TasksContext.Provider>
+    );
+}
+
+// read context and call dispatch functions from any nested component
+export const useTasks = () => {
+    return useContext(TasksContext);
+}
+
+export const useTasksDispatch = () => {
+    return useContext(TasksDispatchContext);
+}
+
+
+// // Initial state
+// const initialState = {
+//   tasks: {},
+//   data: {
+//     total_count: 0,
+//     parent_count: 0,
+//     incomplete_count: 0,
+//     complete_count: 0,
+//     incomplete_tasks: [],
+//     complete_tasks: [],
+//   },
+//   loading: true,
+//   error: '',
+//   showForm: false,
+//   editingTask: null
+// };
+
+export const useTasksManager = () => {
+    const state = useTasks();
+    const dispatch = useTasksDispatch();
     const apiService = useApiService();
 
     // Fetch tasks
@@ -38,7 +83,7 @@ export const useTaskManager = () => {
             if (task && task.has_subtasks) { delete_subtasks = window.confirm('Delete SUBTASKS too?') }
             try {
                 const response_data = (
-                await apiService.tasks.delete(taskId, { keep_subtasks: !delete_subtasks })
+                    await apiService.tasks.delete(taskId, { keep_subtasks: !delete_subtasks })
                 ).data.data;
 
                 dispatch(taskActions.deleteTask(taskId, response_data, !delete_subtasks))
@@ -72,28 +117,24 @@ export const useTaskManager = () => {
         } else { // Add NEW TASK to list
             dispatch(taskActions.addTask(task)); 
         }
+        console.log('Data:', state.data)
+        console.log('Tasks:', state.tasks)
     };
 
     // UI Actions
+    const showNewTaskForm = (parentId=null) => {
+        dispatch(taskActions.hideForm());
+        dispatch(taskActions.showForm(parentId));
+    }
+    
     const editTask = (taskId) => dispatch(taskActions.setEditingTask(taskId));
 
     const cancelForm = () => dispatch(taskActions.hideForm());
 
-    const showNewTaskForm = () => dispatch(taskActions.showForm());
-
     const clearError = () => dispatch(taskActions.setError(''));
 
-    // Return state and actions
+    // Return actions
     return {
-        // State
-        state,
-        tasks: state.tasks,
-        data: state.data,
-        loading: state.loading,
-        error: state.error,
-        showForm: state.showForm,
-        editingTask: state.editingTask,
-
         // API Actions
         getTasks,
         deleteTask,
@@ -104,10 +145,6 @@ export const useTaskManager = () => {
         editTask,
         cancelForm,
         showNewTaskForm,
-        clearError,
-
-        // Direct dispatch access (for edge cases)
-        dispatch
-    };
-
-};
+        clearError
+    }
+}
