@@ -31,9 +31,9 @@ function App() {
                     {/* protected routes */}
                     <Route element={<RequireAuth />}>
                         <Route path='/profile' element={<Profile key={"profile"}/>} />
-                        <Route path='/organizer' element={<Organizer key={"organizer"}/>} />
 
                         <Route element={<TasksApp />}>
+                            <Route path='/organizer' element={<Organizer key={"organizer"}/>} />
                             <Route path='/tasks' element={<TaskList key={"tasks"}/>} />
                             <Route path='/tasks/:taskId' element={<TaskDetail key={"task-detail"}/>} />
                         </Route>

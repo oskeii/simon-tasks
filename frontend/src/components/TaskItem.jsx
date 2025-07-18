@@ -41,9 +41,11 @@ const TaskItem = ({ task, subtasks=[], onEdit=null, onDelete=null, onToggle=null
     {task.category_name && !task.parent_task && <p className='task-category'><strong>{task.category_name}</strong></p>}
     {task.tag_names && (
         <div className='task-tags'>
-            {task.tag_names.map((tag) => (
-                <p>{tag}</p>
-            ))}
+            {task.tags.map((tagId) => {
+                let i = task.tags.indexOf(tagId)
+                
+                return (<p key={tagId}>#{task.tag_names[i]}</p>)
+            })}
         </div>)}
 
     <div className='task-actions'>

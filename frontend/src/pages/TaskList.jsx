@@ -2,16 +2,29 @@ import React, { useEffect, useState } from 'react'
 import TaskForm from '../components/TaskForm';
 import TaskItem from '../components/TaskItem';
 import { useTasksManager, useTasks } from '../context/TasksContext';
+import TaskFilter from '../components/TaskFilter';
 
 const TaskList = () => {
   const [toggleCompleteList, setToggleCompleteList] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filteredTasks, setFilteredTasks] = useState(null);
+  const [activeFilters, setActiveFilters] = useState({
+    search: '',
+    status: 'all', // 'all', 'incomplete', 'completed'
+    categories: [], // empty => select all (no filter)
+    tags: [], // empty => select all (no filter)
+    noTags: false, // to disregard tag filter list and show only tasks without tags
+    dueDate: 'all', // 'all', 'overdue', 'today', 'thisWeek','future', 'none'
+    applyFilters: false
+  });
+
   const state = useTasks();
 
   const { tasks, data } = state;
-  console.log('LOCAL TASKS SET:', tasks)
-  console.log('LOCAL DATA:', data)
-  console.log('editing:', state.editingTask)
-  console.log('linking parent:', state.linkingParent)
+    // console.log('LOCAL TASKS SET:', tasks)
+    // console.log('LOCAL DATA:', data)
+    // console.log('editing:', state.editingTask)
+    // console.log('linking parent:', state.linkingParent)
 
   const {
     getTasks,
@@ -19,12 +32,91 @@ const TaskList = () => {
     cancelForm
   } = useTasksManager();
   
+  // Apply filters to tasks
+  const applyFilters = () => {
+    let result = {...tasks};
+    /** Custom built-in function for filtering the object
+     * reference: https://www.geeksforgeeks.org/javascript/how-to-implement-a-filter-for-objects-in-javascript/
+     */ 
+    Object.filter = (obj, predicate) =>
+      Object.fromEntries(Object.entries(obj).
+                          filter(([key, value]) => predicate(value))
+                        );
+    
+    
+    // SORTING
+    // Filter by completion status
+    // Filter by due date
+
+    // Filter by search term
+    if (activeFilters.search) {
+      console.log('FILTERING BY SEARCH TERM')
+      const searchLower = activeFilters.search.toLowerCase();
+      result = Object.filter(result, task => {
+        let isMatch = task.title.toLowerCase().includes(searchLower) ||
+          task.description.toLowerCase().includes(searchLower)
+        
+        let subtaskIsMatch = task.has_subtasks && 
+          task.sub_tasks.some(id =>
+            result[id].title.toLowerCase().includes(searchLower) ||
+            result[id].description.toLowerCase().includes(searchLower)
+          )
+        !isMatch && subtaskIsMatch && console.log('MATCH FOUND IN SUBTASK of task', task.title)
+
+        return isMatch || subtaskIsMatch
+      });
+      console.log('RESULT:', result)
+    }
+
+    // Filter by category
+    if (activeFilters.categories.length > 0) {
+      console.log('FILTERING BY CATEGORY')
+      result = Object.filter(result, task => {
+        return task.category && activeFilters.categories.includes(task.category)
+      });
+      console.log('RESULT:', result)
+    }
+
+    // Filter by tags
+    if (activeFilters.noTags) {
+      console.log('FILTERING BY TAGS (NO TAG)')
+      result = Object.filter(result, task => task.tags.length === 0)
+    } else if (activeFilters.tags.length > 0) {
+      console.log('FILTERING BY TAGS')
+      result = Object.filter(result, task => {
+        return task.tags && task.tags.some(tagId => 
+          // Check if task has at least one of the selected tags
+          activeFilters.tags.includes(tagId)
+        );
+      });
+      console.log('RESULT:', result)
+    }
+
+    setFilteredTasks(result);
+  };
+  
+  // Handle filter changes from TaskFilter component
+  const handleFilterChange = (newFilters) => {
+    !newFilters.applyFilters 
+      ? setFilteredTasks(null) // clear filtered tasks
+      : setActiveFilters(newFilters); // set active filters to trigger task filtering
+  };
   
   useEffect(() => {
     getTasks();
     cancelForm();
   }, []);
+  
+  useEffect(() => {
+    console.log('UPDATED ACTIVE FILTERS:', activeFilters);
+  }, [activeFilters]);
 
+  useEffect(() => {
+    if (activeFilters.applyFilters) {
+      console.log('APPLYING ACTIVE FILTERS')
+      applyFilters();
+    }
+  }, [tasks, activeFilters]);
 
   if (state.loading) {
     return <div>Loading tasks...</div>;
@@ -32,60 +124,61 @@ const TaskList = () => {
 
 
   return (
-    <div className='task-list-container'>
-      <h2>My Tasks</h2>
-      <hr/>
-      {state.error && <p className='error'>{state.error}</p>}
+    <div className='task-list-page'>
+      <div className='task-list-header'>
+        <h2>My Tasks</h2>
+        <hr/>
+        
+        <div className='task-list-actions'>
+          <button onClick={() => showNewTaskForm()}>Add New Task</button>
 
-      <button onClick={showNewTaskForm}>Add New Task</button>
-
-      {state.showForm && (
-        <div>
-          <TaskForm
-            task={tasks[state.editingTask]}
-            parentId={state.linkingParent}
-          />
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={showFilters ? 'active' : ''}
+          >{showFilters ? 'Hide Filters' : 'Show Filters'}</button>
         </div>
-      )}
 
-      <div className='task-list'> 
-        {data.total_count === 0 ? (
-          <p>No tasks yet. Create one to get started!</p>
-        ): (
-          <>
-          <div className='incomplete-list'>
-            <h3>Incomplete Tasks ({data.incomplete_count})</h3>
-            <ul>
-              {data.incomplete_tasks.map((tId) => {
-                const task = tasks[tId];
-                if (!task) return null;
+      </div>
 
-                return (
-                  <li key={tId}>
-                    <TaskItem 
-                      task={task}
-                      subtasks={task.sub_tasks ? task.sub_tasks.map(id => tasks[id]) : []}
-                    />
-                  </li>
-                )
-              })}
-            </ul>
+      {state.error && <p className='error'>{state.error}</p>}
+      
+      <div>
+        {showFilters && (
+          <aside className='task-filters-sidebar'>
+            <TaskFilter onFilterChange={handleFilterChange}/>
+          </aside>
+        )}
+
+        {state.showForm && (
+          <div className='task-form-container'>
+            <TaskForm
+              task={tasks[state.editingTask]}
+              parentId={state.linkingParent}
+            />
           </div>
+        )}
 
-          <hr/>
-          <div className='completed-list'>
-            <h3>Complete Tasks ({data.complete_count})</h3>
-            <button onClick={() => setToggleCompleteList(!toggleCompleteList)}>
-              {toggleCompleteList ? '▼ Hide' : '▶ Show'}
-            </button>
-            {toggleCompleteList && (
+        <div className='task-list'> 
+          {activeFilters.applyFilters && filteredTasks && 
+            <p>Filters applied. ({filteredTasks.length}) tasks found</p>
+          }
+
+          {data.total_count === 0 ? (
+            <p>No tasks yet. Create one to get started!</p>
+          ): (
+            <>
+            <div className='incomplete-list'>
+              <h3>Incomplete Tasks ({data.incomplete_count})</h3>
               <ul>
-                {data.complete_tasks.map((tId) => {
-                  const task = tasks[tId];
+                {data.incomplete_tasks.map((tId) => {
+                  // if tasks are filtered, look for task in filteredTasks
+                  const task = filteredTasks
+                    ? filteredTasks[tId]
+                    : tasks[tId];
                   if (!task) return null;
 
                   return (
-                    <li key={tId} className='completed'>
+                    <li key={tId}>
                       <TaskItem 
                         task={task}
                         subtasks={task.sub_tasks ? task.sub_tasks.map(id => tasks[id]) : []}
@@ -94,11 +187,39 @@ const TaskList = () => {
                   )
                 })}
               </ul>
-            )}
-          </div>
+            </div>
 
-          </>
-        )}
+            <hr/>
+            <div className='completed-list'>
+              <h3>Complete Tasks ({data.complete_count})</h3>
+              <button onClick={() => setToggleCompleteList(!toggleCompleteList)}>
+                {toggleCompleteList ? '▼ Hide' : '▶ Show'}
+              </button>
+              {toggleCompleteList && (
+                <ul>
+                  {data.complete_tasks.map((tId) => {
+                    // if tasks are filtered, look for task in filteredTasks
+                    const task = filteredTasks
+                      ? filteredTasks[tId]
+                      : tasks[tId];
+                    if (!task) return null;
+
+                    return (
+                      <li key={tId} className='completed'>
+                        <TaskItem 
+                          task={task}
+                          subtasks={task.sub_tasks ? task.sub_tasks.map(id => tasks[id]) : []}
+                        />
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </div>
+            </>
+          )}
+        </div>
+
       </div>
     </div>
   );

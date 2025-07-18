@@ -82,14 +82,14 @@ const Register = () => {
                 <p>
                 <label htmlFor='first-name'>
                     First Name: 
-                    <input type='text' id='first-name' name='first_name' optional />
+                    <input type='text' id='first-name' name='first_name' />
                 </label>
                 {field_err.first_name && <span style={{color: "red"}}>{field_err.first_name}</span>}
                 </p>
                 <p>
                 <label htmlFor='last-name'>
                     Last Name:
-                    <input type='text' id='last-name' name='last_name' optional />  
+                    <input type='text' id='last-name' name='last_name' />  
                 </label>
                 {field_err.first_name && <span style={{color: "red"}}>{field_err.first_name}</span>}
                 </p>

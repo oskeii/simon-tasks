@@ -43,7 +43,8 @@ export const useTasksDispatch = () => {
 //   loading: true,
 //   error: '',
 //   showForm: false,
-//   editingTask: null
+//   editingTask: null,
+//   linkingParent: null,
 // };
 
 export const useTasksManager = () => {
@@ -52,10 +53,10 @@ export const useTasksManager = () => {
     const apiService = useApiService();
 
     // Fetch tasks
-    const getTasks = async () => {
+    const getTasks = async (params={}) => {
         try {
             dispatch(taskActions.setLoading(true));
-            const response = await apiService.tasks.getAll();
+            const response = await apiService.tasks.getAll(params);
             dispatch(taskActions.setTasks(response.data.data));
         } catch (err) {
             console.error('Error fetching tasks:', err);
@@ -85,7 +86,7 @@ export const useTasksManager = () => {
                 const response_data = (
                     await apiService.tasks.delete(taskId, { keep_subtasks: !delete_subtasks })
                 ).data.data;
-
+                console.log('Task deletion response data: ', response_data)
                 dispatch(taskActions.deleteTask(taskId, response_data, !delete_subtasks))
             } catch (err) {
                 console.error('Error deleting task', err);

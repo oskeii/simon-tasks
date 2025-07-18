@@ -1,12 +1,17 @@
 import { Outlet } from "react-router-dom"
 import { TasksProvider } from "../context/TasksContext"
+import { OrganizersProvider } from "../context/OrganizersContext";
 
 const TasksApp = () => {
 
     return (
-        <TasksProvider>
-            <Outlet />
-        </TasksProvider>
+        <OrganizersProvider>
+
+            <TasksProvider>
+                <Outlet />
+            </TasksProvider>
+            
+        </OrganizersProvider>
     )
 }
 

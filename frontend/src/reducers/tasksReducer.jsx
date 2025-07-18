@@ -154,7 +154,7 @@ const deleteSubtask = (state, taskId) => {
 
     return {
         tasks: { ...newTasks,  [parentTask.id]: parentTask },
-        data: { ...state.data, total_count: state.total_count-1 }
+        data: { ...state.data, total_count: state.data.total_count-1 }
     };
 };
 
@@ -196,7 +196,7 @@ export function tasksReducer(state, action) {
         }
 
         case 'SHOW_FORM': {
-            return { ...state, showForm: true, linkingParent: action.parentId };
+            return { ...state, showForm: true, editingTask: null, linkingParent: action.parentId };
         }
 
         case 'HIDE_FORM': {
@@ -227,6 +227,7 @@ export function tasksReducer(state, action) {
                 ...state,
                 showForm: false,
                 editingTask: null,
+                linkingParent: null,
                 ...result
             };
         }
@@ -238,6 +239,7 @@ export function tasksReducer(state, action) {
                 ...state,
                 showForm: false,
                 editingTask: null,
+                linkingParent: null,
                 ...result
             };
         }
