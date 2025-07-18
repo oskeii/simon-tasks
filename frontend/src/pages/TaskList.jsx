@@ -15,7 +15,8 @@ const TaskList = () => {
     tags: [], // empty => select all (no filter)
     noTags: false, // to disregard tag filter list and show only tasks without tags
     dueDate: 'all', // 'all', 'overdue', 'today', 'thisWeek','future', 'none'
-    applyFilters: false
+    applyFilters: false, // to let TaskList know to apply filters or to clear filteredTasks
+    quickSearch: false // trigger search only, without applying filters
   });
 
   const state = useTasks();
@@ -32,17 +33,40 @@ const TaskList = () => {
     cancelForm
   } = useTasksManager();
   
+  /** Custom built-in function for filtering the object
+   * reference: https://www.geeksforgeeks.org/javascript/how-to-implement-a-filter-for-objects-in-javascript/
+   */ 
+  Object.filter = (obj, predicate) =>
+    Object.fromEntries(Object.entries(obj).
+      filter(([key, value]) => predicate(value))
+    );
+  
+  // Search tasks
+  const search = () => {
+    let result = {...tasks};
+    const searchLower = activeFilters.search.toLowerCase();
+
+    result = Object.filter(result, task => {
+      let isMatch = task.title.toLowerCase().includes(searchLower) ||
+        task.description.toLowerCase().includes(searchLower)
+      
+      let subtaskIsMatch = task.has_subtasks && 
+        task.sub_tasks.some(id =>
+          result[id].title.toLowerCase().includes(searchLower) ||
+          result[id].description.toLowerCase().includes(searchLower)
+        )
+      !isMatch && subtaskIsMatch && console.log('MATCH FOUND IN SUBTASK of task', task.title)
+
+      return isMatch || subtaskIsMatch
+    });
+    
+    setFilteredTasks(result);
+    console.log('RESULT:', result)
+  }
+  
   // Apply filters to tasks
   const applyFilters = () => {
     let result = {...tasks};
-    /** Custom built-in function for filtering the object
-     * reference: https://www.geeksforgeeks.org/javascript/how-to-implement-a-filter-for-objects-in-javascript/
-     */ 
-    Object.filter = (obj, predicate) =>
-      Object.fromEntries(Object.entries(obj).
-                          filter(([key, value]) => predicate(value))
-                        );
-    
     
     // SORTING
     // Filter by completion status
@@ -50,22 +74,9 @@ const TaskList = () => {
 
     // Filter by search term
     if (activeFilters.search) {
-      console.log('FILTERING BY SEARCH TERM')
-      const searchLower = activeFilters.search.toLowerCase();
-      result = Object.filter(result, task => {
-        let isMatch = task.title.toLowerCase().includes(searchLower) ||
-          task.description.toLowerCase().includes(searchLower)
-        
-        let subtaskIsMatch = task.has_subtasks && 
-          task.sub_tasks.some(id =>
-            result[id].title.toLowerCase().includes(searchLower) ||
-            result[id].description.toLowerCase().includes(searchLower)
-          )
-        !isMatch && subtaskIsMatch && console.log('MATCH FOUND IN SUBTASK of task', task.title)
-
-        return isMatch || subtaskIsMatch
-      });
-      console.log('RESULT:', result)
+      // console.log('FILTERING BY SEARCH TERM')
+      // search();
+      result = {...filteredTasks}; 
     }
 
     // Filter by category
@@ -97,9 +108,17 @@ const TaskList = () => {
   
   // Handle filter changes from TaskFilter component
   const handleFilterChange = (newFilters) => {
-    !newFilters.applyFilters 
-      ? setFilteredTasks(null) // clear filtered tasks
-      : setActiveFilters(newFilters); // set active filters to trigger task filtering
+    if (newFilters.quickSearch) { // set active filters to trigger quick search
+      setActiveFilters(prev => ({
+        ...prev,
+        search: newFilters.search,
+        quickSearch: true
+      }));
+    } else if (!newFilters.applyFilters) { // clear filtered tasks
+      setFilteredTasks(null)
+    } else { // set active filters to trigger task filtering
+      setActiveFilters(newFilters); 
+    }
   };
   
   useEffect(() => {
@@ -112,9 +131,13 @@ const TaskList = () => {
   }, [activeFilters]);
 
   useEffect(() => {
-    if (activeFilters.applyFilters) {
+    if (activeFilters.quickSearch) {
+      console.log('QUICK SEARCH')
+      search();
+    } 
+    else if (activeFilters.applyFilters) {
       console.log('APPLYING ACTIVE FILTERS')
-      applyFilters();
+      applyFilters()
     }
   }, [tasks, activeFilters]);
 
@@ -160,7 +183,7 @@ const TaskList = () => {
 
         <div className='task-list'> 
           {activeFilters.applyFilters && filteredTasks && 
-            <p>Filters applied. ({filteredTasks.length}) tasks found</p>
+            <p>{Object.keys(filteredTasks).length} matches found.</p>
           }
 
           {data.total_count === 0 ? (

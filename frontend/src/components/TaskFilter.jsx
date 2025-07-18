@@ -15,7 +15,8 @@ const TaskFilter = ({ onFilterChange }) => {
         tags: [], // empty => select all (no filter)
         noTags: false, // 
         dueDate: 'all', // 'all', 'overdue', 'today', 'thisWeek','future', 'none'
-        applyFilters: true // to let TaskList know to apply filters or to clear filteredTasks
+        applyFilters: true, // to let TaskList know to apply filters or to clear filteredTasks
+        quickSearch: false // trigger search only, without applying filters
     });
     
     const organizers = useOrganizers();
@@ -43,6 +44,14 @@ const TaskFilter = ({ onFilterChange }) => {
             [name]: value
         }));
     };
+
+    const handleSearch = (e) => {
+        setFilters(prev => ({
+            ...prev,
+            search: e.target.value
+        }));
+        onFilterChange({ search: e.target.value, quickSearch: true });
+    }
 
     const handleTagSelection = (tagId=-1) => {
         if (tagId < 0) { // toggle noTags filter
@@ -79,9 +88,10 @@ const TaskFilter = ({ onFilterChange }) => {
             tags: [],
             noTags: false,
             dueDate: 'all',
-            applyFilters: true
+            applyFilters: true,
+            quickSearch: false
         });
-        // but tell TaskList component to clear filteredTasks
+        // And have TaskList component clear filteredTasks
         onFilterChange({...filters, applyFilters: false});
     };
 
@@ -94,17 +104,17 @@ const TaskFilter = ({ onFilterChange }) => {
             <h3>Filter Tasks</h3>
 
             {organizers.error && <p className='error'>{organizers.error}</p>}
-            <div className='filter-section'>
+            <div className='search-section'>
                 <label htmlFor='search'>Search</label>
                 <input
                     type='text'
                     id='search'
                     name='search'
                     value={filters.search}
-                    onChange={handleFilterChange}
+                    onChange={handleSearch}
                     placeholder='Search by title or description'
                 />
-            </div>
+            </div> <hr/>
 
             <div className='filter-section'>
                 <label htmlFor='status'>Status</label>
