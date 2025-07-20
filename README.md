@@ -9,7 +9,7 @@ Projected features include smart task suggestions, time-logging, activity tracki
 
 ## Overview
 ### Screenshots
-*Coming soon*
+*Coming soon (7/28/2025). Everything's really ugly right now.* 😅
 
 ### Core Functionality
 - **Secure Authentication:** JWT-based authentication with HTTP-only cookies for enhanced XSS protection
@@ -47,13 +47,13 @@ Projected features include smart task suggestions, time-logging, activity tracki
 - **Package Management:** Pipenv (Python), npm (Node.js)
 
 ## Project Status
-### Phase 1: Core MVP
+### Phase 1: Core MVP ✅
 - [x] User authentication and authorization
 - [x] Basic task CRUD operations
 - [x] User profile management
 - [x] Sub-task functionality
 - [x] Category and tag system
-- [ ] Task search, filter, and sort functionality
+- [x] Task search, filter, and sort functionality
 ### Phase 2: Enhanced Functionality
 - [ ] Comprehensive testing suite (unit, integration, e2e)
 - [ ] Responsive styling/ UX improvements

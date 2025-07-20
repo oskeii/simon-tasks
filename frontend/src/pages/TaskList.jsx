@@ -48,20 +48,32 @@ const TaskList = () => {
 
     result = Object.filter(result, task => {
       let isMatch = task.title.toLowerCase().includes(searchLower) ||
-        task.description.toLowerCase().includes(searchLower)
+        (task.description && task.description.toLowerCase().includes(searchLower))
       
       let subtaskIsMatch = task.has_subtasks && 
         task.sub_tasks.some(id =>
           result[id].title.toLowerCase().includes(searchLower) ||
-          result[id].description.toLowerCase().includes(searchLower)
+          (result[id].description && result[id].description.toLowerCase().includes(searchLower))
         )
-      !isMatch && subtaskIsMatch && console.log('MATCH FOUND IN SUBTASK of task', task.title)
+      !isMatch && subtaskIsMatch && console.log('MATCH FOUND IN SUBTASK of task ->', task.title)
 
       return isMatch || subtaskIsMatch
     });
     
     setFilteredTasks(result);
     console.log('RESULT:', result)
+  }
+
+  // Apply task sorting
+  const applySorting = (sortBy) => {
+    // split the string to separate sort-by and ordering
+    let sort = sortBy.split('-', 2) // [sortByString, orderString]
+    console.log('Sorting by...', sort)
+    let sortParams = new URLSearchParams();
+    sortParams.append('sort_by', sort[0])
+    sortParams.append('sort_by', sort[1])
+    console.log('SORT PARAMS', sortParams)
+    getTasks(sortParams)
   }
   
   // Apply filters to tasks
@@ -77,6 +89,7 @@ const TaskList = () => {
       // console.log('FILTERING BY SEARCH TERM')
       // search();
       result = {...filteredTasks}; 
+      // result = Object.filter(result, task => {filteredTasks.includes(task.id)});
     }
 
     // Filter by category
@@ -168,7 +181,7 @@ const TaskList = () => {
       <div>
         {showFilters && (
           <aside className='task-filters-sidebar'>
-            <TaskFilter onFilterChange={handleFilterChange}/>
+            <TaskFilter onFilterChange={handleFilterChange} onSort={applySorting}/>
           </aside>
         )}
 
@@ -184,6 +197,7 @@ const TaskList = () => {
         <div className='task-list'> 
           {activeFilters.applyFilters && filteredTasks && 
             <p>{Object.keys(filteredTasks).length} matches found.</p>
+            // <p>{filteredTasks.length} matches found.</p>
           }
 
           {data.total_count === 0 ? (
@@ -195,8 +209,8 @@ const TaskList = () => {
               <ul>
                 {data.incomplete_tasks.map((tId) => {
                   // if tasks are filtered, look for task in filteredTasks
-                  const task = filteredTasks
-                    ? filteredTasks[tId]
+                  const task = filteredTasks // && filteredTasks.icludes(tId)
+                    ? filteredTasks[tId] // ? tasks[tId] : null
                     : tasks[tId];
                   if (!task) return null;
 
@@ -215,9 +229,11 @@ const TaskList = () => {
             <hr/>
             <div className='completed-list'>
               <h3>Complete Tasks ({data.complete_count})</h3>
-              <button onClick={() => setToggleCompleteList(!toggleCompleteList)}>
-                {toggleCompleteList ? '▼ Hide' : '▶ Show'}
-              </button>
+              {data.complete_count > 0 && 
+                <button onClick={() => setToggleCompleteList(!toggleCompleteList)}>
+                  {toggleCompleteList ? '▼ Hide' : '▶ Show'}
+                </button>
+              }
               {toggleCompleteList && (
                 <ul>
                   {data.complete_tasks.map((tId) => {

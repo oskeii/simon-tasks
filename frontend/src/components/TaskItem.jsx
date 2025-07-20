@@ -31,6 +31,7 @@ const TaskItem = ({ task, subtasks=[], onEdit=null, onDelete=null, onToggle=null
     </div>
 
     {task.description && <p className='task-description'>{task.description}</p>}
+    {task.estimated_time && <p className='task-duration'>Estimated Duration: {task.estimated_time}</p>}
 
     {task.due_date && (
         <p className='task-due-date'>

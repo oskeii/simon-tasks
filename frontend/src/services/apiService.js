@@ -6,7 +6,7 @@ export const useApiService = () => {
     // TASK endpoints
     const tasks = {
         getAll: async (params={}) => {
-            return await axiosPrivate.get('/tasks/', { params });
+            return await axiosPrivate.get('/tasks/', { params: params });
         },
 
         getById: async (taskId) => {

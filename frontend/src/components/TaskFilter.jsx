@@ -3,11 +3,17 @@ import useApiService from '../services/apiService'
 import { useTasksManager } from '../context/TasksContext'
 import { useOrganizers, useOrganizersManager } from '../context/OrganizersContext';
 
-const TaskFilter = ({ onFilterChange }) => {
-    // const [categories, setCategories] = useState([]);
-    // const [tags, setTags] = useState([]); 
-    // const [loading, setLoading] = useState(true);
-    
+const TaskFilter = ({ onFilterChange, onSort }) => {
+    const sortingOptions = [
+        {id: 0, value: 'dueDate-asc', text: 'Due Date'},
+        {id: 1, value: 'createdAt-desc', text: 'Recently Added'},
+        {id: 2, value: 'categoryPriority-asc', text: 'Category Priority'},
+        {id: 3, value: 'duration-asc', text: 'Shortest Duration'},
+        {id: 4, value: 'duration-desc', text: 'Longest Duration'},
+        {id: 5, value: 'numOfSubtasks-desc', text: 'Most Subtasks'},
+        {id: 6, value: 'numOfSubtasks-asc', text: 'Least Subtasks'}
+    ]
+    const [sortBy, setSortBy] = useState(sortingOptions[0].value);
     const [filters, setFilters] = useState({
         search: '',
         status: 'all', // 'all', 'incomplete', 'completed'
@@ -26,15 +32,15 @@ const TaskFilter = ({ onFilterChange }) => {
 
     // 1. (on initial render) fetch tags and categories for filter options
         // *will also need to update these options whenever a new tag or category is created
+    // 2. notify parent component when filters change
+        // so we can update activeFilters and apply them
+        // might need to separate frontend filters and backend filters
+        // backend filters should require 'apply' button, to reduce API calls
     useEffect(() => {
         getTags();
         getCategories();
     // error handler?
     }, []);
-    // 2. notify parent component when filters change
-        // so we can update activeFilters and apply them
-        // might need to separate frontend filters and backend filters
-        // backend filters should require 'apply' button, to reduce API calls
 
     
     const handleFilterChange = (e) => {
@@ -45,6 +51,10 @@ const TaskFilter = ({ onFilterChange }) => {
         }));
     };
 
+    const handleSort = (e) => {
+        setSortBy(e.target.value);
+    }
+    
     const handleSearch = (e) => {
         setFilters(prev => ({
             ...prev,
@@ -115,8 +125,22 @@ const TaskFilter = ({ onFilterChange }) => {
                     placeholder='Search by title or description'
                 />
             </div> <hr/>
+            <div className='sort-section'>
+                <label htmlFor='sortBy'>Sort By</label>
+                <select
+                    id='sortBy'
+                    name='sortBy'
+                    value={sortBy}
+                    onChange={handleSort}
+                >
+                    {sortingOptions.map(option => (
+                        <option key={option.id} value={option.value}>{option.text}</option>
+                    ))}
+                </select>
+                <button onClick={() => onSort(sortBy)} className='sort-btn'>Sort</button>
+            </div>
 
-            <div className='filter-section'>
+            {/* <div className='filter-section'>
                 <label htmlFor='status'>Status</label>
                 <select
                     id='status'
@@ -145,7 +169,7 @@ const TaskFilter = ({ onFilterChange }) => {
                     <option value='thisWeek'>Due This Week</option>
                     <option value='future'>Future</option>
                 </select>
-            </div>
+            </div> */}
 
             <div className='filter-section'>
                 <label>Category</label>
