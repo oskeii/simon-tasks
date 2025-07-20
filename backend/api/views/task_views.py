@@ -1,7 +1,7 @@
 import logging
 from django.utils import timezone
 from datetime import timedelta
-from django.db import models
+from django.db.models import Count, F, Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -16,13 +16,12 @@ class TaskListCreateView(APIView):
     """
     View for creating and listing user's tasks
     """
-    def get(self, request):
-        user = request.user
-        queryset = Task.objects.filter(user=user)  # will prefetch subtasks
-
-        # --- APPLY FILTERS based on query parameters ---
+    def apply_filters(self, queryset, params):
+        """
+        Helper function to apply filters to queryset
+        """
         # > Filter by parent task (for subtasks)
-        parent_id = request.query_params.get('parent_task')
+        parent_id = params.get('parent_task')
         if parent_id:
             if parent_id.lower() == 'null':
                 # Get top-level tasks (those without a parent)
@@ -32,7 +31,7 @@ class TaskListCreateView(APIView):
                 queryset = queryset.filter(parent_task=parent_id)
             
         # > Filter by completion status
-        status_filter = request.query_params.get('completed')
+        status_filter = params.get('status')
         if status_filter:
             if status_filter.lower() == 'true':
                 queryset = queryset.filter(completed=True)
@@ -40,7 +39,7 @@ class TaskListCreateView(APIView):
                 queryset = queryset.filter(completed=False)
             
         # > Filter by category
-        category_id = request.query_params.get('category')
+        category_id = params.get('category')
         if category_id:
             if category_id.lower() == 'null':
                 queryset = queryset.filter(category__isnull=True)
@@ -48,7 +47,7 @@ class TaskListCreateView(APIView):
                 queryset = queryset.filter(category=category_id)
 
         # > Filter by due date
-        due_date_filter = request.query_params.get('due_date')
+        due_date_filter = params.get('due_date')
         if due_date_filter:
             today = timezone.now().date()
 
@@ -72,17 +71,76 @@ class TaskListCreateView(APIView):
 
 
         # > Filter by tag
-        tag_id = request.query_params.get('tag')
+        tag_id = params.get('tag')
         if tag_id:
             queryset = queryset.filter(tags__id=tag_id)
             
         # > SEARCH by title or description
-        search = request.query_params.get('search')
+        search = params.get('search')
         if search:
             queryset = queryset.filter(
-                models.Q(title__icontains=search) |
-                models.Q(description__icontains=search)
+                Q(title__icontains=search) |
+                Q(description__icontains=search)
             )
+
+        return queryset
+
+
+    def apply_sorting(self, queryset, sorting):
+        """
+        Helper function to apply sorting to queryset
+        Note: Any previous sorting on queryset will be overwritten
+        """
+        field = sorting[0]
+        ordering = sorting[1]
+        sort_by = None
+        secondary_sort = F('due_date').asc(nulls_last=True)
+
+        match field:
+            case 'dueDate':
+                sort_by = 'due_date'
+                secondary_sort = '-created_at'
+            case 'categoryPriority':
+                sort_by = 'category__priority'
+            case 'duration':
+                sort_by = 'estimated_time'
+            
+            # Otherwise, sort directly and return early
+            case 'createdAt':
+                return queryset.order_by(F('-created_at'))
+            case 'numOfSubtasks':
+                queryset = queryset.annotate(subtask_count=Count('sub_tasks'))
+                sort_expr = (
+                    F('subtask_count').desc(nulls_last=True)
+                    if ordering == 'desc'
+                    else F('subtask_count').asc(nulls_first=True)
+                )
+                return queryset.order_by(sort_expr, secondary_sort)
+            case _:
+                return queryset
+            
+        if sort_by:
+            sort_expr = (
+                F(sort_by).desc(nulls_last=True)
+                if ordering == 'desc'
+                else F(sort_by).asc(nulls_first=True)
+            )
+            queryset = queryset.order_by(sort_expr, secondary_sort)
+
+        return queryset
+
+
+    def get(self, request):
+        user = request.user
+        queryset = Task.objects.filter(user=user)  # will prefetch subtasks
+
+        sorting = request.query_params.getlist('sort_by')
+        logger.debug(f"SORTING Query Params received: {sorting}")
+
+        # --- APPLY FILTERS based on query parameters ---
+        if request.query_params:
+            logger.debug(f"Checking for filtering parameters: {request.query_params}")
+            queryset = self.apply_filters(queryset, params=request.query_params)
         # -----------------------------------------------
         # PRE-FETCH all related data
         queryset = queryset.select_related(
@@ -91,13 +149,21 @@ class TaskListCreateView(APIView):
             'tags',
             'sub_tasks'
         )
+        # -----------------------------------------------
 
-        # Default ORDERING: due date, then creation date
-        queryset = queryset.order_by(
-            models.F('due_date').asc(nulls_last=True),
-            '-created_at'
-        )
+        # --- APPLY SORTING based on query parameters ---
+        if sorting:
+            logger.debug(f"Applying sorting to queryset")
+            queryset = self.apply_sorting(queryset, sorting)
+        else:
+            # Default ORDERING: due date, then creation date
+            logger.debug(f"No sorting parameters found. Applying default sorting to queryset")
+            queryset = queryset.order_by(
+                F('due_date').asc(nulls_last=True),
+                '-created_at'
+            )
 
+        # -----------------------------------------------
         serializer = TaskSerializer(queryset, many=True, context={'request':request})
         
         # ORGANIZE for the response data structure
@@ -234,7 +300,7 @@ class TaskDetailView(APIView):
         Returns dictionary with updated data for subtasks.
         """
         if not subtask_ids:
-            return {'sub_count': 0, 'keep_subtasks': True}
+            return {'keep_subtasks': True, 'sub_count': 0}
         
         if not keep_subtasks:
             Task.objects.filter(id__in=subtask_ids).delete()
@@ -245,11 +311,11 @@ class TaskDetailView(APIView):
             }
             return response_data
         
-        # Query subtasks by ID to get their updated state
+        # Keeping subtasks; Query subtasks by ID to get their updated state
         updated_subtasks = Task.objects.filter(id__in=subtask_ids).select_related(
                 'category'
             ).prefetch_related('tags').order_by(
-                models.F('due_date').asc(nulls_last=True),
+                F('due_date').asc(nulls_last=True),
                 '-created_at'
             )
         
@@ -314,7 +380,7 @@ class TaskSubtasksView(APIView):
             parent_task = Task.objects.get(pk=pk, user=request.user)
 
             subtasks = Task.objects.filter(parent_task=parent_task).order_by(
-                models.F('due_date').asc(nulls_last=True),
+                F('due_date').asc(nulls_last=True),
                 '-created_at'
             )
             serializer = TaskSerializer(subtasks, many=True, context={'request': request})
@@ -346,7 +412,7 @@ class TopLevelTasksView(APIView):
             user=request.user,
             parent_task__isnull=True
         ).order_by(
-            models.F('due_date').asc(nulls_last=True),
+            F('due_date').asc(nulls_last=True),
             '-created_at'
         )
 

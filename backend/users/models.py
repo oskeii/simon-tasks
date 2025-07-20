@@ -52,9 +52,14 @@ class Category(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
     as_workload = models.BooleanField(default=True)  # should this category be counted towards workload limit?
+    priority = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        ordering = [models.F('priority').asc(nulls_last=True)]
+        verbose_name_plural = 'categories'
 
 
 
