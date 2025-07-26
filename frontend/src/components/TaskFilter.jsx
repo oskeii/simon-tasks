@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import useApiService from '../services/apiService'
-import { useTasksManager } from '../context/TasksContext'
-import { useOrganizers, useOrganizersManager } from '../context/OrganizersContext';
+import React, { useState, memo } from 'react'
+import { useOrganizers } from '../context/OrganizersContext';
 
 const TaskFilter = ({ onFilterChange, onSort }) => {
+    console.log('TaskFilter rendered!')
     const sortingOptions = [
         {id: 0, value: 'dueDate-asc', text: 'Due Date'},
         {id: 1, value: 'createdAt-desc', text: 'Recently Added'},
@@ -28,19 +27,17 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
     const organizers = useOrganizers();
     const { tags, categories } = organizers;
 
-    const { getTags, getCategories } = useOrganizersManager();
-
     // 1. (on initial render) fetch tags and categories for filter options
         // *will also need to update these options whenever a new tag or category is created
     // 2. notify parent component when filters change
         // so we can update activeFilters and apply them
         // might need to separate frontend filters and backend filters
         // backend filters should require 'apply' button, to reduce API calls
-    useEffect(() => {
-        getTags();
-        getCategories();
-    // error handler?
-    }, []);
+    // useEffect(() => {
+    //     getTags();
+    //     getCategories();
+    // // error handler?
+    // }, []);
 
     
     const handleFilterChange = (e) => {
@@ -236,4 +233,4 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
     );
 };
 
-export default TaskFilter
+export default memo(TaskFilter);

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import TaskForm from '../components/TaskForm';
 import TaskItem from '../components/TaskItem';
-import { useTasksManager, useTasks } from '../context/TasksContext';
 import TaskFilter from '../components/TaskFilter';
+import { useTasksManager, useTasks } from '../context/TasksContext';
+import { useOrganizersManager } from '../context/OrganizersContext';
 
 const TaskList = () => {
+  console.log('TaskList rendered!')
+
   const [toggleCompleteList, setToggleCompleteList] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filteredTasks, setFilteredTasks] = useState(null);
@@ -20,13 +23,13 @@ const TaskList = () => {
   });
 
   const state = useTasks();
-
   const { tasks, data } = state;
-    // console.log('LOCAL TASKS SET:', tasks)
-    // console.log('LOCAL DATA:', data)
-    // console.log('editing:', state.editingTask)
-    // console.log('linking parent:', state.linkingParent)
-
+  console.log('LOCAL TASKS SET:', tasks)
+  console.log('LOCAL DATA:', data)
+  // console.log('editing:', state.editingTask)
+  // console.log('linking parent:', state.linkingParent)
+  
+  const { getTags, getCategories } = useOrganizersManager();
   const {
     getTasks,
     showNewTaskForm,
@@ -41,7 +44,7 @@ const TaskList = () => {
       filter(([key, value]) => predicate(value))
     );
   
-  // Search tasks
+  // Search tasks --> setFilteredTasks(result);
   const search = () => {
     let result = {...tasks};
     const searchLower = activeFilters.search.toLowerCase();
@@ -64,7 +67,7 @@ const TaskList = () => {
     console.log('RESULT:', result)
   }
 
-  // Apply task sorting
+  // Apply task sorting --> getTasks(sortParams);
   const applySorting = (sortBy) => {
     // split the string to separate sort-by and ordering
     let sort = sortBy.split('-', 2) // [sortByString, orderString]
@@ -76,7 +79,7 @@ const TaskList = () => {
     getTasks(sortParams)
   }
   
-  // Apply filters to tasks
+  // Apply filters to tasks --> let result = {...tasks}; -> setFilteredTasks(result);
   const applyFilters = () => {
     let result = {...tasks};
     
@@ -119,7 +122,7 @@ const TaskList = () => {
     setFilteredTasks(result);
   };
   
-  // Handle filter changes from TaskFilter component
+  // Handle filter changes from TaskFilter component --> setActiveFilters OR setFiilteredTasks(null)
   const handleFilterChange = (newFilters) => {
     if (newFilters.quickSearch) { // set active filters to trigger quick search
       setActiveFilters(prev => ({
@@ -135,6 +138,9 @@ const TaskList = () => {
   };
   
   useEffect(() => {
+    getTags();
+    getCategories();
+
     getTasks();
     cancelForm();
   }, []);

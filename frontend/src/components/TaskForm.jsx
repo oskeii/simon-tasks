@@ -1,20 +1,28 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, memo } from 'react'
 import useApiService from '../services/apiService';
 import { toLocalMidnight } from '../utils/dateHelpers';
+import { useOrganizers } from '../context/OrganizersContext';
 import { useTasksManager } from '../context/TasksContext';
 
 
 const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) => {
-    const { handleFormSuccess, cancelForm } = useTasksManager();
-    const apiService = useApiService();
-    
+    console.log('TaskForm rendered!')
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        completed: false
+        completed: false, tags: []
     });
     const [originalData, setOriginalData] = useState({});
+
+    const inputRef = useRef(null);
+    const apiService = useApiService();
+    const { handleFormSuccess, cancelForm } = useTasksManager();
+    
+    const organizers = useOrganizers();
+    const { tags, categories } = organizers;
     
     useEffect(() => {
+        inputRef.current?.focus();
+
         if (task) {
             // Format date for input field
             const formattedTask = {...task};
@@ -32,7 +40,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
         if (parentId) { // for creating a new sub-task
             setFormData({...formData, parent_task: parentId});
         }
-    }, [parentId])
+    }, [parentId]);
 
     useEffect(() => {
         console.log('Original data updated:', originalData);
@@ -79,6 +87,11 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
         }
         console.log('Form Changes:', formChanges)
         return formChanges;
+    }
+
+    const handleSelectChange = (e) => {
+        const values = Array.from(e.target.selectedOptions, option => option.value);
+        setFormData({...formData, tags: values});
     }
 
     const handleChange = (e) => {
@@ -168,6 +181,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
             <div className='form-group'>
                 <label htmlFor='title'>Title</label>
                 <input
+                    ref={inputRef}
                     type='text'
                     id='title'
                     name='title'
@@ -186,6 +200,35 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
                     onChange={handleChange}
                     rows='3'
                 />
+            </div>
+
+            <div className='form-group'>
+                <label htmlFor='category'>Category</label>
+                    <select 
+                        id='category'
+                        name='category'
+                        value={formData.category || ''}
+                        onChange={handleChange}
+                    >
+                        {categories.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                    </select>
+            </div>
+
+            <div className='form-group'>
+                <label htmlFor='tags'>Tags</label>
+                    <select 
+                        multiple
+                        id='tags'
+                        name='tags'
+                        value={formData.tags}
+                        onChange={handleSelectChange}
+                    >
+                        {tags.map(tag => (
+                            <option key={tag.id} value={tag.id}>{tag.name}</option>
+                        ))}
+                    </select>
             </div>
 
             <div className='form-group'>
@@ -220,4 +263,4 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
   )
 }
 
-export default TaskForm
+export default memo(TaskForm);
