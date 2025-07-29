@@ -14,9 +14,8 @@ const TaskList = () => {
   const [activeFilters, setActiveFilters] = useState({
     search: '',
     status: 'all', // 'all', 'incomplete', 'completed'
-    categories: [], // empty => select all (no filter)
-    tags: [], // empty => select all (no filter)
-    noTags: false, // to disregard tag filter list and show only tasks without tags
+    categories: [], // empty => no filter
+    tags: [], // empty => no filter ; tags[0]==='-1' => "filter out untagged tasks"
     dueDate: 'all', // 'all', 'overdue', 'today', 'thisWeek','future', 'none'
     applyFilters: false, // to let TaskList know to apply filters or to clear filteredTasks
     quickSearch: false // trigger search only, without applying filters
@@ -46,7 +45,7 @@ const TaskList = () => {
   
   // Search tasks --> setFilteredTasks(result);
   const search = () => {
-    let result = {...tasks};
+    let result = filteredTasks ? {...filteredTasks} : {...tasks};
     const searchLower = activeFilters.search.toLowerCase();
 
     result = Object.filter(result, task => {
@@ -89,7 +88,7 @@ const TaskList = () => {
 
     // Filter by search term
     if (activeFilters.search) {
-      // console.log('FILTERING BY SEARCH TERM')
+      console.log('FILTERING BY SEARCH TERM')
       // search();
       result = {...filteredTasks}; 
       // result = Object.filter(result, task => {filteredTasks.includes(task.id)});
@@ -105,20 +104,25 @@ const TaskList = () => {
     }
 
     // Filter by tags
-    if (activeFilters.noTags) {
-      console.log('FILTERING BY TAGS (NO TAG)')
-      result = Object.filter(result, task => task.tags.length === 0)
-    } else if (activeFilters.tags.length > 0) {
+    if (activeFilters.tags.length > 0) {
       console.log('FILTERING BY TAGS')
-      result = Object.filter(result, task => {
-        return task.tags && task.tags.some(tagId => 
-          // Check if task has at least one of the selected tags
-          activeFilters.tags.includes(tagId)
-        );
+      // Check if task has no tags OR at least one of the selected tags
+      let resultWithUntagged = Object.filter(result, task => {
+        return (task.tags.length === 0) 
+          || (task.tags.some(tagId => activeFilters.tags.includes(tagId)))
       });
+
+      result = activeFilters.tags[0] === -1 // "filter out untagged tasks"
+        ? Object.filter(resultWithUntagged, task => task.tags.length > 0)
+        : resultWithUntagged;
+        
       console.log('RESULT:', result)
     }
 
+    // remove subtasks
+    console.log('REMOVING SUBTASKS')
+    result = Object.filter(result, task => !task.parent_task);
+    console.log('RESULT:', result)
     setFilteredTasks(result);
   };
   
@@ -201,7 +205,7 @@ const TaskList = () => {
         )}
 
         <div className='task-list'> 
-          {activeFilters.applyFilters && filteredTasks && 
+          {filteredTasks && 
             <p>{Object.keys(filteredTasks).length} matches found.</p>
             // <p>{filteredTasks.length} matches found.</p>
           }
@@ -215,7 +219,7 @@ const TaskList = () => {
               <ul>
                 {data.incomplete_tasks.map((tId) => {
                   // if tasks are filtered, look for task in filteredTasks
-                  const task = filteredTasks // && filteredTasks.icludes(tId)
+                  const task = filteredTasks // && filteredTasks.includes(tId)
                     ? filteredTasks[tId] // ? tasks[tId] : null
                     : tasks[tId];
                   if (!task) return null;

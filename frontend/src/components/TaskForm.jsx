@@ -3,6 +3,7 @@ import useApiService from '../services/apiService';
 import { toLocalMidnight } from '../utils/dateHelpers';
 import { useOrganizers } from '../context/OrganizersContext';
 import { useTasksManager } from '../context/TasksContext';
+import TagSelector from './TagSelector';
 
 
 const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) => {
@@ -89,9 +90,15 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
         return formChanges;
     }
 
+    const handleTagsChange = (selectedTagIds) => {
+        console.log('Tag Selected, updating form data')
+        setFormData({...formData, tags: [...selectedTagIds]});
+    }
+
     const handleSelectChange = (e) => {
+        const name = e.target.name;
         const values = Array.from(e.target.selectedOptions, option => option.value);
-        setFormData({...formData, tags: values});
+        setFormData({...formData, [name]: values});
     }
 
     const handleChange = (e) => {
@@ -179,7 +186,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
 
         <form onSubmit={handleSubmit}>
             <div className='form-group'>
-                <label htmlFor='title'>Title</label>
+                <label>Title
                 <input
                     ref={inputRef}
                     type='text'
@@ -189,10 +196,11 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
                     onChange={handleChange}
                     required
                 />
+                </label>
             </div>
 
             <div className='form-group'>
-                <label htmlFor='description'>Description</label>
+                <label>Description
                 <textarea
                     id='description'
                     name='description'
@@ -200,39 +208,45 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
                     onChange={handleChange}
                     rows='3'
                 />
+                </label>
             </div>
 
             <div className='form-group'>
-                <label htmlFor='category'>Category</label>
-                    <select 
-                        id='category'
-                        name='category'
-                        value={formData.category || ''}
-                        onChange={handleChange}
-                    >
-                        {categories.map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                        ))}
-                    </select>
+                <label>Category
+                <select 
+                    id='category'
+                    name='category'
+                    value={formData.category || ''}
+                    onChange={handleChange}
+                >
+                    {categories.map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                </select>
+                </label>
             </div>
 
             <div className='form-group'>
-                <label htmlFor='tags'>Tags</label>
-                    <select 
-                        multiple
-                        id='tags'
-                        name='tags'
-                        value={formData.tags}
-                        onChange={handleSelectChange}
-                    >
-                        {tags.map(tag => (
-                            <option key={tag.id} value={tag.id}>{tag.name}</option>
-                        ))}
-                    </select>
+                {/* <label>Tags
+                <select 
+                    multiple
+                    id='tags'
+                    name='tags'
+                    value={formData.tags}
+                    onChange={handleSelectChange}
+                >
+                    {tags.map(tag => (
+                        <option key={tag.id} value={tag.id}>#{tag.name}</option>
+                    ))}
+                </select>
+                </label> */}
+                <TagSelector 
+                    onTagsChange={handleTagsChange}
+                />
             </div>
 
             <div className='form-group'>
-                <label htmlFor='due_date'>Due Date</label>
+                <label>Due Date
                 <input
                     type='date'
                     id='due_date'
@@ -240,6 +254,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
                     value={formData.due_date || ''}
                     onChange={handleChange}
                 />
+                </label>
             </div>
 
             <div className='form-group'>

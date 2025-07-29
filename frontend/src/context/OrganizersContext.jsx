@@ -58,12 +58,40 @@ export const useOrganizersManager = () => {
         }
     }
 
+    const addTag = async (tagData={name: 'newTag'}) => {
+        dispatch(orgActions.setLoading(true))
+        try {
+            const response = await apiService.tags.create(tagData);
+            dispatch(orgActions.addTag(response.data.data));
+            return response.data.data
+        } catch (err) {
+            console.error('Error creating tag', err);
+            dispatch(orgActions.setError('Failed to create tag. Please Try again.'));
+            return null
+        }
+    }
+
+    const deleteTag = async (tagId) => {
+        if (window.confirm('There are N tasks in this tag\n Are you sure you want to delete this tag?')) {
+            // Option: delete tag from associated tasks, or delete all tasks associated with the tag
+            try {
+                const response = await apiService.tags.delete(tagId);
+                dispatch(orgActions.deleteTag(tagId));
+            } catch (err) {
+                console.error('Error deleting tag', err);
+                dispatch(orgActions.setError('Failed to delete tag. Please try again.'));
+            }
+        }
+    }
+
+
 
     // Return actions
     return {
         // API Actions
         getTags,
-        getCategories
+        getCategories,
+        addTag
         // deleteTag,
         // handleFormSuccess, // task creation and updates
 
@@ -85,10 +113,15 @@ const orgActions = {
 
     setTags: (tags) => ({ type: 'SET_TAGS', tags }),
     setCategories: (categories) => ({ type: 'SET_CATEGORIES', categories }),
+
+    addTag: (tag) => ({ type: 'ADD_TAG', tag }),
+    deleteTag: (tagId) => ({ type: 'DELETE_TAG', tagId})
+
 };
 
 function orgReducer(state, action) {
-    switch (action.type) {
+    const { type } = action;
+    switch (type) {
         case 'SET_TAGS': {
             return {
                 ...state,
@@ -106,6 +139,24 @@ function orgReducer(state, action) {
                 error: ''
             }
         }
+
+        case 'ADD_TAG': {
+            return {
+                ...state,
+                tags: [...state.tags, action.tag],
+                loading: false,
+                error: ''
+            }
+        }
+
+        case 'DELETE_TAG': {
+            return {
+                ...state,
+                tags: state.tags.filter(t => t.id !== tagId),
+                error: ''
+            }
+        }
+
 
         case 'SET_ERROR': {
             return {

@@ -16,9 +16,8 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
     const [filters, setFilters] = useState({
         search: '',
         status: 'all', // 'all', 'incomplete', 'completed'
-        categories: [], // empty => select all (no filter)
-        tags: [], // empty => select all (no filter)
-        noTags: false, // 
+        categories: [], // empty => no filter
+        tags: [], // empty => no filter; tags[0]=== -1 => filter out untagged
         dueDate: 'all', // 'all', 'overdue', 'today', 'thisWeek','future', 'none'
         applyFilters: true, // to let TaskList know to apply filters or to clear filteredTasks
         quickSearch: false // trigger search only, without applying filters
@@ -26,18 +25,6 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
     
     const organizers = useOrganizers();
     const { tags, categories } = organizers;
-
-    // 1. (on initial render) fetch tags and categories for filter options
-        // *will also need to update these options whenever a new tag or category is created
-    // 2. notify parent component when filters change
-        // so we can update activeFilters and apply them
-        // might need to separate frontend filters and backend filters
-        // backend filters should require 'apply' button, to reduce API calls
-    // useEffect(() => {
-    //     getTags();
-    //     getCategories();
-    // // error handler?
-    // }, []);
 
     
     const handleFilterChange = (e) => {
@@ -60,30 +47,21 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
         onFilterChange({ search: e.target.value, quickSearch: true });
     }
 
-    const handleTagSelection = (tagId=-1) => {
-        if (tagId < 0) { // toggle noTags filter
-            setFilters(prev => ({ ...prev, noTags: !prev.noTags }));
-        } else {
-            // add or remove tag from selected tags
-            setFilters(prev => {
-                const updatedSelection = prev.tags.includes(tagId)
-                    ? prev.tags.filter(id => id !== tagId)
-                    : [...prev.tags, tagId];
-                
-                return { ...prev, tags: updatedSelection };
-            });
-        }
-    };
+    const handleSelectChange = (e) => {
+        const name = e.target.name;
+        const options = [...e.target.selectedOptions];
 
-    const handleCategorySelection = (catId) => {
-        // add or remove category from selected categories
-        setFilters(prev => {
-            const updatedSelection = prev.categories.includes(catId)
-                ? prev.categories.filter(id => id !== catId)
-                : [...prev.categories, catId];
-            
-            return { ...prev, categories: updatedSelection };
-        });
+        const values = options.reduce((accumulator, option) => {
+            option.value === '-1'
+                ? accumulator.unshift(+option.value) // put in the beginning of array for easy checks
+                : accumulator.push(+option.value);
+
+            return accumulator
+        }, [])
+        console.log('Selected values changed:', values)
+        console.log('taggedONLY?', values[0] === -1)
+
+        setFilters({ ...filters, [name]: values });
     }
 
     const clearFilters = () => {
@@ -93,7 +71,6 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
             status: 'all',
             categories: [],
             tags: [],
-            noTags: false,
             dueDate: 'all',
             applyFilters: true,
             quickSearch: false
@@ -107,7 +84,7 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
     }
 
     return (
-        <div className='task-filter'>
+        <div className='task-filter'> 
             <h3>Filter Tasks</h3>
 
             {organizers.error && <p className='error'>{organizers.error}</p>}
@@ -149,9 +126,9 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
                     <option value='completed'>Completed</option>
                     <option value='incomplete'>Incomplete</option>
                 </select>
-            </div>
+            </div>*/}
 
-            <div className='filter-section'>
+            {/* <div className='filter-section'>
                 <label htmlFor='dueDate'>Due Date</label>
                 <select
                     id='dueDate'
@@ -169,57 +146,40 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
             </div> */}
 
             <div className='filter-section'>
-                <label>Category</label>
-
-                <div className='category-filter-options'>
-
-                    {categories.map(cat => (
-                        <div key={cat.id} className='category-filter-option'>
-                            <label>
-                                <input
-                                    type='checkbox'
-                                    checked={filters.categories.includes(cat.id)}
-                                    onChange={() => handleCategorySelection(cat.id)}
-                                />
-                                {cat.name}
-                            </label>
-                        </div>
-                    ))}
-                </div>
+                <label>
+                    Categories
+                    <select className='category-filter-options'
+                        multiple
+                        id='categories'
+                        name='categories'
+                        value={filters.categories}
+                        onChange={handleSelectChange}
+                    >
+                        {categories.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                    </select>
+                </label>
 
             </div>
 
             {tags && tags.length > 0 && (
                 <div className='filter-section'>
-                    <label>Tags</label>
-
-                    <div className='tag-filter-options'>
-                        <div className='tag-filter-option'>
-                            <label>
-                                <input
-                                    type='checkbox'
-                                    checked={filters.noTags}
-                                    onChange={() => handleTagSelection()}
-                                />
-                                No Tags
-                            </label>
-                        </div>
-
-                        {tags.map(tag => (
-                            <div key={tag.id} className='tag-filter-option'>
-                                <label>
-                                    <input
-                                        type='checkbox'
-                                        checked={filters.tags.includes(tag.id)}
-                                        onChange={() => handleTagSelection(tag.id)}
-                                        disabled={filters.noTags}
-                                    />
-                                    #{tag.name}
-                                </label>
-                            </div>
-                        ))}
-                    </div>
-
+                    <label>
+                        Tags
+                        <select className='tag-filter-options'
+                            multiple
+                            id='tags'
+                            name='tags'
+                            value={filters.tags}
+                            onChange={handleSelectChange}
+                        >
+                            <option value={'-1'}>Tagged Only</option>
+                            {tags.map(tag => (
+                                <option key={tag.id} value={tag.id}>#{tag.name}</option>
+                            ))}
+                        </select>
+                    </label>
                 </div>
             )}  
 
