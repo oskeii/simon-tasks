@@ -58,6 +58,19 @@ export const useOrganizersManager = () => {
         }
     }
 
+    const addCategory = async (catData={name: 'newCategory'}) => {
+        dispatch(orgActions.setLoading(true))
+        try {
+            const response = await apiService.categories.create(catData);
+            dispatch(orgActions.addCategory(response.data.data));
+            return response.data.data
+        } catch (err) {
+            console.error('Error creating category', err);
+            dispatch(orgActions.setError('Failed to create category. Please Try again.'));
+            return null
+        }
+    }
+
     const addTag = async (tagData={name: 'newTag'}) => {
         dispatch(orgActions.setLoading(true))
         try {
@@ -91,6 +104,7 @@ export const useOrganizersManager = () => {
         // API Actions
         getTags,
         getCategories,
+        addCategory,
         addTag
         // deleteTag,
         // handleFormSuccess, // task creation and updates
@@ -113,6 +127,8 @@ const orgActions = {
 
     setTags: (tags) => ({ type: 'SET_TAGS', tags }),
     setCategories: (categories) => ({ type: 'SET_CATEGORIES', categories }),
+
+    addCategory: (category) => ({ type: 'ADD_CATEGORY', category}),
 
     addTag: (tag) => ({ type: 'ADD_TAG', tag }),
     deleteTag: (tagId) => ({ type: 'DELETE_TAG', tagId})
@@ -138,6 +154,15 @@ function orgReducer(state, action) {
                 loading: false,
                 error: ''
             }
+        }
+
+        case 'ADD_CATEGORY': {
+            return {
+                ...state,
+                categories: [...state.categories, action.category],
+                loading: false,
+                error: ''
+            }            
         }
 
         case 'ADD_TAG': {

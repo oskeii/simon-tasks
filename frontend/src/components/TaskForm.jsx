@@ -4,6 +4,7 @@ import { toLocalMidnight } from '../utils/dateHelpers';
 import { useOrganizers } from '../context/OrganizersContext';
 import { useTasksManager } from '../context/TasksContext';
 import TagSelector from './TagSelector';
+import CategorySelector from './CategorySelector';
 
 
 const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) => {
@@ -19,7 +20,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
     const { handleFormSuccess, cancelForm } = useTasksManager();
     
     const organizers = useOrganizers();
-    const { tags, categories } = organizers;
+    const { categories } = organizers;
     
     useEffect(() => {
         inputRef.current?.focus();
@@ -93,13 +94,12 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
     const handleTagsChange = (selectedTagIds) => {
         console.log('Tag Selected, updating form data')
         setFormData({...formData, tags: [...selectedTagIds]});
-    }
+    };
 
-    const handleSelectChange = (e) => {
-        const name = e.target.name;
-        const values = Array.from(e.target.selectedOptions, option => option.value);
-        setFormData({...formData, [name]: values});
-    }
+    const handleCategorySelect = (categoryId) => {
+        console.log('Category Selected, updating form data')
+        setFormData({...formData, category: categoryId});
+    };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -212,7 +212,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
             </div>
 
             <div className='form-group'>
-                <label>Category
+                {/* <label>Category
                 <select 
                     id='category'
                     name='category'
@@ -223,23 +223,14 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                 </select>
-                </label>
+                </label> */}
+                <CategorySelector
+                    currentSelection={formData.category || null}
+                    onSelect={handleCategorySelect}
+                />
             </div>
 
             <div className='form-group'>
-                {/* <label>Tags
-                <select 
-                    multiple
-                    id='tags'
-                    name='tags'
-                    value={formData.tags}
-                    onChange={handleSelectChange}
-                >
-                    {tags.map(tag => (
-                        <option key={tag.id} value={tag.id}>#{tag.name}</option>
-                    ))}
-                </select>
-                </label> */}
                 <TagSelector 
                     onTagsChange={handleTagsChange}
                 />

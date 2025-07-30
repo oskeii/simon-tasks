@@ -174,13 +174,11 @@ const TagSelector = ({ onTagsChange }) => {
                                 onClick={handleCreateNewTag}
                             >
                                 <div>
-                                    {/* <Plus size={16} /> */}
+                                    <Plus size={16} />
                                     Create "{inputValue.trim()}"
                                 </div>
                             </button>
                         )}
-
-                        {/* Tag already exists */}
 
                         {/* All available tags selected */}
                         {filteredTags.length === 0 && !inputValue.trim() && (
@@ -191,16 +189,6 @@ const TagSelector = ({ onTagsChange }) => {
                 )}
             </div>
 
-            {/* Display selected tags */}
-            <div>
-                <h3>Selected Tags:</h3>
-                <div>
-                    {selectedTags.length > 0
-                        ? selectedTags.map(tag => tag.name).join(', ')
-                        : 'None selected'
-                    }
-                </div>
-            </div>
         </div>
     );
 };
