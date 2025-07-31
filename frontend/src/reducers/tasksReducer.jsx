@@ -1,20 +1,19 @@
-
 // Initial state
 export const initialState = {
-  tasks: {},
-  data: {
-    total_count: 0,
-    parent_count: 0,
-    incomplete_count: 0,
-    complete_count: 0,
-    incomplete_tasks: [],
-    complete_tasks: [],
-  },
-  loading: true,
-  error: '',
-  showForm: false,
-  editingTask: null,
-  linkingParent: null
+    tasks: {},
+    data: {
+        total_count: 0,
+        parent_count: 0,
+        incomplete_count: 0,
+        complete_count: 0,
+        incomplete_tasks: [],
+        complete_tasks: [],
+    },
+    loading: true,
+    error: '',
+    showForm: false,
+    editingTask: null,
+    linkingParent: null,
 };
 
 // Action creators
@@ -28,22 +27,26 @@ export const taskActions = {
     setTasks: (data) => ({ type: 'SET_TASKS', data }),
     addTask: (task) => ({ type: 'ADD_TASK', task }),
     updateTask: (task) => ({ type: 'UPDATE_TASK', task }),
-    deleteTask: (id, subtasksData={}, keepSubtasks=true) => ({ type: 'DELETE_TASK', id, subtasksData, keepSubtasks })
+    deleteTask: (id, subtasksData = {}, keepSubtasks = true) => ({
+        type: 'DELETE_TASK',
+        id,
+        subtasksData,
+        keepSubtasks,
+    }),
 };
-
 
 // Helper Functions
 
 const addParentTask = (state, task) => {
     let newData = {
         ...state.data,
-        total_count: state.data.total_count +1,
-        parent_count: state.data.parent_count +1
+        total_count: state.data.total_count + 1,
+        parent_count: state.data.parent_count + 1,
     };
 
     if (task.completed) {
         newData.complete_count++;
-        newData.complete_tasks = [task.id, ...newData.complete_tasks];        
+        newData.complete_tasks = [task.id, ...newData.complete_tasks];
     } else {
         newData.incomplete_count++;
         newData.incomplete_tasks = [task.id, ...newData.incomplete_tasks];
@@ -51,7 +54,7 @@ const addParentTask = (state, task) => {
 
     return {
         tasks: { ...state.tasks, [task.id]: task },
-        data: newData
+        data: newData,
     };
 };
 
@@ -60,19 +63,19 @@ const addSubtask = (state, task) => {
     const updatedParent = {
         ...parentTask,
         has_subtasks: true,
-        sub_tasks: [...(parentTask.sub_tasks || []), task.id]
+        sub_tasks: [...(parentTask.sub_tasks || []), task.id],
     };
 
     return {
         tasks: {
             ...state.tasks,
             [task.id]: task,
-            [task.parent_task]: updatedParent
+            [task.parent_task]: updatedParent,
         },
         data: {
             ...state.data,
-            total_count: state.data.total_count +1
-        }
+            total_count: state.data.total_count + 1,
+        },
     };
 };
 
@@ -81,7 +84,7 @@ const updateTaskCompletion = (state, newTask, oldTask) => {
     if (newTask.parent_task || oldTask.completed === newTask.completed) {
         return {
             tasks: { ...state.tasks, [newTask.id]: newTask },
-            data: state.data
+            data: state.data,
         };
     }
 
@@ -91,19 +94,23 @@ const updateTaskCompletion = (state, newTask, oldTask) => {
         // Task marked complete
         newData.incomplete_count--;
         newData.complete_count++;
-        newData.incomplete_tasks = newData.incomplete_tasks.filter(id => id !== newTask.id);
+        newData.incomplete_tasks = newData.incomplete_tasks.filter(
+            (id) => id !== newTask.id
+        );
         newData.complete_tasks = [newTask.id, ...newData.complete_tasks];
     } else {
         // Task marked incomplete
         newData.incomplete_count++;
         newData.complete_count--;
-        newData.complete_tasks = newData.complete_tasks.filter(id => id !== newTask.id);
+        newData.complete_tasks = newData.complete_tasks.filter(
+            (id) => id !== newTask.id
+        );
         newData.incomplete_tasks = [newTask.id, ...newData.incomplete_tasks];
     }
 
     return {
         tasks: { ...state.tasks, [newTask.id]: newTask },
-        data: newData
+        data: newData,
     };
 };
 
@@ -114,17 +121,21 @@ const deleteParentTask = (state, taskId, subtasksData, keepSubtasks) => {
 
     let newData = {
         ...state.data,
-        total_count: state.data.total_count -1,
-        parent_count: state.data.parent_count -1
+        total_count: state.data.total_count - 1,
+        parent_count: state.data.parent_count - 1,
     };
 
     // Remove from completion lists
     if (taskToDelete.completed) {
         newData.complete_count--;
-        newData.complete_tasks = newData.complete_tasks.filter(id => id !== taskId);
+        newData.complete_tasks = newData.complete_tasks.filter(
+            (id) => id !== taskId
+        );
     } else {
         newData.incomplete_count--;
-        newData.incomplete_tasks = newData.incomplete_tasks.filter(id => id !== taskId);
+        newData.incomplete_tasks = newData.incomplete_tasks.filter(
+            (id) => id !== taskId
+        );
     }
 
     // Handle subtasks
@@ -134,7 +145,11 @@ const deleteParentTask = (state, taskId, subtasksData, keepSubtasks) => {
             newTasks = result.tasks;
             newData = result.data;
         } else {
-            const result = deleteAllSubtasks(newTasks, newData, subtasksData.deleted_subtasks);
+            const result = deleteAllSubtasks(
+                newTasks,
+                newData,
+                subtasksData.deleted_subtasks
+            );
             newTasks = result.tasks;
             newData = result.data;
         }
@@ -149,12 +164,12 @@ const deleteSubtask = (state, taskId) => {
     delete newTasks[taskId];
 
     let parentTask = newTasks[taskToDelete.parent_task];
-    parentTask.sub_tasks = parentTask.sub_tasks.filter(id => id !== taskId);
+    parentTask.sub_tasks = parentTask.sub_tasks.filter((id) => id !== taskId);
     parentTask.has_subtasks = parentTask.sub_tasks.length > 0;
 
     return {
-        tasks: { ...newTasks,  [parentTask.id]: parentTask },
-        data: { ...state.data, total_count: state.data.total_count-1 }
+        tasks: { ...newTasks, [parentTask.id]: parentTask },
+        data: { ...state.data, total_count: state.data.total_count - 1 },
     };
 };
 
@@ -165,8 +180,14 @@ const promoteSubtasks = (tasks, data, subtasksData) => {
         parent_count: data.parent_count + subtasksData.sub_count,
         incomplete_count: data.incomplete_count + subtasksData.incomplete_count,
         complete_count: data.complete_count + subtasksData.complete_count,
-        incomplete_tasks: [ ...data.incomplete_tasks, ...(subtasksData.incomplete_tasks || []) ],
-        complete_tasks: [ ...data.complete_tasks, ...(subtasksData.complete_tasks || []) ]
+        incomplete_tasks: [
+            ...data.incomplete_tasks,
+            ...(subtasksData.incomplete_tasks || []),
+        ],
+        complete_tasks: [
+            ...data.complete_tasks,
+            ...(subtasksData.complete_tasks || []),
+        ],
     };
 
     return { tasks: newTasks, data: newData };
@@ -174,15 +195,17 @@ const promoteSubtasks = (tasks, data, subtasksData) => {
 
 const deleteAllSubtasks = (tasks, data, subtaskIds) => {
     let newTasks = { ...tasks };
-    let newData = { ...data, total_count: data.total_count - subtaskIds.length};
+    let newData = {
+        ...data,
+        total_count: data.total_count - subtaskIds.length,
+    };
 
-    subtaskIds.forEach(id => { 
-        delete newTasks[id]; 
+    subtaskIds.forEach((id) => {
+        delete newTasks[id];
     });
 
     return { tasks: newTasks, data: newData };
 };
-
 
 // Main Reducer Function
 export function tasksReducer(state, action) {
@@ -196,42 +219,57 @@ export function tasksReducer(state, action) {
         }
 
         case 'SHOW_FORM': {
-            return { ...state, showForm: true, editingTask: null, linkingParent: action.parentId };
-        }
-
-        case 'HIDE_FORM': {
-            return { ...state, showForm: false, editingTask: null, linkingParent: null };
-        }
-        
-        case 'SET_EDITING_TASK': {
-            return { ...state, editingTask: action.id, linkingParent: null, showForm: true };
-        }
-        
-        case 'SET_TASKS': {
-            const {tasks, ...relatedData} = action.data;
             return {
                 ...state,
-                tasks: tasks,
-                data: relatedData,
-                loading: false,
-                error: ''
+                showForm: true,
+                editingTask: null,
+                linkingParent: action.parentId,
             };
         }
 
-        case 'ADD_TASK':{
-            const result = action.task.parent_task
-                ? addSubtask(state, action.task)
-                : addParentTask(state, action.task)
-                
+        case 'HIDE_FORM': {
             return {
                 ...state,
                 showForm: false,
                 editingTask: null,
                 linkingParent: null,
-                ...result
             };
         }
-        
+
+        case 'SET_EDITING_TASK': {
+            return {
+                ...state,
+                editingTask: action.id,
+                linkingParent: null,
+                showForm: true,
+            };
+        }
+
+        case 'SET_TASKS': {
+            const { tasks, ...relatedData } = action.data;
+            return {
+                ...state,
+                tasks: tasks,
+                data: relatedData,
+                loading: false,
+                error: '',
+            };
+        }
+
+        case 'ADD_TASK': {
+            const result = action.task.parent_task
+                ? addSubtask(state, action.task)
+                : addParentTask(state, action.task);
+
+            return {
+                ...state,
+                showForm: false,
+                editingTask: null,
+                linkingParent: null,
+                ...result,
+            };
+        }
+
         case 'UPDATE_TASK': {
             const oldTask = state.tasks[action.task.id];
             const result = updateTaskCompletion(state, action.task, oldTask);
@@ -240,7 +278,7 @@ export function tasksReducer(state, action) {
                 showForm: false,
                 editingTask: null,
                 linkingParent: null,
-                ...result
+                ...result,
             };
         }
 
@@ -248,13 +286,17 @@ export function tasksReducer(state, action) {
             const taskToDelete = state.tasks[action.id];
             const result = taskToDelete.parent_task
                 ? deleteSubtask(state, action.id)
-                : deleteParentTask(state, action.id, action.subtasksData, action.keepSubtasks);
+                : deleteParentTask(
+                      state,
+                      action.id,
+                      action.subtasksData,
+                      action.keepSubtasks
+                  );
 
             return { ...state, ...result };
         }
 
         default:
-        throw new Error(`Unkown action: ${action.type}`);
-    }  
-};
-
+            throw new Error(`Unkown action: ${action.type}`);
+    }
+}

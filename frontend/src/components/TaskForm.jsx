@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, memo } from 'react'
+import React, { useState, useEffect, useRef, memo } from 'react';
 import useApiService from '../services/apiService';
 import { toLocalMidnight } from '../utils/dateHelpers';
 import { useOrganizers } from '../context/OrganizersContext';
@@ -6,28 +6,33 @@ import { useTasksManager } from '../context/TasksContext';
 import TagSelector from './TagSelector';
 import CategorySelector from './CategorySelector';
 
-
-const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) => {
-    console.log('TaskForm rendered!')
+const TaskForm = ({
+    task = null,
+    parentId = null,
+    onSuccess = null,
+    onCancel = null,
+}) => {
+    console.log('TaskForm rendered!');
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        completed: false, tags: []
+        completed: false,
+        tags: [],
     });
     const [originalData, setOriginalData] = useState({});
 
     const inputRef = useRef(null);
     const apiService = useApiService();
     const { handleFormSuccess, cancelForm } = useTasksManager();
-    
+
     const organizers = useOrganizers();
     const { categories } = organizers;
-    
+
     useEffect(() => {
         inputRef.current?.focus();
 
         if (task) {
             // Format date for input field
-            const formattedTask = {...task};
+            const formattedTask = { ...task };
             if (task.due_date) {
                 const dueDate = new Date(task.due_date);
                 formattedTask.due_date = dueDate.toISOString().split('T')[0];
@@ -39,8 +44,9 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
     }, [task]);
 
     useEffect(() => {
-        if (parentId) { // for creating a new sub-task
-            setFormData({...formData, parent_task: parentId});
+        if (parentId) {
+            // for creating a new sub-task
+            setFormData({ ...formData, parent_task: parentId });
         }
     }, [parentId]);
 
@@ -51,8 +57,7 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
         console.log('Form data updated:', formData);
     }, [formData]);
 
-
-    const filterChanges = (isNew=false) => {
+    const filterChanges = (isNew = false) => {
         // reduce formData to only include modified fields
         let formChanges = {};
 
@@ -61,7 +66,9 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
             for (const key in formData) {
                 if (key.includes('date') && formData[key]) {
                     formChanges[key] = toLocalMidnight(formData[key]);
-                    console.log(`Formatting date field (${key}) for submission:\n${formData[key]}\t--->\t${formChanges[key]}`)
+                    console.log(
+                        `Formatting date field (${key}) for submission:\n${formData[key]}\t--->\t${formChanges[key]}`
+                    );
                 } else {
                     formChanges[key] = formData[key];
                 }
@@ -73,41 +80,42 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
             for (const key in formData) {
                 console.log(`Checking field: ${key}...\n
                     formData: ${formData[key]}
-                    originalData: ${originalData.hasOwnProperty(key) ? originalData?.[key] : 'NONE'}`)
+                    originalData: ${originalData.hasOwnProperty(key) ? originalData?.[key] : 'NONE'}`);
                 if (formData[key] !== originalData?.[key]) {
                     console.log('Field changes detected.');
 
                     // Format date fields
                     if (key.includes('date') && formData[key]) {
                         formChanges[key] = toLocalMidnight(formData[key]);
-                        console.log(`Formatting date field (${key}) for submission:\n${formData[key]}\t--->\t${formChanges[key]}`)
+                        console.log(
+                            `Formatting date field (${key}) for submission:\n${formData[key]}\t--->\t${formChanges[key]}`
+                        );
                     } else {
                         formChanges[key] = formData[key];
                     }
                 }
             }
         }
-        console.log('Form Changes:', formChanges)
+        console.log('Form Changes:', formChanges);
         return formChanges;
-    }
+    };
 
     const handleTagsChange = (selectedTagIds) => {
-        console.log('Tag Selected, updating form data')
-        setFormData({...formData, tags: [...selectedTagIds]});
+        console.log('Tag Selected, updating form data');
+        setFormData({ ...formData, tags: [...selectedTagIds] });
     };
 
     const handleCategorySelect = (categoryId) => {
-        console.log('Category Selected, updating form data')
-        setFormData({...formData, category: categoryId});
+        console.log('Category Selected, updating form data');
+        setFormData({ ...formData, category: categoryId });
     };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        let originalEmpty = (
+        let originalEmpty =
             !task || // originalData is an empty object
             originalData?.[name] === null || // field is null in originalData
-            originalData?.[name] === '' // field is empty string in originalData
-        );
+            originalData?.[name] === ''; // field is empty string in originalData
 
         // debugging logs
         // console.log(`empty? ${originalEmpty}`)
@@ -115,29 +123,28 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
         // console.log(`editing...\nname: ${name}, value: ${value}
         //     type: ${type}, checked: ${checked}`);
         // -----------------------------------------------------------------------------
-        
+
         if (type === 'checkbox') {
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
-                [name]: checked
+                [name]: checked,
             }));
-        }
-        else if (value === '' && originalEmpty) { // empty field same as original data
-                console.log('empty field same as original data')
-                const { [name]: _, ...newFormData} = formData;
-                setFormData(newFormData);
-            }
-        else if (type === 'date' && value === '') { // change empty date value to null
-            console.log('change empty date value to null')
-            setFormData(prev => ({
+        } else if (value === '' && originalEmpty) {
+            // empty field same as original data
+            console.log('empty field same as original data');
+            const { [name]: _, ...newFormData } = formData;
+            setFormData(newFormData);
+        } else if (type === 'date' && value === '') {
+            // change empty date value to null
+            console.log('change empty date value to null');
+            setFormData((prev) => ({
                 ...prev,
-                [name]: null
+                [name]: null,
             }));
-        }    
-        else {
-            setFormData(prev => ({
+        } else {
+            setFormData((prev) => ({
                 ...prev,
-                [name]: value
+                [name]: value,
             }));
         }
     };
@@ -149,70 +156,74 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
         try {
             let response;
             // console.log('Sending data to API:', formData)
-            
-            if (task) { // UPDATE existing task
+
+            if (task) {
+                // UPDATE existing task
                 let formChanges = filterChanges(); // For updates, only include changed fields
                 console.log('Sending data to API:', formChanges);
 
                 response = await apiService.tasks.update(task.id, formChanges);
-            } else { // CREATE new task
-                let formChanges = filterChanges(true); // 
+            } else {
+                // CREATE new task
+                let formChanges = filterChanges(true); //
                 console.log('Sending data to API:', formChanges);
 
                 // console.log('Sending data to API:', formData);
                 response = await apiService.tasks.create(formChanges);
             }
-            console.log('Response from API:', response)
+            console.log('Response from API:', response);
 
-            onSuccess ? onSuccess(response.data.data) : handleFormSuccess(response.data.data);
+            onSuccess
+                ? onSuccess(response.data.data)
+                : handleFormSuccess(response.data.data);
 
             setFormData({
-                completed: false
+                completed: false,
             });
             setOriginalData({});
-
         } catch (err) {
             console.error('Error updating/creating task:', err);
-            console.log('Error response:', err.response?.data)
+            console.log('Error response:', err.response?.data);
             setError(err.response?.data?.message || 'An error occurred');
         }
     };
 
+    return (
+        <div className="task-form">
+            <h3>{task ? 'Edit Task' : 'Create New Task'}</h3>
+            {error && <p className="error">{error}</p>}
 
-  return (
-    <div className='task-form'>
-        <h3>{task ? 'Edit Task' : 'Create New Task'}</h3>
-        {error && <p className='error'>{error}</p>}
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label>
+                        Title
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            id="title"
+                            name="title"
+                            value={formData.title || ''}
+                            onChange={handleChange}
+                            required
+                        />
+                    </label>
+                </div>
 
-        <form onSubmit={handleSubmit}>
-            <div className='form-group'>
-                <label>Title
-                <input
-                    ref={inputRef}
-                    type='text'
-                    id='title'
-                    name='title'
-                    value={formData.title || ''}
-                    onChange={handleChange}
-                    required
-                />
-                </label>
-            </div>
+                <div className="form-group">
+                    <label>
+                        Description
+                        <textarea
+                            id="description"
+                            name="description"
+                            value={formData.description || ''}
+                            onChange={handleChange}
+                            rows="3"
+                        />
+                    </label>
+                </div>
 
-            <div className='form-group'>
-                <label>Description
-                <textarea
-                    id='description'
-                    name='description'
-                    value={formData.description || ''}
-                    onChange={handleChange}
-                    rows='3'
-                />
-                </label>
-            </div>
-
-            <div className='form-group'>
-                {/* <label>Category
+                <div className="form-group">
+                    {/* <label>Category
                 <select 
                     id='category'
                     name='category'
@@ -224,49 +235,53 @@ const TaskForm = ({ task=null, parentId=null, onSuccess=null, onCancel=null }) =
                     ))}
                 </select>
                 </label> */}
-                <CategorySelector
-                    currentSelection={formData.category || null}
-                    onSelect={handleCategorySelect}
-                />
-            </div>
-
-            <div className='form-group'>
-                <TagSelector 
-                    onTagsChange={handleTagsChange}
-                />
-            </div>
-
-            <div className='form-group'>
-                <label>Due Date
-                <input
-                    type='date'
-                    id='due_date'
-                    name='due_date'
-                    value={formData.due_date || ''}
-                    onChange={handleChange}
-                />
-                </label>
-            </div>
-
-            <div className='form-group'>
-                <label>
-                    <input
-                        type='checkbox'
-                        name='completed'
-                        checked={formData.completed}
-                        onChange={handleChange}
+                    <CategorySelector
+                        currentSelection={formData.category || null}
+                        onSelect={handleCategorySelect}
                     />
-                    Completed
-                </label>
-            </div>
+                </div>
 
-            <div className='form-actions'>
-                <button type='submit'>{task ? 'Update' : 'Create'}</button>
-                <button type='button' onClick={() => onCancel ? onCancel() : cancelForm()}>Cancel</button>
-            </div>
-        </form>
-    </div>
-  )
-}
+                <div className="form-group">
+                    <TagSelector onTagsChange={handleTagsChange} />
+                </div>
+
+                <div className="form-group">
+                    <label>
+                        Due Date
+                        <input
+                            type="date"
+                            id="due_date"
+                            name="due_date"
+                            value={formData.due_date || ''}
+                            onChange={handleChange}
+                        />
+                    </label>
+                </div>
+
+                <div className="form-group">
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="completed"
+                            checked={formData.completed}
+                            onChange={handleChange}
+                        />
+                        Completed
+                    </label>
+                </div>
+
+                <div className="form-actions">
+                    <button type="submit">{task ? 'Update' : 'Create'}</button>
+                    <button
+                        type="button"
+                        onClick={() => (onCancel ? onCancel() : cancelForm())}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+};
 
 export default memo(TaskForm);

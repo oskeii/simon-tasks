@@ -1,36 +1,48 @@
-import React from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import React from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 const Home = () => {
-  const { auth, logout } = useAuth()
-  const navigate = useNavigate();
+    const { auth, logout } = useAuth();
+    const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');  // Redirect to login page?
-  };
+    const handleLogout = async () => {
+        await logout();
+        navigate('/'); // Redirect to login page?
+    };
 
-  const AuthButton = () => {
-    if (!auth?.isAuthenticated) {
-      return <Link to='/login'><button>Login here</button></Link>
-    } else {
-      return (<button className='logout-btn' onClick={handleLogout}>Logout</button>)
-    }
-  }
+    const AuthButton = () => {
+        if (!auth?.isAuthenticated) {
+            return (
+                <Link to="/login">
+                    <button>Login here</button>
+                </Link>
+            );
+        } else {
+            return (
+                <button
+                    className="logout-btn"
+                    onClick={handleLogout}
+                >
+                    Logout
+                </button>
+            );
+        }
+    };
 
-  return (
-    <div>
-        {auth?.isAuthenticated
-        ?<h2>Hello, {auth?.user.first_name || auth?.user.username}!</h2>
-        :<h1>Welcome</h1>}
-        
+    return (
         <div>
-          <AuthButton />
-        </div>
-        
-    </div>
-  )
-}
+            {auth?.isAuthenticated ? (
+                <h2>Hello, {auth?.user.first_name || auth?.user.username}!</h2>
+            ) : (
+                <h1>Welcome</h1>
+            )}
 
-export default Home
+            <div>
+                <AuthButton />
+            </div>
+        </div>
+    );
+};
+
+export default Home;

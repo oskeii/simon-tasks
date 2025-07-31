@@ -6,26 +6,26 @@ export const OrganizersDispatchContext = createContext(null);
 
 /**
  * Context Provider for tags and categories
-*/
+ */
 export const OrganizersProvider = ({ children }) => {
     const [organizers, dispatch] = useReducer(orgReducer, initialState);
 
-  return (
-    <OrganizersContext.Provider value={organizers}>
-        <OrganizersDispatchContext.Provider value={dispatch}>
-            {children}
-        </OrganizersDispatchContext.Provider>
-    </OrganizersContext.Provider>
-  );
-}
+    return (
+        <OrganizersContext.Provider value={organizers}>
+            <OrganizersDispatchContext.Provider value={dispatch}>
+                {children}
+            </OrganizersDispatchContext.Provider>
+        </OrganizersContext.Provider>
+    );
+};
 
 export const useOrganizers = () => {
     return useContext(OrganizersContext);
-}
+};
 
 export const useOrganizersDispatch = () => {
     return useContext(OrganizersDispatchContext);
-}
+};
 
 export const useOrganizersManager = () => {
     const state = useOrganizers();
@@ -37,67 +37,84 @@ export const useOrganizersManager = () => {
         try {
             dispatch(orgActions.setLoading(true));
             const response = await apiService.tags.get();
-            console.log(response.data)
+            console.log(response.data);
             dispatch(orgActions.setTags(response.data.data));
         } catch (err) {
             console.error('Error fetching tags:', err);
-            dispatch(orgActions.setError('Failed to load tags. Please try again.'));
+            dispatch(
+                orgActions.setError('Failed to load tags. Please try again.')
+            );
         }
-
-    }
+    };
     // Get all categories
     const getCategories = async () => {
         try {
             dispatch(orgActions.setLoading(true));
             const response = await apiService.categories.get();
-            console.log(response.data)
+            console.log(response.data);
             dispatch(orgActions.setCategories(response.data.data));
         } catch (err) {
             console.error('Error fetching categories:', err);
-            dispatch(orgActions.setError('Failed to load categories. Please try again.'));
+            dispatch(
+                orgActions.setError(
+                    'Failed to load categories. Please try again.'
+                )
+            );
         }
-    }
+    };
 
-    const addCategory = async (catData={name: 'newCategory'}) => {
-        dispatch(orgActions.setLoading(true))
+    const addCategory = async (catData = { name: 'newCategory' }) => {
+        dispatch(orgActions.setLoading(true));
         try {
             const response = await apiService.categories.create(catData);
             dispatch(orgActions.addCategory(response.data.data));
-            return response.data.data
+            return response.data.data;
         } catch (err) {
             console.error('Error creating category', err);
-            dispatch(orgActions.setError('Failed to create category. Please Try again.'));
-            return null
+            dispatch(
+                orgActions.setError(
+                    'Failed to create category. Please Try again.'
+                )
+            );
+            return null;
         }
-    }
+    };
 
-    const addTag = async (tagData={name: 'newTag'}) => {
-        dispatch(orgActions.setLoading(true))
+    const addTag = async (tagData = { name: 'newTag' }) => {
+        dispatch(orgActions.setLoading(true));
         try {
             const response = await apiService.tags.create(tagData);
             dispatch(orgActions.addTag(response.data.data));
-            return response.data.data
+            return response.data.data;
         } catch (err) {
             console.error('Error creating tag', err);
-            dispatch(orgActions.setError('Failed to create tag. Please Try again.'));
-            return null
+            dispatch(
+                orgActions.setError('Failed to create tag. Please Try again.')
+            );
+            return null;
         }
-    }
+    };
 
     const deleteTag = async (tagId) => {
-        if (window.confirm('There are N tasks in this tag\n Are you sure you want to delete this tag?')) {
+        if (
+            window.confirm(
+                'There are N tasks in this tag\n Are you sure you want to delete this tag?'
+            )
+        ) {
             // Option: delete tag from associated tasks, or delete all tasks associated with the tag
             try {
                 const response = await apiService.tags.delete(tagId);
                 dispatch(orgActions.deleteTag(tagId));
             } catch (err) {
                 console.error('Error deleting tag', err);
-                dispatch(orgActions.setError('Failed to delete tag. Please try again.'));
+                dispatch(
+                    orgActions.setError(
+                        'Failed to delete tag. Please try again.'
+                    )
+                );
             }
         }
-    }
-
-
+    };
 
     // Return actions
     return {
@@ -105,7 +122,7 @@ export const useOrganizersManager = () => {
         getTags,
         getCategories,
         addCategory,
-        addTag
+        addTag,
         // deleteTag,
         // handleFormSuccess, // task creation and updates
 
@@ -114,11 +131,8 @@ export const useOrganizersManager = () => {
         // cancelForm,
         // showNewTaskForm,
         // clearError
-    }
-}
-
-
-
+    };
+};
 
 // Action creators
 const orgActions = {
@@ -128,11 +142,10 @@ const orgActions = {
     setTags: (tags) => ({ type: 'SET_TAGS', tags }),
     setCategories: (categories) => ({ type: 'SET_CATEGORIES', categories }),
 
-    addCategory: (category) => ({ type: 'ADD_CATEGORY', category}),
+    addCategory: (category) => ({ type: 'ADD_CATEGORY', category }),
 
     addTag: (tag) => ({ type: 'ADD_TAG', tag }),
-    deleteTag: (tagId) => ({ type: 'DELETE_TAG', tagId})
-
+    deleteTag: (tagId) => ({ type: 'DELETE_TAG', tagId }),
 };
 
 function orgReducer(state, action) {
@@ -143,8 +156,8 @@ function orgReducer(state, action) {
                 ...state,
                 tags: action.tags,
                 loading: false,
-                error: ''
-            }
+                error: '',
+            };
         }
 
         case 'SET_CATEGORIES': {
@@ -152,8 +165,8 @@ function orgReducer(state, action) {
                 ...state,
                 categories: action.categories,
                 loading: false,
-                error: ''
-            }
+                error: '',
+            };
         }
 
         case 'ADD_CATEGORY': {
@@ -161,8 +174,8 @@ function orgReducer(state, action) {
                 ...state,
                 categories: [...state.categories, action.category],
                 loading: false,
-                error: ''
-            }            
+                error: '',
+            };
         }
 
         case 'ADD_TAG': {
@@ -170,32 +183,31 @@ function orgReducer(state, action) {
                 ...state,
                 tags: [...state.tags, action.tag],
                 loading: false,
-                error: ''
-            }
+                error: '',
+            };
         }
 
         case 'DELETE_TAG': {
             return {
                 ...state,
-                tags: state.tags.filter(t => t.id !== tagId),
-                error: ''
-            }
+                tags: state.tags.filter((t) => t.id !== tagId),
+                error: '',
+            };
         }
-
 
         case 'SET_ERROR': {
             return {
                 ...state,
                 error: action.error,
-                loading: false
-            }
+                loading: false,
+            };
         }
 
         case 'SET_LOADING': {
             return {
                 ...state,
-                loading: action.loading
-            }
+                loading: action.loading,
+            };
         }
     }
 }
@@ -205,5 +217,5 @@ const initialState = {
     tags: [],
     categories: [],
     loading: false,
-    error: ''
+    error: '',
 };

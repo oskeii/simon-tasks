@@ -1,16 +1,23 @@
-import React, { useState, useRef, useEffect, useMemo, memo } from 'react'
-import { X, Plus } from 'lucide-react'
-import { useOrganizers, useOrganizersManager } from '../context/OrganizersContext';
+import React, { useState, useRef, useEffect, useMemo, memo } from 'react';
+import { X, Plus } from 'lucide-react';
+import {
+    useOrganizers,
+    useOrganizersManager,
+} from '../context/OrganizersContext';
 
-const CategorySelector = ({ currentSelection=null, onSelect }) => {
+const CategorySelector = ({ currentSelection = null, onSelect }) => {
     console.log('CategorySelector rendered!');
 
     // Get available categories
     const organizers = useOrganizers();
     const { addCategory } = useOrganizersManager();
     const { categories } = organizers; // available categories
-    
-    const [selection, setSelection] = useState(currentSelection ? categories.find(cat => cat.id ===currentSelection) : null);
+
+    const [selection, setSelection] = useState(
+        currentSelection
+            ? categories.find((cat) => cat.id === currentSelection)
+            : null
+    );
     const [inputValue, setInputValue] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -18,33 +25,42 @@ const CategorySelector = ({ currentSelection=null, onSelect }) => {
     const dropdownRef = useRef(null);
 
     const partialMatch = (catName) => {
-        return catName.toLowerCase().includes(inputValue.trim().toLowerCase())
+        return catName.toLowerCase().includes(inputValue.trim().toLowerCase());
     };
 
     // Filter categories based on input
     const filteredCategories = useMemo(() => {
         if (!inputValue.trim()) {
             // Return all available categories
-            return categories.filter(cat => cat !== selection);
+            return categories.filter((cat) => cat !== selection);
         } else {
             // Return all available categories that also match input
-            return categories.filter(cat => cat !== selection && partialMatch(cat.name));
+            return categories.filter(
+                (cat) => cat !== selection && partialMatch(cat.name)
+            );
         }
-    }, [inputValue, selection, categories])
-    
-    console.log('Selected Category:', selection)   
-    useEffect(() => console.log('Filtered Categories:', filteredCategories), [filteredCategories])
-    
+    }, [inputValue, selection, categories]);
+
+    console.log('Selected Category:', selection);
+    useEffect(
+        () => console.log('Filtered Categories:', filteredCategories),
+        [filteredCategories]
+    );
+
     // Handle clicking outside to close dropdown
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(e.target)
+            ) {
                 setShowDropdown(false);
             }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     const handleInputChange = (e) => {
@@ -61,7 +77,7 @@ const CategorySelector = ({ currentSelection=null, onSelect }) => {
 
         setSelection(category);
         setInputValue('');
-        setShowDropdown(false); 
+        setShowDropdown(false);
         inputRef.current?.focus();
     };
 
@@ -71,8 +87,9 @@ const CategorySelector = ({ currentSelection=null, onSelect }) => {
             // send tag name in API call to create tag
             let categoryName = inputValue.trim();
             const newCategory = await addCategory({ name: categoryName });
-                
-            if (!newCategory) inputRef.current?.focus(); // error occured
+
+            if (!newCategory)
+                inputRef.current?.focus(); // error occured
             else {
                 handleSelect(newCategory);
             }
@@ -112,70 +129,76 @@ const CategorySelector = ({ currentSelection=null, onSelect }) => {
         }
     };
 
-    const exactMatch = categories.some(cat =>
-        cat.name.toLowerCase() === inputValue.trim().toLowerCase()
+    const exactMatch = categories.some(
+        (cat) => cat.name.toLowerCase() === inputValue.trim().toLowerCase()
     );
 
-
-  return (
-    <div className='category-selector'>
-        <h2>Category Selector</h2>
-        {organizers.error && <p className='error'>{organizers.error}</p>}
-        <div className='input-container' ref={dropdownRef}>
-            <div> 
-                {selection && (
-                    <span>
-                        {selection.name}
-                        <button
-                            type='button'
-                            onClick={handleClearSelection}
-                        >   <X size={12} /> </button>
-                    </span>
-                )}
-
-                <input
-                    ref={inputRef}
-                    type='text'
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    onFocus={handleInputFocus}
-                    onKeyDown={handleKeyDown}
-                    placeholder={'Type to search or create a category...'}
-                />
-            </div>
-
-            {/* Dropdown */}
-            {showDropdown && (
+    return (
+        <div className="category-selector">
+            <h2>Category Selector</h2>
+            {organizers.error && <p className="error">{organizers.error}</p>}
+            <div
+                className="input-container"
+                ref={dropdownRef}
+            >
                 <div>
-                    {filteredCategories.length > 0 && (
-                        <div>
-                            {filteredCategories.map(cat => (
-                                <button key={cat.id}
-                                    type='button'
-                                    onClick={() => handleSelect(cat)}
-                                >{cat.name}</button>
-                            ))}
-                        </div>
+                    {selection && (
+                        <span>
+                            {selection.name}
+                            <button
+                                type="button"
+                                onClick={handleClearSelection}
+                            >
+                                {' '}
+                                <X size={12} />{' '}
+                            </button>
+                        </span>
                     )}
 
-                    {/* Create new tag option */}
-                    {inputValue.trim() && !exactMatch && (
-                        <button
-                            type='button'
-                            onClick={handleCreateNewCategory}
-                        >
-                            <div>
-                                <Plus size={16} />
-                                Create "{inputValue.trim()}"
-                            </div>
-                        </button>
-                    )}
-
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                        onFocus={handleInputFocus}
+                        onKeyDown={handleKeyDown}
+                        placeholder={'Type to search or create a category...'}
+                    />
                 </div>
-            )}
+
+                {/* Dropdown */}
+                {showDropdown && (
+                    <div>
+                        {filteredCategories.length > 0 && (
+                            <div>
+                                {filteredCategories.map((cat) => (
+                                    <button
+                                        key={cat.id}
+                                        type="button"
+                                        onClick={() => handleSelect(cat)}
+                                    >
+                                        {cat.name}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Create new tag option */}
+                        {inputValue.trim() && !exactMatch && (
+                            <button
+                                type="button"
+                                onClick={handleCreateNewCategory}
+                            >
+                                <div>
+                                    <Plus size={16} />
+                                    Create "{inputValue.trim()}"
+                                </div>
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
-        
-    </div>
-  )
-}
+    );
+};
 export default CategorySelector;

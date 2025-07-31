@@ -5,7 +5,7 @@ export const useApiService = () => {
 
     // TASK endpoints
     const tasks = {
-        getAll: async (params={}) => {
+        getAll: async (params = {}) => {
             return await axiosPrivate.get('/tasks/', { params: params });
         },
 
@@ -29,9 +29,9 @@ export const useApiService = () => {
             return await axiosPrivate.patch(`/tasks/${taskId}/`, taskData);
         },
 
-        delete: async (taskId, params={}) => {
+        delete: async (taskId, params = {}) => {
             return await axiosPrivate.delete(`/tasks/${taskId}/`, { params });
-        }
+        },
     };
 
     // TAGS endpoints
@@ -54,8 +54,8 @@ export const useApiService = () => {
 
         delete: async (tagId) => {
             return await axiosPrivate.delete(`/tags/${tagId}/`);
-        }
-    }
+        },
+    };
 
     const categories = {
         get: async () => {
@@ -76,8 +76,8 @@ export const useApiService = () => {
 
         delete: async (catId) => {
             return await axiosPrivate.delete(`/categories/${catId}/`);
-        }
-    }
+        },
+    };
 
     // PROFILE endpoints
     const profile = {
@@ -87,15 +87,14 @@ export const useApiService = () => {
 
         update: async (profileData) => {
             return await axiosPrivate.patchForm('/profile/', profileData);
-        }
+        },
     };
-
 
     return {
         tasks,
         tags,
         categories,
-        profile
+        profile,
     };
 };
 

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import useProfile from '../context/ProfileContext';
 import ProfileForm from '../components/ProfileForm';
 import useApiService from '../services/apiService';
-
 
 const Profile = () => {
     const apiService = useApiService();
@@ -14,18 +13,13 @@ const Profile = () => {
 
         try {
             const response = await apiService.profile.get();
-            await updateProfile(response.data.data)
-            
+            await updateProfile(response.data.data);
         } catch (err) {
             console.error('Error fetching user profile', err);
-
-        }
-        finally {
+        } finally {
             setLoading(false);
         }
-        
     };
-
 
     useEffect(() => {
         getProfile();
@@ -33,25 +27,26 @@ const Profile = () => {
 
     useEffect(() => {
         getProfile();
-    }, [refresh])
+    }, [refresh]);
 
     if (loading) {
         return <div>Loading profile...</div>;
     }
 
-
     return (
         <div>
-            <div className='user-info-card'>
-                <img className='profile-pic' src={`${profile.image}?${new Date().getTime()}`} alt='profile picture' />
+            <div className="user-info-card">
+                <img
+                    className="profile-pic"
+                    src={`${profile.image}?${new Date().getTime()}`}
+                    alt="profile picture"
+                />
                 <h3>@{user.username}</h3>
                 <p>{user.email}</p>
             </div>
             <ProfileForm />
-            
-            
         </div>
-    )
-}
+    );
+};
 
-export default Profile
+export default Profile;
