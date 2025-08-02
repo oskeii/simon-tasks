@@ -26,6 +26,13 @@ class Command(BaseCommand):
             help='Skip creating admin user',
         )
 
+        parser.add_argument(
+            '--user',
+            type=str,
+            default='A',
+            help='Select a specific user to create from demo data (A, B, C, or D)'
+        )
+
     def handle(self, *args, **options):
         if not options['no_reset']:
             self.stdout.write('Resetting database...')
@@ -43,10 +50,11 @@ class Command(BaseCommand):
             self.stdout.write('👤 Admin user: admin / adminpass123')
 
         # Create demo user, tasks, etc.
-        self.load_from_json()
+        self.stdout.write(f'User Selected: {options['user']}')
+        username = self.load_from_json(options['user'])
 
         self.stdout.write(self.style.SUCCESS('✅ Demo setup complete!'))
-        self.stdout.write('👤 Demo user: demo / demopass123')
+        self.stdout.write(f'👤 Demo user: {username} / demopass123')
         self.stdout.write('🚀 Try it: http://localhost:3000')
 
 
@@ -62,9 +70,9 @@ class Command(BaseCommand):
         self.stdout.write('  ✓ Database recreated')
 
 
-    def load_from_json(self):
+    def load_from_json(self, selected_user):
         """Load demo data from JSON file"""
-        data_file = Path(__file__).parent / 'demo_data.json'
+        data_file = Path(__file__).parent / 'data' / f'demo_{selected_user}.json'
         try:
             with open(data_file, 'r') as f:
                 data = json.load(f)
@@ -141,3 +149,5 @@ class Command(BaseCommand):
                 self.stdout.write(f'  - "{task.title}": {task.estimated_time}')
             if task.due_date:
                 self.stdout.write(f'    Due: {task.due_date.strftime("%Y-%m-%d %H:%M")}')
+
+        return data['user']['username']

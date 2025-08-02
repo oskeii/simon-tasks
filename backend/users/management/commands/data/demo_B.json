@@ -1,0 +1,374 @@
+{
+  "user": {
+    "username": "alexchen", 
+    "email": "alex.chen@productivepro.com", 
+    "password": "demopass123"
+  },
+  
+  "categories": [
+    {
+      "name": "Product Development",
+      "description": "Core product features, roadmap planning, and technical architecture",
+      "as_workload": true,
+      "priority": 1
+    },
+    {
+      "name": "Client Management", 
+      "description": "Client communications, meetings, and relationship building",
+      "as_workload": true,
+      "priority": 2
+    },
+    {
+      "name": "Business Operations",
+      "description": "Admin tasks, finance, legal, and operational work",
+      "as_workload": true,
+      "priority": 3
+    },
+    {
+      "name": "Personal Growth",
+      "description": "Learning, skill development, and career advancement",
+      "as_workload": false,
+      "priority": null
+    },
+    {
+      "name": "Health & Wellness",
+      "description": "Physical health, mental wellness, and self-care activities",
+      "as_workload": false,
+      "priority": null
+    },
+    {
+      "name": "Home & Family",
+      "description": "Household management, family time, and personal responsibilities",
+      "as_workload": false,
+      "priority": null
+    },
+    {
+      "name": "Creative Projects",
+      "description": "Side projects, creative pursuits, and passion projects",
+      "as_workload": false,
+      "priority": null
+    }
+  ],
+
+  "tags": [
+    {"name": "urgent"},
+    {"name": "quick-win"},
+    {"name": "deep-work"},
+    {"name": "planning"},
+    {"name": "low-energy"},
+    {"name": "high-energy"},
+    {"name": "research"},
+    {"name": "communication"},
+    {"name": "creative"},
+    {"name": "review"},
+    {"name": "implementation"},
+    {"name": "waiting-on-others"},
+    {"name": "financial"},
+    {"name": "health"},
+    {"name": "social"},
+    {"name": "learning"},
+    {"name": "maintenance"},
+    {"name": "brainstorming"}
+  ],
+
+  "tasks": [
+    {
+      "title": "Complete Q3 product roadmap",
+      "description": "Finalize feature priorities, timeline, and resource allocation for Q3. Include stakeholder feedback and technical feasibility assessment.",
+      "category": "Product Development",
+      "tags": ["deep-work", "planning", "urgent"],
+      "estimated_time": "4h30m",
+      "due_date": "+2 days",
+      "completed": false
+    },
+    {
+      "title": "Client onboarding call - TechStart Inc",
+      "description": "Introduction meeting with new enterprise client. Present platform overview and discuss implementation timeline.",
+      "category": "Client Management",
+      "tags": ["communication", "high-energy"],
+      "estimated_time": "1h30m",
+      "due_date": "today",
+      "completed": false
+    },
+    {
+      "title": "Review and approve expense reports",
+      "description": "Process team expense submissions from last month. Verify receipts and approve for accounting.",
+      "category": "Business Operations",
+      "tags": ["review", "financial", "low-energy"],
+      "estimated_time": "45m",
+      "due_date": "+1 day",
+      "completed": false
+    },
+    {
+      "title": "Complete AWS Solutions Architect certification",
+      "description": "Finish remaining practice exams and schedule certification test. Focus on database and security domains.",
+      "category": "Personal Growth",
+      "tags": ["learning", "deep-work"],
+      "estimated_time": "8h",
+      "due_date": "+14 days",
+      "completed": false
+    },
+    {
+      "title": "Weekly meal prep",
+      "description": "Prepare healthy meals for the week. Focus on high-protein options and batch cooking grains.",
+      "category": "Health & Wellness",
+      "tags": ["health", "maintenance"],
+      "estimated_time": "2h30m",
+      "due_date": "+3 days",
+      "completed": true
+    },
+    {
+      "title": "Fix leaky kitchen faucet",
+      "description": "Replace worn O-ring and check water pressure. May need to call plumber if issue persists.",
+      "category": "Home & Family",
+      "tags": ["maintenance", "quick-win"],
+      "estimated_time": "1h15m",
+      "due_date": "+5 days",
+      "completed": false
+    },
+    {
+      "title": "Write blog post on productivity systems",
+      "description": "Share insights about task batching and energy management. Target 1500-2000 words with practical examples.",
+      "category": "Creative Projects",
+      "tags": ["creative", "deep-work", "communication"],
+      "estimated_time": "3h",
+      "due_date": "+10 days",
+      "completed": false
+    },
+    {
+      "title": "Quarterly team performance reviews",
+      "description": "Complete performance evaluations for 6 team members. Include goal setting for next quarter.",
+      "category": "Business Operations",
+      "tags": ["communication", "planning"],
+      "estimated_time": "4h",
+      "due_date": "+7 days",
+      "completed": false
+    },
+    {
+      "title": "Database optimization research",
+      "description": "Research query optimization techniques and indexing strategies for improved app performance.",
+      "category": "Product Development",
+      "tags": ["research", "deep-work"],
+      "estimated_time": "2h45m",
+      "due_date": "+6 days",
+      "completed": false
+    },
+    {
+      "title": "Morning meditation practice",
+      "description": "15-minute guided meditation using Headspace app. Focus on breath awareness and stress reduction.",
+      "category": "Health & Wellness",
+      "tags": ["health", "low-energy"],
+      "estimated_time": "15m",
+      "due_date": "today",
+      "completed": true
+    },
+    {
+      "title": "Client feedback analysis",
+      "description": "Analyze survey responses from 23 clients. Identify common pain points and feature requests.",
+      "category": "Client Management",
+      "tags": ["review", "planning"],
+      "estimated_time": "2h15m",
+      "due_date": "+4 days",
+      "completed": false
+    },
+    {
+      "title": "Update emergency contact information",
+      "description": "Review and update emergency contacts for all family members. Include medical information.",
+      "category": "Home & Family",
+      "tags": ["planning", "quick-win"],
+      "estimated_time": "30m",
+      "due_date": null,
+      "completed": false
+    },
+    {
+      "title": "Prototype mobile app navigation",
+      "description": "Create interactive wireframes for mobile app navigation flow. Test with 3-5 users for feedback.",
+      "category": "Product Development",
+      "tags": ["creative", "implementation"],
+      "estimated_time": "5h30m",
+      "due_date": "+12 days",
+      "completed": false
+    },
+    {
+      "title": "Schedule annual physical exam",
+      "description": "Book appointment with Dr. Rodriguez for annual checkup. Request blood work and vision screening.",
+      "category": "Health & Wellness",
+      "tags": ["health", "quick-win"],
+      "estimated_time": "20m",
+      "due_date": "+3 days",
+      "completed": false
+    },
+    {
+      "title": "Prepare monthly financial report",
+      "description": "Compile revenue, expenses, and profit metrics for board presentation. Include growth projections.",
+      "category": "Business Operations",
+      "tags": ["financial", "planning", "urgent"],
+      "estimated_time": "3h15m",
+      "due_date": "-1 day",
+      "completed": false
+    },
+    {
+      "title": "Learn Figma advanced features",
+      "description": "Complete online course on component systems and design tokens. Practice with current project designs.",
+      "category": "Personal Growth",
+      "tags": ["learning", "creative"],
+      "estimated_time": "4h",
+      "due_date": "+20 days",
+      "completed": false
+    },
+    {
+      "title": "Plan anniversary dinner",
+      "description": "Research restaurants and make reservation for wedding anniversary. Consider dietary restrictions.",
+      "category": "Home & Family",
+      "tags": ["planning", "social"],
+      "estimated_time": "45m",
+      "due_date": "+8 days",
+      "completed": false
+    },
+    {
+      "title": "Weekly client check-in calls",
+      "description": "Conduct status calls with 4 key clients. Discuss project progress and address any concerns.",
+      "category": "Client Management",
+      "tags": ["communication", "waiting-on-others"],
+      "estimated_time": "2h",
+      "due_date": "today",
+      "completed": true
+    },
+    {
+      "title": "Photography portfolio update",
+      "description": "Select and edit 20 best photos from recent shoots. Update website portfolio and social media.",
+      "category": "Creative Projects",
+      "tags": ["creative", "review"],
+      "estimated_time": "6h",
+      "due_date": "+15 days",
+      "completed": false
+    },
+    {
+      "title": "Security audit preparation",
+      "description": "Prepare documentation and access logs for quarterly security audit. Review compliance checklist.",
+      "category": "Product Development",
+      "tags": ["review", "planning"],
+      "estimated_time": "2h30m",
+      "due_date": "+9 days",
+      "completed": false
+    }
+  ],
+
+  "subtasks": [
+    {
+      "parent_title": "Complete Q3 product roadmap",
+      "subtasks": [
+        {
+          "title": "Gather stakeholder input",
+          "description": "Survey product managers, engineering leads, and key clients for feature priorities",
+          "estimated_time": "1h30m",
+          "completed": true
+        },
+        {
+          "title": "Analyze technical feasibility",
+          "description": "Review engineering capacity and technical debt impact on timeline",
+          "estimated_time": "2h",
+          "completed": false
+        },
+        {
+          "title": "Create timeline visualization",
+          "description": "Build Gantt chart showing feature dependencies and milestones",
+          "estimated_time": "1h",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "parent_title": "Quarterly team performance reviews",
+      "subtasks": [
+        {
+          "title": "Review individual goal progress",
+          "description": "Assess each team member's progress against Q2 objectives",
+          "estimated_time": "2h",
+          "completed": false
+        },
+        {
+          "title": "Prepare feedback notes",
+          "description": "Document specific examples of achievements and areas for improvement",
+          "estimated_time": "1h30m",
+          "completed": false
+        },
+        {
+          "title": "Schedule review meetings",
+          "description": "Book 1-hour slots with each team member over two weeks",
+          "estimated_time": "30m",
+          "completed": true
+        }
+      ]
+    },
+    {
+      "parent_title": "Complete AWS Solutions Architect certification",
+      "subtasks": [
+        {
+          "title": "Complete practice exams",
+          "description": "Take 3 full-length practice tests and review weak areas",
+          "estimated_time": "4h",
+          "completed": false
+        },
+        {
+          "title": "Study database services",
+          "description": "Deep dive into RDS, DynamoDB, and data migration strategies",
+          "estimated_time": "2h30m",
+          "completed": true
+        },
+        {
+          "title": "Review security best practices",
+          "description": "Focus on IAM, VPC, and encryption implementation patterns",
+          "estimated_time": "1h30m",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "parent_title": "Prototype mobile app navigation",
+      "subtasks": [
+        {
+          "title": "Create user flow diagrams",
+          "description": "Map out primary user journeys and decision points",
+          "estimated_time": "1h30m",
+          "completed": false
+        },
+        {
+          "title": "Design wireframes",
+          "description": "Create low-fidelity wireframes for key screens",
+          "estimated_time": "2h30m",
+          "completed": false
+        },
+        {
+          "title": "Build interactive prototype",
+          "description": "Use Figma to create clickable prototype for user testing",
+          "estimated_time": "1h30m",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "parent_title": "Photography portfolio update",
+      "subtasks": [
+        {
+          "title": "Select best photos",
+          "description": "Review 200+ photos and shortlist top 20 candidates",
+          "estimated_time": "2h",
+          "completed": false
+        },
+        {
+          "title": "Edit selected photos",
+          "description": "Color correction, exposure adjustment, and artistic enhancement",
+          "estimated_time": "3h",
+          "completed": false
+        },
+        {
+          "title": "Update website gallery",
+          "description": "Upload new photos and reorganize portfolio sections",
+          "estimated_time": "1h",
+          "completed": false
+        }
+      ]
+    }
+  ]
+}
