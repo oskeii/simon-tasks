@@ -9,7 +9,7 @@ Projected features include smart task suggestions, time-logging, activity tracki
 
 ## Overview
 ### Screenshots
-*Coming soon (7/28/2025). Everything's really ugly right now.* 😅
+*Coming soon. Everything's really ugly right now.* 😅
 
 ### Core Functionality
 - **Secure Authentication:** JWT-based authentication with HTTP-only cookies for enhanced XSS protection
@@ -139,7 +139,7 @@ python manage.py setup_demo
   - Username: `admin`
   - Password: `adminpass123`
 - **Demo User**:
-  - Username: `demo`
+  - Username: `see message in terminal`
   - Password: `demopass123`
 
 

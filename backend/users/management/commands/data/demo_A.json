@@ -1,0 +1,426 @@
+{
+  "user": {
+    "username": "maya_dev", 
+    "email": "maya.torres.dev@email.com", 
+    "password": "demopass123"
+  },
+  
+  "categories": [
+    {
+      "name": "Development",
+      "description": "Coding projects, technical learning, and career preparation",
+      "as_workload": true,
+      "priority": 1
+    },
+    {
+      "name": "Learning",
+      "description": "Language study, creative skills, and personal education",
+      "as_workload": false,
+      "priority": null
+    },
+    {
+      "name": "Creative",
+      "description": "Art, animation, writing, and creative projects",
+      "as_workload": false,
+      "priority": null
+    },
+    {
+      "name": "Personal Projects",
+      "description": "Homelab, side tools, and technical experiments",
+      "as_workload": false,
+      "priority": null
+    },
+    {
+      "name": "Health",
+      "description": "Exercise, wellness, and self-care activities",
+      "as_workload": false,
+      "priority": null
+    },
+    {
+      "name": "Life Admin",
+      "description": "Bills, appointments, household, and general adulting",
+      "as_workload": false,
+      "priority": null
+    }
+  ],
+
+  "tags": [
+    {"name": "urgent"},
+    {"name": "deep-work"},
+    {"name": "low-energy"},
+    {"name": "high-energy"},
+    {"name": "quick-win"},
+    {"name": "review"},
+    {"name": "practice"},
+    {"name": "planning"},
+    {"name": "social"},
+    {"name": "maintenance"}
+  ],
+
+  "tasks": [
+    {
+      "title": "Build React task management app",
+      "description": "Create a full-stack todo app with React frontend and Node.js backend. Include authentication, drag-and-drop, and data visualization.",
+      "category": "Development",
+      "tags": ["deep-work"],
+      "estimated_time": "12h",
+      "due_date": "+14 days",
+      "completed": false
+    },
+    {
+      "title": "Practice LeetCode problems",
+      "description": "Complete 5 medium-difficulty problems focusing on dynamic programming and graph algorithms.",
+      "category": "Development",
+      "tags": ["practice", "deep-work"],
+      "estimated_time": "2h30m",
+      "due_date": "today",
+      "completed": false
+    },
+    {
+      "title": "Learn Docker containerization",
+      "description": "Complete Docker tutorial series and containerize my portfolio website. Document the process for future reference.",
+      "category": "Development",
+      "tags": ["deep-work"],
+      "estimated_time": "4h",
+      "due_date": "+7 days",
+      "completed": false
+    },
+    {
+      "title": "Japanese Anki review session",
+      "description": "Review 150+ cards focusing on N3 vocabulary and kanji. Add new cards from recent textbook chapter.",
+      "category": "Learning",
+      "tags": ["review", "low-energy"],
+      "estimated_time": "45m",
+      "due_date": "today",
+      "completed": false
+    },
+    {
+      "title": "Finish character animation tutorial",
+      "description": "Complete the walk cycle animation in Blender. Export and add to animation portfolio reel.",
+      "category": "Creative",
+      "tags": ["deep-work"],
+      "estimated_time": "3h",
+      "due_date": "+5 days",
+      "completed": false
+    },
+    {
+      "title": "Set up Raspberry Pi home server",
+      "description": "Install Pi-hole, Jellyfin media server, and file sharing. Configure remote access and backup system.",
+      "category": "Personal Projects",
+      "tags": ["deep-work"],
+      "estimated_time": "6h",
+      "due_date": "+10 days",
+      "completed": false
+    },
+    {
+      "title": "Morning workout routine",
+      "description": "30-minute bodyweight workout focusing on core and upper body strength. Follow YouTube routine.",
+      "category": "Health",
+      "tags": ["high-energy"],
+      "estimated_time": "30m",
+      "due_date": "today",
+      "completed": true
+    },
+    {
+      "title": "Pay rent and utilities",
+      "description": "Transfer rent payment and pay electricity, internet, and phone bills. Update budget spreadsheet.",
+      "category": "Life Admin",
+      "tags": ["urgent", "quick-win"],
+      "estimated_time": "20m",
+      "due_date": "+1 day",
+      "completed": false
+    },
+    {
+      "title": "Deep clean apartment",
+      "description": "Vacuum, mop floors, clean bathroom, organize desk space. Change Mochi's litter box and wash food bowls.",
+      "category": "Life Admin",
+      "tags": ["maintenance"],
+      "estimated_time": "2h",
+      "due_date": "+3 days",
+      "completed": false
+    },
+    {
+      "title": "Apply to 5 software engineer positions",
+      "description": "Research companies, customize resume and cover letters, submit applications through various job boards.",
+      "category": "Development",
+      "tags": ["planning", "urgent"],
+      "estimated_time": "3h30m",
+      "due_date": "+2 days",
+      "completed": false
+    },
+    {
+      "title": "Study system design fundamentals",
+      "description": "Read chapters 3-5 of 'Designing Data-Intensive Applications'. Take notes on database scaling patterns.",
+      "category": "Development",
+      "tags": ["deep-work"],
+      "estimated_time": "2h45m",
+      "due_date": "+6 days",
+      "completed": false
+    },
+    {
+      "title": "Genki II Chapter 18 exercises",
+      "description": "Complete grammar exercises on conditionals and practice writing example sentences. Review with answer key.",
+      "category": "Learning",
+      "tags": ["practice"],
+      "estimated_time": "1h15m",
+      "due_date": "+2 days",
+      "completed": true
+    },
+    {
+      "title": "Sketch character designs for game project",
+      "description": "Create 8-10 character concept sketches for indie game idea. Focus on distinct silhouettes and personalities.",
+      "category": "Creative",
+      "tags": ["planning"],
+      "estimated_time": "2h15m",
+      "due_date": "+8 days",
+      "completed": false
+    },
+    {
+      "title": "Configure Linux desktop environment",
+      "description": "Customize i3wm setup with new color scheme, status bar, and productivity shortcuts. Backup dotfiles to GitHub.",
+      "category": "Personal Projects",
+      "tags": ["maintenance"],
+      "estimated_time": "1h45m",
+      "due_date": null,
+      "completed": false
+    },
+    {
+      "title": "Schedule dentist appointment",
+      "description": "Call Dr. Kim's office to schedule 6-month cleaning. Check if insurance covers fluoride treatment.",
+      "category": "Health",
+      "tags": ["quick-win"],
+      "estimated_time": "10m",
+      "due_date": "+4 days",
+      "completed": false
+    },
+    {
+      "title": "Update monthly budget spreadsheet",
+      "description": "Input November expenses, categorize transactions, check savings goals progress. Plan December spending.",
+      "category": "Life Admin",
+      "tags": ["planning", "review"],
+      "estimated_time": "45m",
+      "due_date": "+1 day",
+      "completed": false
+    },
+    {
+      "title": "Buy cat food and litter",
+      "description": "Stock up on Mochi's favorite wet food and clumping litter. Maybe grab some new toys to keep her entertained.",
+      "category": "Life Admin",
+      "tags": ["quick-win"],
+      "estimated_time": "45m",
+      "due_date": "+2 days",
+      "completed": false
+    },
+    {
+      "title": "Mock interview practice",
+      "description": "Practice behavioral questions and live coding with friend. Focus on explaining thought process clearly.",
+      "category": "Development",
+      "tags": ["practice", "social"],
+      "estimated_time": "1h30m",
+      "due_date": "+3 days",
+      "completed": false
+    },
+    {
+      "title": "Learn Three.js basics",
+      "description": "Follow tutorial series on 3D web graphics. Build simple rotating cube demo and deploy to portfolio site.",
+      "category": "Development",
+      "tags": ["deep-work"],
+      "estimated_time": "4h30m",
+      "due_date": "+12 days",
+      "completed": false
+    },
+    {
+      "title": "Language exchange video call",
+      "description": "30-minute conversation with Yuki-san from HelloTalk. Practice discussing hobbies and weekend plans in Japanese.",
+      "category": "Learning",
+      "tags": ["social", "practice"],
+      "estimated_time": "30m",
+      "due_date": "+1 day",
+      "completed": false
+    },
+    {
+      "title": "Digital painting study - lighting",
+      "description": "Follow Marco Bucci's lighting tutorial. Practice painting simple objects with dramatic lighting setups.",
+      "category": "Creative",
+      "tags": ["deep-work"],
+      "estimated_time": "2h",
+      "due_date": "+9 days",
+      "completed": false
+    },
+    {
+      "title": "Research trip to Japan",
+      "description": "Look into flight prices, accommodation options in Tokyo/Kyoto, and create rough 2-week itinerary for spring 2025.",
+      "category": "Life Admin",
+      "tags": ["planning"],
+      "estimated_time": "2h30m",
+      "due_date": "+15 days",
+      "completed": false
+    },
+    {
+      "title": "Grocery shopping",
+      "description": "Buy ingredients for meal prep: chicken, rice, vegetables, eggs, oat milk. Don't forget Mochi's favorite treats.",
+      "category": "Life Admin",
+      "tags": ["quick-win"],
+      "estimated_time": "1h",
+      "due_date": "today",
+      "completed": false
+    },
+    {
+      "title": "Debug portfolio website deployment",
+      "description": "Fix CSS loading issues on mobile devices and optimize image loading. Test across different browsers.",
+      "category": "Development",
+      "tags": ["urgent"],
+      "estimated_time": "1h45m",
+      "due_date": "-1 day",
+      "completed": false
+    },
+    {
+      "title": "Watch Japanese drama episode",
+      "description": "Continue watching 'First Love' on Netflix with Japanese subtitles. Take notes on new vocabulary and expressions.",
+      "category": "Learning",
+      "tags": ["low-energy"],
+      "estimated_time": "1h",
+      "due_date": "+3 days",
+      "completed": false
+    },
+    {
+      "title": "Procreate digital art practice",
+      "description": "Follow along with character design tutorial, focusing on facial expressions and emotion portrayal.",
+      "category": "Creative",
+      "tags": ["practice"],
+      "estimated_time": "1h30m",
+      "due_date": "+6 days",
+      "completed": false
+    }
+  ],
+
+  "subtasks": [
+    {
+      "parent_title": "Build React task management app",
+      "subtasks": [
+        {
+          "title": "Set up project structure",
+          "description": "Initialize React app, set up Express backend, configure database connection",
+          "estimated_time": "2h",
+          "completed": true
+        },
+        {
+          "title": "Implement authentication system",
+          "description": "JWT tokens, login/register components, protected routes",
+          "estimated_time": "4h",
+          "completed": false
+        },
+        {
+          "title": "Build task CRUD operations",
+          "description": "Create, read, update, delete tasks with categories and tags",
+          "estimated_time": "3h30m",
+          "completed": false
+        },
+        {
+          "title": "Add drag-and-drop functionality",
+          "description": "Implement react-beautiful-dnd for task reordering and status changes",
+          "estimated_time": "2h30m",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "parent_title": "Set up Raspberry Pi home server",
+      "subtasks": [
+        {
+          "title": "Install Raspberry Pi OS",
+          "description": "Flash SD card, enable SSH, configure initial settings",
+          "estimated_time": "45m",
+          "completed": true
+        },
+        {
+          "title": "Set up Pi-hole ad blocker",
+          "description": "Install Pi-hole, configure DNS settings, test ad blocking",
+          "estimated_time": "1h30m",
+          "completed": false
+        },
+        {
+          "title": "Install Jellyfin media server",
+          "description": "Set up media server, organize movie/TV show libraries",
+          "estimated_time": "2h",
+          "completed": false
+        },
+        {
+          "title": "Configure file sharing",
+          "description": "Set up Samba shares, configure user permissions and access",
+          "estimated_time": "1h45m",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "parent_title": "Apply to 5 software engineer positions",
+      "subtasks": [
+        {
+          "title": "Research target companies",
+          "description": "Identify companies with good culture fit, tech stack alignment",
+          "estimated_time": "1h",
+          "completed": false
+        },
+        {
+          "title": "Customize resume for each role",
+          "description": "Tailor resume bullets to match job requirements and keywords",
+          "estimated_time": "1h30m",
+          "completed": false
+        },
+        {
+          "title": "Write personalized cover letters",
+          "description": "Research company values, mention specific projects and interests",
+          "estimated_time": "1h",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "parent_title": "Research trip to Japan",
+      "subtasks": [
+        {
+          "title": "Compare flight options",
+          "description": "Check prices across different airlines and dates, consider layovers",
+          "estimated_time": "45m",
+          "completed": false
+        },
+        {
+          "title": "Research accommodation",
+          "description": "Compare hotels, ryokans, and Airbnb options in different neighborhoods",
+          "estimated_time": "1h",
+          "completed": false
+        },
+        {
+          "title": "Create rough itinerary",
+          "description": "List must-see places, estimate travel times, check seasonal events",
+          "estimated_time": "45m",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "parent_title": "Learn Three.js basics",
+      "subtasks": [
+        {
+          "title": "Complete basic shapes tutorial",
+          "description": "Learn to create cubes, spheres, and basic geometries",
+          "estimated_time": "1h30m",
+          "completed": false
+        },
+        {
+          "title": "Study lighting and materials",
+          "description": "Understand different light types and material properties",
+          "estimated_time": "2h",
+          "completed": false
+        },
+        {
+          "title": "Build interactive demo",
+          "description": "Create mouse-controlled 3D scene for portfolio showcase",
+          "estimated_time": "1h",
+          "completed": false
+        }
+      ]
+    }
+  ]
+}

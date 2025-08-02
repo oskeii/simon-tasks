@@ -15,22 +15,16 @@
   ],
 
   "tags": [
-    // Context
     {"name": "urgent"}, {"name": "quick-win"}, {"name": "deep-work"},
-    // Energy level
     {"name": "high-energy"}, {"name": "low-energy"}, 
     {"name": "creative"}, {"name": "admin"},
-    // Time-based
     {"name": "morning"}, {"name": "evening"}, {"name": "weekend"},
-    // Project
     {"name": "portfolio"}, {"name": "job-search"}, {"name": "networking"}, 
     {"name": "research"},
-    // Process
     {"name": "brainstorm"}, {"name": "planning"}, {"name": "review"}, {"name": "follow-up"}
   ],
 
   "tasks": [
-    // WORK TASKS
     {
         "title": "Review Q1 project requirements",
         "description": "Go through the project brief and identify key deliverables for the first quarter",
@@ -59,7 +53,6 @@
         "completed": true
     },
     
-    // LEARNING TASKS
     {
         "title": "Complete Django testing tutorial",
         "description": "Work through the pytest and Django testing documentation",
@@ -75,11 +68,9 @@
         "category": "Learning",
         "tags": ["research", "evening"],
         "estimated_time": "1h",
-        "due_date": None,
         "completed": false
     },
     
-    // PERSONAL TASKS
     {
         "title": "Schedule dentist appointment",
         "description": "Call Dr. Smith's office to book routine cleaning",
@@ -104,11 +95,9 @@
         "category": "Personal",
         "tags": ["weekend", "high-energy"],
         "estimated_time": "2h",
-        "due_date": None,
         "completed": false
     },
     
-    // HEALTH TASKS
     {
         "title": "Morning workout routine",
         "description": "30 minutes cardio + strength training",
@@ -128,7 +117,6 @@
         "completed": false
     },
     
-    // FINANCE TASKS
     {
         "title": "Review monthly budget",
         "description": "Check spending against budget categories and adjust if needed",
@@ -144,11 +132,10 @@
         "category": "Finance",
         "tags": ["urgent", "quick-win"],
         "estimated_time": "10m",
-        "due_date": "-1 day",  // Overdue
+        "due_date": "-1 day",  
         "completed": false
     },
     
-    // SIDE PROJECTS
     {
         "title": "Add testing to todo app",
         "description": "Implement pytest for Django backend and Jest for React frontend",
@@ -168,7 +155,6 @@
         "completed": false
     },
     
-    // SOME COMPLETED TASKS FOR DEMO
     {
         "title": "Research job interview techniques",
         "description": "Read articles about technical interviews and behavioral questions",
