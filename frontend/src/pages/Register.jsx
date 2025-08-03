@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { ClipboardPen } from 'lucide-react';
 
 const Register = () => {
     const [error, setError] = useState('');
@@ -42,116 +43,115 @@ const Register = () => {
 
     return (
         <div>
-            <p>
+            <p className='m-3 p-1 font-semibold text-indigo-600 hover:text-indigo-500'>
                 <Link to={'/login'}>&larr; Back to Login</Link>
             </p>
-            <h1>Create an Account!</h1> <hr />
-            <div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <form
+            <div className='mx-auto max-w-3xl text-center bg-blue-50 border-1 border-blue-900/50 rounded-xl shadow-xl/30'>
+                <h2>Create an Account!</h2>
+                <hr className=' text-black/50'/>
+                {error && <p className='error'>{error}</p>}
+                <form className='my-4 mx-10 p-1'
                     id="registration-form"
                     method="POST"
                     onSubmit={handleSubmit}
                     autoComplete="off"
                 >
-                    {' '}
-                    {/* ADD FORM VALIDATION*/}
                     <p>
-                        <label htmlFor="username">
-                            Username:
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                autoFocus
-                                required
-                            />
-                        </label>
+                        <label htmlFor="username" className='block'>Username:</label>
+                        <input className='input w-5/6'
+                            type="text"
+                            id="username"
+                            name="username"
+                            autoFocus
+                            required
+                        />
+                        
                         {field_err.username && (
-                            <span style={{ color: 'red' }}>
+                            <span className='error'>
                                 {field_err.username}
                             </span>
                         )}
                     </p>
                     <p>
-                        <label htmlFor="password">
-                            Password:
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                minLength={8}
-                                required
-                            />
-                        </label>
+                        <label htmlFor="password" className='block'>Password:</label>
+                        <input className='input w-5/6'
+                            type="password"
+                            id="password"
+                            name="password"
+                            minLength={8}
+                            required
+                        />
+                        
                         {field_err.password && (
-                            <span style={{ color: 'red' }}>
+                            <span className='error'>
                                 {field_err.password}
                             </span>
                         )}
                     </p>
+
                     <p>
-                        <label htmlFor="confirm-password">
-                            Confirm Password:
-                            <input
-                                type="password"
-                                id="confirm-password"
-                                name="confirm_password"
-                                required
-                            />
-                        </label>
+                        <label htmlFor="confirm-password" className='block'>Confirm Password:</label>
+                        <input className='input w-5/6'
+                            type="password"
+                            id="confirm-password"
+                            name="confirm_password"
+                            required
+                        />
+                    
                         {field_err.confirm_password && (
-                            <span style={{ color: 'red' }}>
+                            <span className='error'>
                                 {field_err.confirm_password}
                             </span>
                         )}
                     </p>
+                    
                     <p>
-                        <label htmlFor="email">
-                            Email:
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                required
-                            />
-                        </label>
-                    </p>
+                        <label htmlFor="email" className='block'>Email:</label>
+                        <input className='input w-5/6'
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                        />
+
                     {field_err.email && (
-                        <span style={{ color: 'red' }}>{field_err.email}</span>
+                        <span className='error'>{field_err.email}</span>
                     )}
+                    </p>
+
                     <p>
-                        <label htmlFor="first-name">
-                            First Name:
-                            <input
-                                type="text"
-                                id="first-name"
-                                name="first_name"
-                            />
-                        </label>
+                        <label htmlFor="first-name" className='block'>First Name:</label>
+                        <input className='input w-5/6'
+                            type="text"
+                            id="first-name"
+                            name="first_name"
+                        />
                         {field_err.first_name && (
-                            <span style={{ color: 'red' }}>
+                            <span className='error'>
                                 {field_err.first_name}
                             </span>
                         )}
                     </p>
+
                     <p>
-                        <label htmlFor="last-name">
-                            Last Name:
-                            <input
-                                type="text"
-                                id="last-name"
-                                name="last_name"
-                            />
-                        </label>
+                        <label htmlFor="last-name" className='block'>Last Name:</label>
+                        <input className='input w-5/6'
+                            type="text"
+                            id="last-name"
+                            name="last_name"
+                        />
+
                         {field_err.first_name && (
-                            <span style={{ color: 'red' }}>
+                            <span className='error'>
                                 {field_err.first_name}
                             </span>
                         )}
                     </p>
-                    <hr />
-                    <button type="submit">Register</button>
+
+                    <button className='m-4 py-2 w-5/6' type="submit">
+                        Register
+                        <ClipboardPen className='inline ml-2' />
+                    </button>
                 </form>
             </div>
         </div>

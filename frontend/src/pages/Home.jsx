@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import { LogIn, LogOut } from 'lucide-react';
 
 const Home = () => {
     const { auth, logout } = useAuth();
@@ -15,15 +16,19 @@ const Home = () => {
         if (!auth?.isAuthenticated) {
             return (
                 <Link to="/login">
-                    <button>Login here</button>
+                    <button>
+                        Log In
+                        <LogIn className='inline ml-2'/>
+                    </button>
                 </Link>
             );
         } else {
             return (
                 <button
-                    className="logout-btn"
+                    className="btn-danger py-2 px-4"
                     onClick={handleLogout}
                 >
+                    <LogOut className='inline mr-2'/>
                     Logout
                 </button>
             );
@@ -31,14 +36,14 @@ const Home = () => {
     };
 
     return (
-        <div>
+        <div className='text-center'>
             {auth?.isAuthenticated ? (
                 <h2>Hello, {auth?.user.first_name || auth?.user.username}!</h2>
             ) : (
                 <h1>Welcome</h1>
             )}
 
-            <div>
+            <div className='mt-6'>
                 <AuthButton />
             </div>
         </div>

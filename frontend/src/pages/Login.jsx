@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-
 import axios from '../services/axios';
+import { LogIn } from 'lucide-react';
+
 const LOGIN_URL = '/auth/';
 
 const Login = () => {
@@ -57,44 +58,46 @@ const Login = () => {
         }
     };
     return (
-        <div>
-            <h2>Login</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <form onSubmit={handleLogin}>
-                <p>
-                    <label>
-                        Username:
-                        <input
-                            type="text"
-                            id="username"
-                            placeholder="Username"
-                            value={username}
-                            autoComplete="off"
-                            required
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                    </label>
+        <div className='mx-auto max-w-lg text-center bg-blue-50 border-1 border-blue-900/50 rounded-xl shadow-xl/30'>
+            <h2>Login</h2> 
+            <hr className=' text-black/50'/>
+            {error && <p className='error'>{error}</p>}
+            <form className='my-4 mx-10 p-1' onSubmit={handleLogin}>
+                <p className='m-1'>
+                    <label htmlFor='username' className='block'>Username:</label>
+                    <input className='input w-5/6'
+                        type="text"
+                        id="username"
+                        placeholder="Username"
+                        value={username}
+                        autoComplete="off"
+                        required
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
                 </p>
 
                 <p>
-                    <label>
-                        Password:
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="Password"
-                            value={password}
-                            required
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </label>
+                    <label htmlFor='password' className='block'>Password:</label>
+                    <input className='input w-5/6'
+                        type="password"
+                        id="password"
+                        placeholder="Password"
+                        value={password}
+                        required
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
                 </p>
-                <button type="submit">Login</button>
+                <button className='m-8 w-5/6' type="submit">
+                    Login
+                    <LogIn className='inline ml-2'/>
+                </button>
             </form>
-            <hr />
-            <p>
+            <hr className=' text-black/50'/>
+            <p className='p-1 text-sm'>
                 Dont Have an Account Yet?{' '}
-                <Link to={'/register'}>Register Here!</Link>
+                <Link to={'/register'} className='font-semibold text-indigo-600 hover:text-indigo-500'>
+                    Register Here!
+                </Link>
             </p>
         </div>
     );
