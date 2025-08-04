@@ -76,7 +76,7 @@ const Login = () => {
                     />
                 </p>
 
-                <p>
+                <p className='m-1'>
                     <label htmlFor='password' className='block'>Password:</label>
                     <input className='input w-5/6'
                         type="password"
@@ -87,7 +87,7 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </p>
-                <button className='m-8 w-5/6' type="submit">
+                <button className='m-6 w-5/6' type="submit">
                     Login
                     <LogIn className='inline ml-2'/>
                 </button>

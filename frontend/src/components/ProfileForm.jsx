@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useProfile from '../context/ProfileContext';
 import useApiService from '../services/apiService';
+import { RotateCw, ImageUp } from 'lucide-react';
 
 const ProfileForm = () => {
     const apiService = useApiService();
@@ -57,79 +58,79 @@ const ProfileForm = () => {
     };
 
     return (
-        <div className="user-info-edit">
-            <form
+        <div className="bg-white p-2 max-w-lg rounded-lg border-1 border-gray-900/50 shadow-lg">
+            <form className='flex flex-col items-center my-2 mx-4'
                 id="profile-form"
                 method="POST"
                 encType="multipart/form-data"
                 onSubmit={submitUpdate}
             >
-                <fieldset>
-                    <legend>Profile Info</legend>
+                <fieldset className='text-gray-800 rounded-xs border-1 border-gray-900/50 p-4'>
+                    <legend className='text-center text-lg font-semibold p-2'>Profile Info</legend>
                     <p>
-                        <label htmlFor="first_name">
-                            First Name:
-                            <input
-                                type="text"
-                                id="first_name"
-                                name="first_name"
-                                placeholder={user.first_name}
-                                onChange={handleChange}
-                            />
-                        </label>
+                        <label htmlFor="first_name" className='block'>First Name:</label>
+                        <input className='input w-full'
+                            type="text"
+                            id="first_name"
+                            name="first_name"
+                            placeholder={user.first_name}
+                            onChange={handleChange}
+                        />
                     </p>
+                        
                     <p>
-                        <label htmlFor="last_name">
-                            Last Name:
-                            <input
-                                type="text"
-                                id="last_name"
-                                name="last_name"
-                                placeholder={user.last_name}
-                                onChange={handleChange}
-                            />
-                        </label>
+                        <label htmlFor="last_name" className='block'>Last Name:</label>
+                        <input className='input w-full'
+                            type="text"
+                            id="last_name"
+                            name="last_name"
+                            placeholder={user.last_name}
+                            onChange={handleChange}
+                        />
                     </p>
+                        
                     <p>
-                        <label htmlFor="username">
-                            Username:
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                placeholder={user.username}
-                                onChange={handleChange}
-                            />
-                        </label>
+                        <label htmlFor="username" className='block'>Username:</label>
+                        <input className='input w-full'
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder={user.username}
+                            onChange={handleChange}
+                        />
                     </p>
+                        
                     <p>
-                        <label htmlFor="email">
-                            Email:
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                placeholder={user.email}
-                                onChange={handleChange}
-                            />
-                        </label>
+                        <label htmlFor="email" className='block'>Email:</label>
+                        <input className='input w-full'
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder={user.email}
+                            onChange={handleChange}
+                        />
                     </p>
 
                     <p>
-                        <label htmlFor="image">
-                            Image:
-                            <input
-                                type="file"
-                                id="image"
-                                name="image"
-                                accept="image/*"
-                            />
-                        </label>
+                        {/* <ImageUp /> */}
+                        <label htmlFor="image" className='block'>Image:</label>
+                        <input className='p-2 hover:file:cursor-pointer hover:file:bg-gray-200 focus:outline-none focus:file:outline-2 file:mr-4 file:rounded-full file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-semibold'
+                        // className='block input   border border-gray-300 '
+                            type="file"
+                            id="image"
+                            name="image"
+                            accept="image/*"
+                        />
                     </p>
                 </fieldset>
-                <button type="submit">Update</button>
+
+                <button className='mt-4' type="submit">
+                    {/* <RotateCw className='inline mr-2' size={20}/> */}
+                    Update
+                </button>
             </form>
-            <p>
+
+            <p className='my-2 ml-1 underline text-blue-900 hover:text-blue-400'>
                 <a href="#">Need to reset your password?</a>
             </p>
         </div>

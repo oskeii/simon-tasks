@@ -28,6 +28,9 @@
         @apply m-1
     }
     
+    h3 {
+        font-size: var(--text-xl);
+    }
 
     button {
         @apply m-1 py-1 px-4 text-white rounded-sm ring ring-cyan-700 bg-cyan-500;
