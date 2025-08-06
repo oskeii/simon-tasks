@@ -4,6 +4,10 @@ import TaskItem from '../components/TaskItem';
 import TaskFilter from '../components/TaskFilter';
 import { useTasksManager, useTasks } from '../context/TasksContext';
 import { useOrganizersManager } from '../context/OrganizersContext';
+import { Pencil, SquarePen, Trash2, X, Plus, CirclePlus, SquarePlus, ListPlus, ChevronDown, ChevronRight, CircleCheckBig, SquareCheckBig,
+    ListFilter, Funnel, FunnelPlus, FunnelX, Search, TextSearch, 
+    ArrowDownUp, CalendarArrowDown, ClockArrowDown, ArrowDown01, ArrowDown10, 
+} from 'lucide-react';
 
 const TaskList = () => {
     console.log('TaskList rendered!');
@@ -255,7 +259,7 @@ const TaskList = () => {
                                         if (!task) return null;
 
                                         return (
-                                            <li key={tId}>
+                                            <li key={tId} className='m-2 md:m-4'>
                                                 <TaskItem
                                                     task={task}
                                                     subtasks={
@@ -273,22 +277,25 @@ const TaskList = () => {
                                 </ul>
                             </div>
 
-                            <hr />
-                            <div className="completed-list">
-                                <h3>Complete Tasks ({data.complete_count})</h3>
-                                {data.complete_count > 0 && (
-                                    <button
-                                        onClick={() =>
-                                            setToggleCompleteList(
-                                                !toggleCompleteList
-                                            )
-                                        }
+                            <hr className='text-black/30 my-4' />
+                            <h3 className={`${data.complete_count > 0 && 'hidden'}`}>No Completed Tasks</h3>
+                            <div className={`${data.complete_count === 0 && 'hidden'}`}>
+                                <div className='flex items-center'>
+                                    <button className={`p-0 ring-0 text-gray-600 bg-gray-200 rounded-full ${toggleCompleteList && 'text-gray-900'}`}
+                                    onClick={() =>
+                                        setToggleCompleteList(
+                                            !toggleCompleteList
+                                        )
+                                    }
                                     >
-                                        {toggleCompleteList
-                                            ? '▼ Hide'
-                                            : '▶ Show'}
+                                    {toggleCompleteList
+                                        ? <ChevronDown className='inline hover:scale-90 transition-all duration-300'/>
+                                        : <ChevronRight className='inline hover:scale-110 transition-all duration-300'/>}
                                     </button>
-                                )}
+                                   <h3>Complete Tasks ({data.complete_count})</h3> 
+                                </div>
+                                
+
                                 {toggleCompleteList && (
                                     <ul>
                                         {data.complete_tasks.map((tId) => {
@@ -301,7 +308,7 @@ const TaskList = () => {
                                             return (
                                                 <li
                                                     key={tId}
-                                                    className="completed"
+                                                    className='m-2 md:m-4'
                                                 >
                                                     <TaskItem
                                                         task={task}

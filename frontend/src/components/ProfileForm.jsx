@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useProfile from '../context/ProfileContext';
 import useApiService from '../services/apiService';
-import { RotateCw, ImageUp } from 'lucide-react';
+import { Save, ImageUp } from 'lucide-react';
 
 const ProfileForm = () => {
     const apiService = useApiService();
@@ -124,9 +124,9 @@ const ProfileForm = () => {
                     </p>
                 </fieldset>
 
-                <button className='mt-4' type="submit">
-                    {/* <RotateCw className='inline mr-2' size={20}/> */}
-                    Update
+                <button className='mt-4 rounded-full' type="submit">
+                    <Save className='inline mx-1' />
+                    Save Changes
                 </button>
             </form>
 

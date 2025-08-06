@@ -33,8 +33,8 @@
     }
 
     button {
-        @apply m-1 py-1 px-4 text-white rounded-sm ring ring-cyan-700 bg-cyan-500;
-        @apply cursor-pointer hover:bg-cyan-600 active:bg-cyan-700 active:scale-95 transition-colors duration-300;
+        @apply m-1 py-1 px-4 text-white rounded-sm ring ring-teal-600 bg-teal-400;
+        @apply cursor-pointer hover:bg-teal-500 active:bg-teal-600 active:scale-95 transition-all duration-300;
     }
 
     label {
@@ -60,7 +60,7 @@
     }
 
     .btn-danger {
-        @apply text-sm rounded-sm text-white ring ring-red-800 bg-red-600;
-        @apply cursor-pointer hover:bg-red-700 active:bg-red-800 active:scale-95 transition-colors duration-300;
+        @apply text-sm rounded-sm text-white ring ring-red-600 bg-red-400;
+        @apply cursor-pointer hover:bg-red-500 active:bg-red-600 active:scale-95 transition-all duration-300;
     }
 }

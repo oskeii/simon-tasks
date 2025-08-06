@@ -11,7 +11,7 @@ const Header = () => {
 
     return (
         <header className="flex justify-between items-center py-2 px-6 text-white bg-gray-800 rounded-md shadow-md shadow-black">
-            <div className='lowercase tracking-tighter'>
+            <div className='lowercase tracking-tighter hover:text-amber-100 hover:text-shadow-sm hover:text-shadow-gray-900'>
                 <h2>
                     <NavLink
                         to="/"
