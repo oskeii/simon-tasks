@@ -142,29 +142,27 @@ const TagSelector = ({ onTagsChange }) => {
     );
 
     return (
-        <div className="tag-selector">
-            <h2>Tag Selector</h2>
+        <div className='w-full max-w-md my-1'>
+            <label className='block text-gray-700'>Tags</label>
             {organizers.error && <p className="error">{organizers.error}</p>}
-            <div
-                className="input-container"
-                ref={dropdownRef}
-            >
+
+            <div className="relative" ref={dropdownRef}>
                 {/* Input container with selected tags */}
-                <div>
+                {/* w-full px-3 py-1 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent */}
+                <div className='w-full px-3 py-1 bg-gray-50 border border-gray-300 rounded-md flex flex-wrap gap-1 items-center focus-within:ring-teal-500 focus-within:border-teal-500'>
                     {selectedTags.map((tag) => (
-                        <span key={tag.id}>
+                        <span key={tag.id} className='inline-flex items-center gap-1 bg-teal-100 text-teal-800 px-1 py-0.5 rounded-full text-sm'>
                             {tag.name}
-                            <button
+                            <button className='hover:bg-teal-200 rounded-full p-0.5'
                                 type="button"
                                 onClick={() => handleRemoveTag(tag)}
                             >
-                                {' '}
-                                <X size={12} />{' '}
+                                <X size={12} />
                             </button>
                         </span>
                     ))}
 
-                    <input
+                    <input className='flex-1 min-w-[120px] outline-none bg-transparent'
                         ref={inputRef}
                         type="text"
                         value={inputValue}
@@ -181,16 +179,16 @@ const TagSelector = ({ onTagsChange }) => {
 
                 {/* Dropdown */}
                 {showDropdown && (
-                    <div>
+                    <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 max-h-48 overflow-y-auto'>
                         {filteredTags.length > 0 && (
                             <div>
                                 {filteredTags.map((tag) => (
-                                    <button
+                                    <button className='w-full text-left px-3 py-0.5 hover:bg-gray-100 focus:bg-gray-200 focus:outline-none'
                                         key={tag.id}
                                         type="button"
                                         onClick={() => handleTagSelect(tag)}
                                     >
-                                        {tag.name}
+                                        #{tag.name}
                                     </button>
                                 ))}
                             </div>
@@ -198,11 +196,11 @@ const TagSelector = ({ onTagsChange }) => {
 
                         {/* Create new tag option */}
                         {inputValue.trim() && !exactMatch && (
-                            <button
+                            <button className='w-full text-left px-3 py-1 hover:bg-emerald-50 focus:bg-emerald-50 focus:outline-none text-emerald-700 border-t border-gray-200'
                                 type="button"
                                 onClick={handleCreateNewTag}
                             >
-                                <div>
+                                <div className='flex items-center gap-2'>
                                     <Plus size={16} />
                                     Create "{inputValue.trim()}"
                                 </div>
@@ -211,7 +209,7 @@ const TagSelector = ({ onTagsChange }) => {
 
                         {/* All available tags selected */}
                         {filteredTags.length === 0 && !inputValue.trim() && (
-                            <div>No more tags available</div>
+                            <div className='px-3 py-1 text-gray-500'>No more tags available</div>
                         )}
                     </div>
                 )}

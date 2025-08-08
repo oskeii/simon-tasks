@@ -87,7 +87,7 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </p>
-                <button className='m-6 w-5/6' type="submit">
+                <button className='btn m-6 w-5/6' type="submit">
                     Login
                     <LogIn className='inline ml-2'/>
                 </button>

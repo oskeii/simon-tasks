@@ -148,7 +148,7 @@ const Register = () => {
                         )}
                     </p>
 
-                    <button className='m-4 py-2 w-5/6' type="submit">
+                    <button className='btn m-4 py-2 w-5/6' type="submit">
                         Register
                         <ClipboardPen className='inline ml-2' />
                     </button>

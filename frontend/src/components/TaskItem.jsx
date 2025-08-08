@@ -46,7 +46,7 @@ const TaskItem = ({
 
             {/* Task Actions */}
                 <div className="flex font-light">
-                    <button className='p-0 text-gray-500 bg-transparent hover:bg-gray-200 hover:text-gray-900 ring-0'
+                    <button className='btn p-0 text-gray-500 bg-transparent hover:bg-gray-200 hover:text-gray-900 ring-0'
                         title='Edit task'
                         onClick={() =>
                             onEdit ? onEdit(task.id) : editTask(task.id)
@@ -54,7 +54,7 @@ const TaskItem = ({
                     >
                         <Pencil className='inline mx-1 '/>
                     </button>
-                    <button className='p-0 text-gray-500 bg-transparent hover:bg-red-200 hover:text-red-950 ring-0'
+                    <button className='btn p-0 text-gray-500 bg-transparent hover:bg-red-200 hover:text-red-950 ring-0'
                         title='Delete task'
                         onClick={() =>
                             onDelete ? onDelete(task.id) : deleteTask(task.id)
@@ -113,14 +113,14 @@ const TaskItem = ({
             <div className="subtasks-container">
                 <div className="flex flex-row-reverse justify-between">
                     {!task.parent_task && (
-                        <button className='p-0 bg-transparent ring-0 text-gray-600 hover:bg-gray-200 hover:text-gray-900 hover:scale-105'
+                        <button className='btn p-0 bg-transparent ring-0 text-gray-600 hover:bg-gray-200 hover:text-gray-900 hover:scale-105'
                         title='Create subtask'
                         onClick={() => showNewTaskForm(task.id)}>
                             <ListPlus size={30} />
                         </button>
                     )}
 
-                    <button className={`group p-0 pr-1.5 bg-transparent ring-0 text-gray-600 hover:bg-gray-200 hover:text-gray-900 ${showSubtasks && 'text-gray-900'} rounded-full`}
+                    <button className={`btn group p-0 pr-1.5 bg-transparent ring-0 text-gray-600 hover:bg-gray-200 hover:text-gray-900 ${showSubtasks && 'text-gray-900'} rounded-full`}
                     onClick={toggleSubtasks}>
                         {showSubtasks 
                         ? <ChevronDown className='inline mr-1 group-hover:scale-90 group-hover:translate-y-1 transition-all duration-300'/>
@@ -171,7 +171,7 @@ const TaskItem = ({
                                             </p>
                                         )}
                                         <div className="flex font-light justify-between">
-                                            <button className='p-0 text-gray-500 bg-transparent hover:bg-gray-200 hover:text-gray-900 ring-0'
+                                            <button className='btn p-0 text-gray-500 bg-transparent hover:bg-gray-200 hover:text-gray-900 ring-0'
                                                 title='Edit subtask'
                                                 onClick={() =>
                                                     onEdit
@@ -181,7 +181,7 @@ const TaskItem = ({
                                             >
                                                 <Pencil size={20} />
                                             </button>
-                                            <button className='p-0 text-gray-500 bg-transparent hover:bg-red-200 hover:text-red-950 ring-0'
+                                            <button className='btn p-0 text-gray-500 bg-transparent hover:bg-red-200 hover:text-red-950 ring-0'
                                                 title='Delete subtask'
                                                 onClick={() =>
                                                     onDelete

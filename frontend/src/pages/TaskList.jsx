@@ -8,10 +8,12 @@ import { Pencil, SquarePen, Trash2, X, Plus, CirclePlus, SquarePlus, ListPlus, C
     ListFilter, Funnel, FunnelPlus, FunnelX, Search, TextSearch, 
     ArrowDownUp, CalendarArrowDown, ClockArrowDown, ArrowDown01, ArrowDown10, 
 } from 'lucide-react';
+import Modal from '../components/Modal';
 
 const TaskList = () => {
     console.log('TaskList rendered!');
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [toggleCompleteList, setToggleCompleteList] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [filteredTasks, setFilteredTasks] = useState(null);
@@ -164,6 +166,7 @@ const TaskList = () => {
         }
     };
 
+
     useEffect(() => {
         getTags();
         getCategories();
@@ -191,26 +194,36 @@ const TaskList = () => {
     }
 
     return (
-        <div className="task-list-page">
-            <div className="task-list-header">
-                <h2>My Tasks</h2>
+        <div className="">
+            <div className="">
+                <h1>My Tasks</h1>
                 <hr />
 
-                <div className="task-list-actions">
-                    <button onClick={() => showNewTaskForm()}>
-                        Add New Task
+                <div className="bg-gray-200 flex">
+                    <button className='btn flex items-center' onClick={() => showNewTaskForm()}>
+                        <Plus size={20} />
+                        Add Task
                     </button>
 
-                    <button
+                    <button className={`btn flex items-center ${showFilters && 'active'}`}
                         onClick={() => setShowFilters(!showFilters)}
-                        className={showFilters ? 'active' : ''}
                     >
+                        <Funnel size={20} />
                         {showFilters ? 'Hide Filters' : 'Show Filters'}
                     </button>
                 </div>
             </div>
 
             {state.error && <p className="error">{state.error}</p>}
+
+            <Modal isOpen={state.showForm} onClose={cancelForm}>
+                <div className='bg-indigo-100'>
+                    <TaskForm
+                        task={tasks[state.editingTask]}
+                        parentId={state.linkingParent}
+                    />
+                </div>
+            </Modal>
 
             <div>
                 {showFilters && (
@@ -220,15 +233,6 @@ const TaskList = () => {
                             onSort={applySorting}
                         />
                     </aside>
-                )}
-
-                {state.showForm && (
-                    <div className="task-form-container">
-                        <TaskForm
-                            task={tasks[state.editingTask]}
-                            parentId={state.linkingParent}
-                        />
-                    </div>
                 )}
 
                 <div className="task-list">
@@ -281,7 +285,7 @@ const TaskList = () => {
                             <h3 className={`${data.complete_count > 0 && 'hidden'}`}>No Completed Tasks</h3>
                             <div className={`${data.complete_count === 0 && 'hidden'}`}>
                                 <div className='flex items-center'>
-                                    <button className={`p-0 ring-0 text-gray-600 bg-gray-200 rounded-full ${toggleCompleteList && 'text-gray-900'}`}
+                                    <button className={`btn p-0 ring-0 text-gray-600 bg-gray-200 rounded-full ${toggleCompleteList && 'text-gray-900'}`}
                                     onClick={() =>
                                         setToggleCompleteList(
                                             !toggleCompleteList

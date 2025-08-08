@@ -5,6 +5,7 @@ import { useOrganizers } from '../context/OrganizersContext';
 import { useTasksManager } from '../context/TasksContext';
 import TagSelector from './TagSelector';
 import CategorySelector from './CategorySelector';
+import { X } from 'lucide-react';
 
 const TaskForm = ({
     task = null,
@@ -24,8 +25,6 @@ const TaskForm = ({
     const apiService = useApiService();
     const { handleFormSuccess, cancelForm } = useTasksManager();
 
-    const organizers = useOrganizers();
-    const { categories } = organizers;
 
     useEffect(() => {
         inputRef.current?.focus();
@@ -189,94 +188,93 @@ const TaskForm = ({
     };
 
     return (
-        <div className="task-form">
-            <h3>{task ? 'Edit Task' : 'Create New Task'}</h3>
+        <div className="p-6">
+            {/* Header */}
+            <div className='flex items-center justify-between'>
+                <h2 className='m-0'>
+                    {task ? 'Edit Task' : 'Create New Task'}
+                </h2>
+                <button className='btn text-gray-400 hover:text-gray-600 bg-transparent ring-0 p-0 m-0'
+                    onClick={() => (onCancel ? onCancel() : cancelForm())}
+                >
+                    <X size={20} />
+                </button>
+            </div>
             {error && <p className="error">{error}</p>}
 
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>
-                        Title
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            id="title"
-                            name="title"
-                            value={formData.title || ''}
-                            onChange={handleChange}
-                            required
-                        />
-                    </label>
+            {/* Form */}
+            <form onSubmit={handleSubmit} className='bg-amber-50 p-4 rounded-md border border-gray-300'>
+                <div>
+                    <label htmlFor='title' className='block text-sm text-gray-700'>Title</label>
+                    <input className='w-full px-3 py-1 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                        ref={inputRef}
+                        type="text"
+                        id="title"
+                        name="title"
+                        value={formData.title || ''}
+                        onChange={handleChange}
+                        placeholder='Enter task title...'
+                        required
+                    />
+                
                 </div>
 
-                <div className="form-group">
-                    <label>
-                        Description
-                        <textarea
+                <div>
+                    <label htmlFor='description' className='block text-sm text-gray-700'>Description (optional)</label>
+                        <textarea className='w-full px-3 py-1 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                             id="description"
                             name="description"
                             value={formData.description || ''}
                             onChange={handleChange}
                             rows="3"
+                            placeholder='Enter task description...'
                         />
-                    </label>
+                    
                 </div>
 
-                <div className="form-group">
-                    {/* <label>Category
-                <select 
-                    id='category'
-                    name='category'
-                    value={formData.category || ''}
-                    onChange={handleChange}
-                >
-                    {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                </select>
-                </label> */}
+                <div>
                     <CategorySelector
-                        currentSelection={formData.category || null}
                         onSelect={handleCategorySelect}
                     />
                 </div>
 
-                <div className="form-group">
+                <div>
                     <TagSelector onTagsChange={handleTagsChange} />
                 </div>
 
-                <div className="form-group">
-                    <label>
-                        Due Date
-                        <input
+                <div>
+                    <label htmlFor='due_date' className='block text-sm text-gray-700'>Due Date</label>
+                        <input className='w-full px-3 py-1 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                             type="date"
                             id="due_date"
                             name="due_date"
                             value={formData.due_date || ''}
                             onChange={handleChange}
                         />
-                    </label>
                 </div>
 
-                <div className="form-group">
-                    <label>
-                        <input
-                            type="checkbox"
-                            name="completed"
-                            checked={formData.completed}
-                            onChange={handleChange}
-                        />
-                        Completed
-                    </label>
+                <div className='flex items-center space-x-2 my-2'>
+                    <input className='h-4 w-4'
+                        type="checkbox"
+                        name="completed"
+                        checked={formData.completed}
+                        onChange={handleChange}
+                    />
+                    <label htmlFor='completed' className='text-gray-700 m-0'>Completed</label>       
                 </div>
 
-                <div className="form-actions">
-                    <button type="submit">{task ? 'Update' : 'Create'}</button>
-                    <button
+                {/* Buttons */}
+                <div className="flex justify-end space-x-3 pt-2">
+                    <button className='btn text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 ring-0'
                         type="button"
                         onClick={() => (onCancel ? onCancel() : cancelForm())}
                     >
                         Cancel
+                    </button>
+                    <button className='btn text-sm font-medium ring-0 '
+                        type="submit"
+                    >
+                        {task ? 'Update' : 'Create'}
                     </button>
                 </div>
             </form>

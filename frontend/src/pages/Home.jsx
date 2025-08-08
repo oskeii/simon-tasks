@@ -16,7 +16,7 @@ const Home = () => {
         if (!auth?.isAuthenticated) {
             return (
                 <Link to="/login">
-                    <button>
+                    <button className='btn'>
                         Log In
                         <LogIn className='inline ml-2'/>
                     </button>
@@ -25,7 +25,7 @@ const Home = () => {
         } else {
             return (
                 <button
-                    className="btn-danger py-2 px-4"
+                    className="btn btn-danger py-2 px-4"
                     onClick={handleLogout}
                 >
                     <LogOut className='inline mr-2'/>

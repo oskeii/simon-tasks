@@ -32,10 +32,10 @@
         font-size: var(--text-xl);
     }
 
-    button {
+    /* button {
         @apply m-1 py-1 px-4 text-white rounded-sm ring ring-teal-600 bg-teal-400;
         @apply cursor-pointer hover:bg-teal-500 active:bg-teal-600 active:scale-95 transition-all duration-300;
-    }
+    } */
 
     label {
         @apply mb-1 font-medium
@@ -57,6 +57,11 @@
         @apply outline-1 outline-gray-300 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 focus:outline-gray-500;
         @apply transition-colors duration-300;
         /* change outline color */
+    }
+
+    .btn {
+        @apply m-1 py-1 px-4 text-white rounded-sm ring ring-teal-600 bg-teal-400;
+        @apply cursor-pointer hover:bg-teal-500 active:bg-teal-600 active:scale-95 transition-all duration-300;
     }
 
     .btn-danger {
