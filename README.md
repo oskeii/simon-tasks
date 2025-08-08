@@ -9,7 +9,7 @@ Projected features include smart task suggestions, time-logging, activity tracki
 
 ## Overview
 ### Screenshots
-*Coming soon. Everything's really ugly right now.* 😅
+*Coming 8/9/2025. Stay Tuned!*
 
 ### Core Functionality
 - **Secure Authentication:** JWT-based authentication with HTTP-only cookies for enhanced XSS protection
@@ -148,3 +148,4 @@ This project is licensed under the GNU GPL v3 License - see the [LICENSE](LICENS
 
 While this code is open source, please note that it represents my personal portfolio work. 
 If you're a potential employer reviewing my code, welcome! If you're someone looking to build something similar, I encourage you to develop your own implementation rather than copying this project. 😅
+
