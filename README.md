@@ -9,7 +9,36 @@ Projected features include smart task suggestions, time-logging, activity tracki
 
 ## Overview
 ### Screenshots
-*Coming 8/9/2025. Stay Tuned!*
+<!-- <div align='center'>
+  <img src="docs/screenshots/tasklist.jpg" width="50%" />
+  <img src="docs/screenshots/taskform.jpg" width="50%" />
+  <img src="docs/screenshots/register.jpg" width="50%" />
+  <img src="docs/screenshots/login.jpg" width="50%" />
+</div> -->
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/login.jpg" width="300" alt="Login Screen"/></td>
+    <td><img src="docs/screenshots/tasklist_complete.gif" width="300" alt="Task List page"/></td>
+    <td><img src="docs/screenshots/profile2.jpg" width="300" alt="Profile/Settings page"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Login Screen</b></td>
+    <td align="center"><b>Task List</b></td>
+    <td align="center"><b>Profile/Settings</b></td>
+  </tr>
+
+  <tr>
+    <td><img src="docs/screenshots/create_task.gif" width="300" alt="Demonstration: creating a task"/></td>
+    <td><img src="docs/screenshots/task_with_subtasks_edit.gif" width="300" alt="Demonstration: editing a task"/></td>
+    <td><img src="docs/screenshots/filtering.gif" width="300" alt="Demonstration: filtering tasks by category"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Create Tasks</b></td>
+    <td align="center"><b>Edit Tasks</b></td>
+    <td align="center"><b>Filter Tasks</b></td>
+  </tr>
+</table>
 
 ### Core Functionality
 - **Secure Authentication:** JWT-based authentication with HTTP-only cookies for enhanced XSS protection
