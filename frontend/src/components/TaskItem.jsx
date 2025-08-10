@@ -22,7 +22,7 @@ const TaskItem = ({
     const hasSubtasks = task.has_subtasks && subtasks;
 
     return (
-        <div className={`flex flex-col p-2 ${task.completed ? 'bg-gray-100 border-gray-300' : 'border-gray-200'} text-gray-700 rounded-2xl border-1 hover:shadow-md transition-all duration-300`}>
+        <div className={`flex flex-col p-2 ${task.completed ? 'bg-gray-100 border-gray-300' : 'bg-white border-gray-200'} text-gray-700 rounded-2xl border-1 hover:shadow-md transition-all duration-300`}>
         {/* Task Header */}
             <div className='flex justify-between'>
                 <div className="mb-2 flex items-center">

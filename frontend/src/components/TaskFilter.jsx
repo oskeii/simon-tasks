@@ -79,137 +79,145 @@ const TaskFilter = ({ onFilterChange, onSort }) => {
     };
 
     if (organizers.loading) {
-        return <div className="filter-loading">Loading filters...</div>;
+        return <div>Loading filters...</div>;
     }
 
     return (
-        <div className="task-filter">
-            <h3>Filter Tasks</h3>
-            {organizers.error && <p className="error">{organizers.error}</p>}
-            <div className="search-section">
-                <label htmlFor="search">Search</label>
-                <input
-                    type="text"
-                    id="search"
-                    name="search"
-                    value={filters.search}
-                    onChange={handleSearch}
-                    placeholder="Search by title or description"
-                />
-            </div>{' '}
-            <hr />
-            <div className="sort-section">
-                <label htmlFor="sortBy">Sort By</label>
-                <select
-                    id="sortBy"
-                    name="sortBy"
-                    value={sortBy}
-                    onChange={handleSort}
-                >
-                    {sortingOptions.map((option) => (
-                        <option
-                            key={option.id}
-                            value={option.value}
-                        >
-                            {option.text}
-                        </option>
-                    ))}
-                </select>
-                <button
-                    onClick={() => onSort(sortBy)}
-                    className="sort-btn"
-                >
-                    Sort
-                </button>
+        <div className="p-4">
+            <div className='flex items-center justify-center'>
+                <h3>Filter Tasks</h3>
             </div>
-            {/* <div className='filter-section'>
-                <label htmlFor='status'>Status</label>
-                <select
-                    id='status'
-                    name='status'
-                    value={filters.status}
-                    onChange={handleFilterChange}
-                >
-                    <option value='all'>All</option>
-                    <option value='completed'>Completed</option>
-                    <option value='incomplete'>Incomplete</option>
-                </select>
-            </div>*/}
-            {/* <div className='filter-section'>
-                <label htmlFor='dueDate'>Due Date</label>
-                <select
-                    id='dueDate'
-                    name='dueDate'
-                    value={filters.dueDate}
-                    onChange={handleFilterChange}
-                >
-                    <option value='none'>No Due Date</option>
-                    <option value='all'>All</option>
-                    <option value='overdue'>Overdue</option>
-                    <option value='today'>Due Today</option>
-                    <option value='thisWeek'>Due This Week</option>
-                    <option value='future'>Future</option>
-                </select>
-            </div> */}
-            <div className="filter-section">
-                <label>
-                    Categories
-                    <select
-                        className="category-filter-options"
-                        multiple
-                        id="categories"
-                        name="categories"
-                        value={filters.categories}
-                        onChange={handleSelectChange}
+            <p className={`error ${!organizers.error && 'hidden'}`}>{organizers.error}</p>
+            
+            <div className='bg-amber-50 flex flex-col gap-4 text-gray-700 p-4 rounded-md border border-gray-300'>
+                {/* Search */}
+                <div>
+                    <label htmlFor="search" className='block'>Search</label>
+                    <input className='w-full px-3 py-1 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                        id="search"
+                        name="search"
+                        value={filters.search}
+                        onChange={handleSearch}
+                        placeholder="Search by title or description"
+                    />
+                </div>
+                <hr className='text-gray-400' />
+
+                {/* Sort */}
+                <div className="flex items-center space-x-2">
+                    <label htmlFor="sortBy">Sort By</label>
+                    <select className='input'
+                        id="sortBy"
+                        name="sortBy"
+                        value={sortBy}
+                        onChange={handleSort}
                     >
-                        {categories.map((cat) => (
+                        {sortingOptions.map((option) => (
                             <option
-                                key={cat.id}
-                                value={cat.id}
+                                key={option.id}
+                                value={option.value}
                             >
-                                {cat.name}
+                                {option.text}
                             </option>
                         ))}
                     </select>
-                </label>
-            </div>
-            {tags && tags.length > 0 && (
-                <div className="filter-section">
-                    <label>
-                        Tags
-                        <select
-                            className="tag-filter-options"
+                    <button className='btn '
+                        onClick={() => onSort(sortBy)}
+                    >
+                        Sort
+                    </button>
+                </div>
+                {/* <div className='filter-section'>
+                    <label htmlFor='status'>Status</label>
+                    <select
+                        id='status'
+                        name='status'
+                        value={filters.status}
+                        onChange={handleFilterChange}
+                    >
+                        <option value='all'>All</option>
+                        <option value='completed'>Completed</option>
+                        <option value='incomplete'>Incomplete</option>
+                    </select>
+                </div>*/}
+                {/* <div className='filter-section'>
+                    <label htmlFor='dueDate'>Due Date</label>
+                    <select
+                        id='dueDate'
+                        name='dueDate'
+                        value={filters.dueDate}
+                        onChange={handleFilterChange}
+                    >
+                        <option value='none'>No Due Date</option>
+                        <option value='all'>All</option>
+                        <option value='overdue'>Overdue</option>
+                        <option value='today'>Due Today</option>
+                        <option value='thisWeek'>Due This Week</option>
+                        <option value='future'>Future</option>
+                    </select>
+                </div> */}
+                {/* Category filter */}
+                <div className="flex flex-col space-y-2">
+                    <label htmlFor='categories'>Categories</label>
+                        <select className='min-h-28 w-full px-3 py-1 text-sm border border-gray-300 rounded-md shadow-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-300'
                             multiple
-                            id="tags"
-                            name="tags"
-                            value={filters.tags}
+                            id="categories"
+                            name="categories"
+                            value={filters.categories}
                             onChange={handleSelectChange}
                         >
-                            <option value={'-1'}>Tagged Only</option>
-                            {tags.map((tag) => (
-                                <option
-                                    key={tag.id}
-                                    value={tag.id}
+                            {categories.map((cat) => (
+                                <option className='mb-[1px] py-0.5 px-2 rounded-md hover:bg-teal-100'
+                                    key={cat.id}
+                                    value={cat.id}
                                 >
-                                    #{tag.name}
+                                    {cat.name}
                                 </option>
                             ))}
                         </select>
-                    </label>
+                    
                 </div>
-            )}
-            <button
-                onClick={clearFilters}
-                className="clear-filters-btn"
-            >
-                Clear Filters
-            </button>
-            <button
-                onClick={() => onFilterChange(filters)}
-                className="apply-filters-btn"
-            >
-                Apply
-            </button>
+                
+                {/* Tag filter */}
+                <div className={`flex flex-col space-y-2 ${(!tags || tags.length === 0) && 'hidden'}`}>
+                    <label htmlFor='tags' className=''>Tags</label>
+                    <select className='min-h-28 w-full px-3 py-1 text-sm border border-gray-300 rounded-md shadow-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-300'
+                        multiple
+                        id="tags"
+                        name="tags"
+                        value={filters.tags}
+                        onChange={handleSelectChange}
+                    >
+                        <option value={'-1'} className='mb-[1px] py-0.5 px-2 hover:bg-teal-100 rounded-md'>Tagged Only</option>
+                        {tags.map((tag) => (
+                            <option className='mb-[1px] py-0.5 px-2 hover:bg-teal-100 rounded-md'
+                                key={tag.id}
+                                value={tag.id}
+                            >
+                                #{tag.name}
+                            </option>
+                        ))}
+                    </select>
+                    
+                </div>
+
+                {/* Buttons */}
+                <div>
+                    <button className="btn text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 ring-0"
+                        onClick={clearFilters}
+                    >
+                        Clear Filters
+                    </button>
+
+                    <button className="btn text-sm font-medium ring-0 "
+                        onClick={() => onFilterChange(filters)}
+                    >
+                        Apply
+                    </button>
+                </div>
+                
+            </div>
+
         </div>
     );
 };

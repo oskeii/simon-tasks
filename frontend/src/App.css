@@ -2,16 +2,17 @@
 
 
 
-/* @theme {
+@theme {
+    
+    --breakpoint-md: 50rem;
+}
     /* examples */
     /* --font-display: "Satoshi", sans-serif;
     --font-poppins: Poppins, sans-serif;
     
-    --breakpoint-3xl:120rem;
 
     --color-mint-500: oklch(0.72 0.11 178); */
     /* END examples */
-/* } */
 
 
 /* Define default base styles for specific HTML elements */

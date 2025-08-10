@@ -13,7 +13,6 @@ import Modal from '../components/Modal';
 const TaskList = () => {
     console.log('TaskList rendered!');
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [toggleCompleteList, setToggleCompleteList] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [filteredTasks, setFilteredTasks] = useState(null);
@@ -194,48 +193,52 @@ const TaskList = () => {
     }
 
     return (
-        <div className="">
-            <div className="">
-                <h1>My Tasks</h1>
+        <div>
+            {/* Header (with buttons) */}
+            <div className='mb-5 flex items-center justify-between pr-4'>
+                <h1 className='mx-auto'>My Tasks</h1>
                 <hr />
 
-                <div className="bg-gray-200 flex">
-                    <button className='btn flex items-center' onClick={() => showNewTaskForm()}>
+                <div className="flex gap-4 justify-between">
+                    <button className='btn flex ' onClick={() => showNewTaskForm()}>
                         <Plus size={20} />
                         Add Task
                     </button>
 
-                    <button className={`btn flex items-center ${showFilters && 'active'}`}
+                    <button className={`btn flex ${showFilters && 'active'}`}
                         onClick={() => setShowFilters(!showFilters)}
                     >
                         <Funnel size={20} />
-                        {showFilters ? 'Hide Filters' : 'Show Filters'}
+                        Filters
+                        {/* {showFilters ? 'Hide Filters' : 'Show Filters'} */}
                     </button>
                 </div>
+
+                {state.error && <p className="error">{state.error}</p>}
             </div>
 
-            {state.error && <p className="error">{state.error}</p>}
 
-            <Modal isOpen={state.showForm} onClose={cancelForm}>
-                <div className='bg-indigo-100'>
-                    <TaskForm
-                        task={tasks[state.editingTask]}
-                        parentId={state.linkingParent}
-                    />
-                </div>
-            </Modal>
-
-            <div>
-                {showFilters && (
-                    <aside className="task-filters-sidebar">
+            <div className='flex flex-col md:flex-row-reverse gap-3 md:gap-5 mx-2 md:m-0'>
+                {/* Modal + Sidebar */}
+                <Modal isOpen={state.showForm} onClose={cancelForm}>
+                    <div className='bg-indigo-100'>
+                        <TaskForm
+                            task={tasks[state.editingTask]}
+                            parentId={state.linkingParent}
+                        />
+                    </div>
+                </Modal>
+                <div className={`max-h-dvh bg-gray-100 p-1 shadow-lg border border-gray-400 md:border-l-2 md:border-r-0 md:rounded-l-xl ${!showFilters && 'hidden'}`}>
+                    <aside className=''>
                         <TaskFilter
                             onFilterChange={handleFilterChange}
                             onSort={applySorting}
                         />
                     </aside>
-                )}
+                </div>
 
-                <div className="task-list">
+                {/* Task List */}
+                <div className='flex-1'>
                     {
                         filteredTasks && (
                             <p>
@@ -250,10 +253,11 @@ const TaskList = () => {
                         <p>No tasks yet. Create one to get started!</p>
                     ) : (
                         <>
-                            <div className="incomplete-list">
-                                <h3>
+                        {/* Incomplete Tasks */}
+                            <div>
+                                <h2>
                                     Incomplete Tasks ({data.incomplete_count})
-                                </h3>
+                                </h2>
                                 <ul>
                                     {data.incomplete_tasks.map((tId) => {
                                         // if tasks are filtered, look for task in filteredTasks
@@ -282,61 +286,66 @@ const TaskList = () => {
                             </div>
 
                             <hr className='text-black/30 my-4' />
-                            <h3 className={`${data.complete_count > 0 && 'hidden'}`}>No Completed Tasks</h3>
-                            <div className={`${data.complete_count === 0 && 'hidden'}`}>
-                                <div className='flex items-center'>
-                                    <button className={`btn p-0 ring-0 text-gray-600 bg-gray-200 rounded-full ${toggleCompleteList && 'text-gray-900'}`}
-                                    onClick={() =>
-                                        setToggleCompleteList(
-                                            !toggleCompleteList
-                                        )
-                                    }
-                                    >
-                                    {toggleCompleteList
-                                        ? <ChevronDown className='inline hover:scale-90 transition-all duration-300'/>
-                                        : <ChevronRight className='inline hover:scale-110 transition-all duration-300'/>}
-                                    </button>
-                                   <h3>Complete Tasks ({data.complete_count})</h3> 
-                                </div>
+                        
+                        {/* Completed Tasks */}
+                            <div>
+                                <h2 className={`${data.complete_count > 0 && 'hidden'}`}>No Completed Tasks</h2>
                                 
+                                <div className={`${data.complete_count === 0 && 'hidden'}`}>
+                                    <div className='flex items-center'>
+                                        <button className={`btn p-0 ring-0 text-gray-600 bg-gray-200 rounded-full ${toggleCompleteList && 'text-gray-900'}`}
+                                        onClick={() =>
+                                            setToggleCompleteList(
+                                                !toggleCompleteList
+                                            )
+                                        }
+                                        >
+                                        {toggleCompleteList
+                                            ? <ChevronDown className='inline hover:scale-90 transition-all duration-300'/>
+                                            : <ChevronRight className='inline hover:scale-110 transition-all duration-300'/>}
+                                        </button>
+                                        <h2>Complete Tasks ({data.complete_count})</h2> 
+                                    </div>
+                                    
+                                    {toggleCompleteList && (
+                                        <ul>
+                                            {data.complete_tasks.map((tId) => {
+                                                // if tasks are filtered, look for task in filteredTasks
+                                                const task = filteredTasks
+                                                    ? filteredTasks[tId]
+                                                    : tasks[tId];
+                                                if (!task) return null;
 
-                                {toggleCompleteList && (
-                                    <ul>
-                                        {data.complete_tasks.map((tId) => {
-                                            // if tasks are filtered, look for task in filteredTasks
-                                            const task = filteredTasks
-                                                ? filteredTasks[tId]
-                                                : tasks[tId];
-                                            if (!task) return null;
-
-                                            return (
-                                                <li
-                                                    key={tId}
-                                                    className='m-2 md:m-4'
-                                                >
-                                                    <TaskItem
-                                                        task={task}
-                                                        subtasks={
-                                                            task.sub_tasks
-                                                                ? task.sub_tasks.map(
-                                                                      (id) =>
-                                                                          tasks[
-                                                                              id
-                                                                          ]
-                                                                  )
-                                                                : []
-                                                        }
-                                                    />
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                )}
+                                                return (
+                                                    <li
+                                                        key={tId}
+                                                        className='m-2 md:m-4'
+                                                    >
+                                                        <TaskItem
+                                                            task={task}
+                                                            subtasks={
+                                                                task.sub_tasks
+                                                                    ? task.sub_tasks.map(
+                                                                            (id) =>
+                                                                                tasks[
+                                                                                    id
+                                                                                ]
+                                                                        )
+                                                                    : []
+                                                            }
+                                                        />
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    )}
+                                </div>
                             </div>
                         </>
                     )}
                 </div>
             </div>
+
         </div>
     );
 };

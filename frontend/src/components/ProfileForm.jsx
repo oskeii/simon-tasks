@@ -124,7 +124,7 @@ const ProfileForm = () => {
                     </p>
                 </fieldset>
 
-                <button className='mt-4 rounded-full' type="submit">
+                <button className='btn mt-4 rounded-full' type="submit">
                     <Save className='inline mx-1' />
                     Save Changes
                 </button>
