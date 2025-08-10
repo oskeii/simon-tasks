@@ -1,277 +1,353 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import TaskForm from '../components/TaskForm';
 import TaskItem from '../components/TaskItem';
 import TaskFilter from '../components/TaskFilter';
 import { useTasksManager, useTasks } from '../context/TasksContext';
 import { useOrganizersManager } from '../context/OrganizersContext';
+import { Pencil, SquarePen, Trash2, X, Plus, CirclePlus, SquarePlus, ListPlus, ChevronDown, ChevronRight, CircleCheckBig, SquareCheckBig,
+    ListFilter, Funnel, FunnelPlus, FunnelX, Search, TextSearch, 
+    ArrowDownUp, CalendarArrowDown, ClockArrowDown, ArrowDown01, ArrowDown10, 
+} from 'lucide-react';
+import Modal from '../components/Modal';
 
 const TaskList = () => {
-  console.log('TaskList rendered!')
+    console.log('TaskList rendered!');
 
-  const [toggleCompleteList, setToggleCompleteList] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [filteredTasks, setFilteredTasks] = useState(null);
-  const [activeFilters, setActiveFilters] = useState({
-    search: '',
-    status: 'all', // 'all', 'incomplete', 'completed'
-    categories: [], // empty => no filter
-    tags: [], // empty => no filter ; tags[0]==='-1' => "filter out untagged tasks"
-    dueDate: 'all', // 'all', 'overdue', 'today', 'thisWeek','future', 'none'
-    applyFilters: false, // to let TaskList know to apply filters or to clear filteredTasks
-    quickSearch: false // trigger search only, without applying filters
-  });
-
-  const state = useTasks();
-  const { tasks, data } = state;
-  console.log('LOCAL TASKS SET:', tasks)
-  console.log('LOCAL DATA:', data)
-  // console.log('editing:', state.editingTask)
-  // console.log('linking parent:', state.linkingParent)
-  
-  const { getTags, getCategories } = useOrganizersManager();
-  const {
-    getTasks,
-    showNewTaskForm,
-    cancelForm
-  } = useTasksManager();
-  
-  /** Custom built-in function for filtering the object
-   * reference: https://www.geeksforgeeks.org/javascript/how-to-implement-a-filter-for-objects-in-javascript/
-   */ 
-  Object.filter = (obj, predicate) =>
-    Object.fromEntries(Object.entries(obj).
-      filter(([key, value]) => predicate(value))
-    );
-  
-  // Search tasks --> setFilteredTasks(result);
-  const search = () => {
-    let result = filteredTasks ? {...filteredTasks} : {...tasks};
-    const searchLower = activeFilters.search.toLowerCase();
-
-    result = Object.filter(result, task => {
-      let isMatch = task.title.toLowerCase().includes(searchLower) ||
-        (task.description && task.description.toLowerCase().includes(searchLower))
-      
-      let subtaskIsMatch = task.has_subtasks && 
-        task.sub_tasks.some(id =>
-          result[id].title.toLowerCase().includes(searchLower) ||
-          (result[id].description && result[id].description.toLowerCase().includes(searchLower))
-        )
-      !isMatch && subtaskIsMatch && console.log('MATCH FOUND IN SUBTASK of task ->', task.title)
-
-      return isMatch || subtaskIsMatch
+    const [toggleCompleteList, setToggleCompleteList] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
+    const [filteredTasks, setFilteredTasks] = useState(null);
+    const [activeFilters, setActiveFilters] = useState({
+        search: '',
+        status: 'all', // 'all', 'incomplete', 'completed'
+        categories: [], // empty => no filter
+        tags: [], // empty => no filter ; tags[0]==='-1' => "filter out untagged tasks"
+        dueDate: 'all', // 'all', 'overdue', 'today', 'thisWeek','future', 'none'
+        applyFilters: false, // to let TaskList know to apply filters or to clear filteredTasks
+        quickSearch: false, // trigger search only, without applying filters
     });
-    
-    setFilteredTasks(result);
-    console.log('RESULT:', result)
-  }
 
-  // Apply task sorting --> getTasks(sortParams);
-  const applySorting = (sortBy) => {
-    // split the string to separate sort-by and ordering
-    let sort = sortBy.split('-', 2) // [sortByString, orderString]
-    console.log('Sorting by...', sort)
-    let sortParams = new URLSearchParams();
-    sortParams.append('sort_by', sort[0])
-    sortParams.append('sort_by', sort[1])
-    console.log('SORT PARAMS', sortParams)
-    getTasks(sortParams)
-  }
-  
-  // Apply filters to tasks --> let result = {...tasks}; -> setFilteredTasks(result);
-  const applyFilters = () => {
-    let result = {...tasks};
-    
-    // SORTING
-    // Filter by completion status
-    // Filter by due date
+    const state = useTasks();
+    const { tasks, data } = state;
+    console.log('LOCAL TASKS SET:', tasks);
+    console.log('LOCAL DATA:', data);
+    // console.log('editing:', state.editingTask)
+    // console.log('linking parent:', state.linkingParent)
 
-    // Filter by search term
-    if (activeFilters.search) {
-      console.log('FILTERING BY SEARCH TERM')
-      // search();
-      result = {...filteredTasks}; 
-      // result = Object.filter(result, task => {filteredTasks.includes(task.id)});
-    }
+    const { getTags, getCategories } = useOrganizersManager();
+    const { getTasks, showNewTaskForm, cancelForm } = useTasksManager();
 
-    // Filter by category
-    if (activeFilters.categories.length > 0) {
-      console.log('FILTERING BY CATEGORY')
-      result = Object.filter(result, task => {
-        return task.category && activeFilters.categories.includes(task.category)
-      });
-      console.log('RESULT:', result)
-    }
+    /** Custom built-in function for filtering the object
+     * reference: https://www.geeksforgeeks.org/javascript/how-to-implement-a-filter-for-objects-in-javascript/
+     */
+    Object.filter = (obj, predicate) =>
+        Object.fromEntries(
+            Object.entries(obj).filter(([key, value]) => predicate(value))
+        );
 
-    // Filter by tags
-    if (activeFilters.tags.length > 0) {
-      console.log('FILTERING BY TAGS')
-      // Check if task has no tags OR at least one of the selected tags
-      let resultWithUntagged = Object.filter(result, task => {
-        return (task.tags.length === 0) 
-          || (task.tags.some(tagId => activeFilters.tags.includes(tagId)))
-      });
+    // Search tasks --> setFilteredTasks(result);
+    const search = () => {
+        let result = filteredTasks ? { ...filteredTasks } : { ...tasks };
+        const searchLower = activeFilters.search.toLowerCase();
 
-      result = activeFilters.tags[0] === -1 // "filter out untagged tasks"
-        ? Object.filter(resultWithUntagged, task => task.tags.length > 0)
-        : resultWithUntagged;
-        
-      console.log('RESULT:', result)
-    }
+        result = Object.filter(result, (task) => {
+            let isMatch =
+                task.title.toLowerCase().includes(searchLower) ||
+                (task.description &&
+                    task.description.toLowerCase().includes(searchLower));
 
-    // remove subtasks
-    console.log('REMOVING SUBTASKS')
-    result = Object.filter(result, task => !task.parent_task);
-    console.log('RESULT:', result)
-    setFilteredTasks(result);
-  };
-  
-  // Handle filter changes from TaskFilter component --> setActiveFilters OR setFiilteredTasks(null)
-  const handleFilterChange = (newFilters) => {
-    if (newFilters.quickSearch) { // set active filters to trigger quick search
-      setActiveFilters(prev => ({
-        ...prev,
-        search: newFilters.search,
-        quickSearch: true
-      }));
-    } else if (!newFilters.applyFilters) { // clear filtered tasks
-      setFilteredTasks(null)
-    } else { // set active filters to trigger task filtering
-      setActiveFilters(newFilters); 
-    }
-  };
-  
-  useEffect(() => {
-    getTags();
-    getCategories();
+            let subtaskIsMatch =
+                task.has_subtasks &&
+                task.sub_tasks.some(
+                    (id) =>
+                        result[id].title.toLowerCase().includes(searchLower) ||
+                        (result[id].description &&
+                            result[id].description
+                                .toLowerCase()
+                                .includes(searchLower))
+                );
+            !isMatch &&
+                subtaskIsMatch &&
+                console.log('MATCH FOUND IN SUBTASK of task ->', task.title);
 
-    getTasks();
-    cancelForm();
-  }, []);
-  
-  useEffect(() => {
-    console.log('UPDATED ACTIVE FILTERS:', activeFilters);
-  }, [activeFilters]);
+            return isMatch || subtaskIsMatch;
+        });
 
-  useEffect(() => {
-    if (activeFilters.quickSearch) {
-      console.log('QUICK SEARCH')
-      search();
-    } 
-    else if (activeFilters.applyFilters) {
-      console.log('APPLYING ACTIVE FILTERS')
-      applyFilters()
-    }
-  }, [tasks, activeFilters]);
+        setFilteredTasks(result);
+        console.log('RESULT:', result);
+    };
 
-  if (state.loading) {
-    return <div>Loading tasks...</div>;
-  }
+    // Apply task sorting --> getTasks(sortParams);
+    const applySorting = (sortBy) => {
+        // split the string to separate sort-by and ordering
+        let sort = sortBy.split('-', 2); // [sortByString, orderString]
+        console.log('Sorting by...', sort);
+        let sortParams = new URLSearchParams();
+        sortParams.append('sort_by', sort[0]);
+        sortParams.append('sort_by', sort[1]);
+        console.log('SORT PARAMS', sortParams);
+        getTasks(sortParams);
+    };
 
+    // Apply filters to tasks --> let result = {...tasks}; -> setFilteredTasks(result);
+    const applyFilters = () => {
+        let result = { ...tasks };
 
-  return (
-    <div className='task-list-page'>
-      <div className='task-list-header'>
-        <h2>My Tasks</h2>
-        <hr/>
-        
-        <div className='task-list-actions'>
-          <button onClick={() => showNewTaskForm()}>Add New Task</button>
+        // SORTING
+        // Filter by completion status
+        // Filter by due date
 
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={showFilters ? 'active' : ''}
-          >{showFilters ? 'Hide Filters' : 'Show Filters'}</button>
-        </div>
+        // Filter by search term
+        if (activeFilters.search) {
+            console.log('FILTERING BY SEARCH TERM');
+            // search();
+            result = { ...filteredTasks };
+            // result = Object.filter(result, task => {filteredTasks.includes(task.id)});
+        }
 
-      </div>
+        // Filter by category
+        if (activeFilters.categories.length > 0) {
+            console.log('FILTERING BY CATEGORY');
+            result = Object.filter(result, (task) => {
+                return (
+                    task.category &&
+                    activeFilters.categories.includes(task.category)
+                );
+            });
+            console.log('RESULT:', result);
+        }
 
-      {state.error && <p className='error'>{state.error}</p>}
-      
-      <div>
-        {showFilters && (
-          <aside className='task-filters-sidebar'>
-            <TaskFilter onFilterChange={handleFilterChange} onSort={applySorting}/>
-          </aside>
-        )}
-
-        {state.showForm && (
-          <div className='task-form-container'>
-            <TaskForm
-              task={tasks[state.editingTask]}
-              parentId={state.linkingParent}
-            />
-          </div>
-        )}
-
-        <div className='task-list'> 
-          {filteredTasks && 
-            <p>{Object.keys(filteredTasks).length} matches found.</p>
-            // <p>{filteredTasks.length} matches found.</p>
-          }
-
-          {data.total_count === 0 ? (
-            <p>No tasks yet. Create one to get started!</p>
-          ): (
-            <>
-            <div className='incomplete-list'>
-              <h3>Incomplete Tasks ({data.incomplete_count})</h3>
-              <ul>
-                {data.incomplete_tasks.map((tId) => {
-                  // if tasks are filtered, look for task in filteredTasks
-                  const task = filteredTasks // && filteredTasks.includes(tId)
-                    ? filteredTasks[tId] // ? tasks[tId] : null
-                    : tasks[tId];
-                  if (!task) return null;
-
-                  return (
-                    <li key={tId}>
-                      <TaskItem 
-                        task={task}
-                        subtasks={task.sub_tasks ? task.sub_tasks.map(id => tasks[id]) : []}
-                      />
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-
-            <hr/>
-            <div className='completed-list'>
-              <h3>Complete Tasks ({data.complete_count})</h3>
-              {data.complete_count > 0 && 
-                <button onClick={() => setToggleCompleteList(!toggleCompleteList)}>
-                  {toggleCompleteList ? '▼ Hide' : '▶ Show'}
-                </button>
-              }
-              {toggleCompleteList && (
-                <ul>
-                  {data.complete_tasks.map((tId) => {
-                    // if tasks are filtered, look for task in filteredTasks
-                    const task = filteredTasks
-                      ? filteredTasks[tId]
-                      : tasks[tId];
-                    if (!task) return null;
-
-                    return (
-                      <li key={tId} className='completed'>
-                        <TaskItem 
-                          task={task}
-                          subtasks={task.sub_tasks ? task.sub_tasks.map(id => tasks[id]) : []}
-                        />
-                      </li>
+        // Filter by tags
+        if (activeFilters.tags.length > 0) {
+            console.log('FILTERING BY TAGS');
+            // Check if task has no tags OR at least one of the selected tags
+            let resultWithUntagged = Object.filter(result, (task) => {
+                return (
+                    task.tags.length === 0 ||
+                    task.tags.some((tagId) =>
+                        activeFilters.tags.includes(tagId)
                     )
-                  })}
-                </ul>
-              )}
-            </div>
-            </>
-          )}
-        </div>
+                );
+            });
 
-      </div>
-    </div>
-  );
+            result =
+                activeFilters.tags[0] === -1 // "filter out untagged tasks"
+                    ? Object.filter(
+                          resultWithUntagged,
+                          (task) => task.tags.length > 0
+                      )
+                    : resultWithUntagged;
+
+            console.log('RESULT:', result);
+        }
+
+        // remove subtasks
+        console.log('REMOVING SUBTASKS');
+        result = Object.filter(result, (task) => !task.parent_task);
+        console.log('RESULT:', result);
+        setFilteredTasks(result);
+    };
+
+    // Handle filter changes from TaskFilter component --> setActiveFilters OR setFiilteredTasks(null)
+    const handleFilterChange = (newFilters) => {
+        if (newFilters.quickSearch) {
+            // set active filters to trigger quick search
+            setActiveFilters((prev) => ({
+                ...prev,
+                search: newFilters.search,
+                quickSearch: true,
+            }));
+        } else if (!newFilters.applyFilters) {
+            // clear filtered tasks
+            setFilteredTasks(null);
+        } else {
+            // set active filters to trigger task filtering
+            setActiveFilters(newFilters);
+        }
+    };
+
+
+    useEffect(() => {
+        getTags();
+        getCategories();
+
+        getTasks();
+        cancelForm();
+    }, []);
+
+    useEffect(() => {
+        console.log('UPDATED ACTIVE FILTERS:', activeFilters);
+    }, [activeFilters]);
+
+    useEffect(() => {
+        if (activeFilters.quickSearch) {
+            console.log('QUICK SEARCH');
+            search();
+        } else if (activeFilters.applyFilters) {
+            console.log('APPLYING ACTIVE FILTERS');
+            applyFilters();
+        }
+    }, [tasks, activeFilters]);
+
+    if (state.loading) {
+        return <div>Loading tasks...</div>;
+    }
+
+    return (
+        <div>
+            {/* Header (with buttons) */}
+            <div className='mb-5 flex items-center justify-between pr-4'>
+                <h1 className='mx-auto'>My Tasks</h1>
+                <hr />
+
+                <div className="flex gap-4 justify-between">
+                    <button className='btn flex ' onClick={() => showNewTaskForm()}>
+                        <Plus size={20} />
+                        Add Task
+                    </button>
+
+                    <button className={`btn flex ${showFilters && 'active'}`}
+                        onClick={() => setShowFilters(!showFilters)}
+                    >
+                        <Funnel size={20} />
+                        Filters
+                        {/* {showFilters ? 'Hide Filters' : 'Show Filters'} */}
+                    </button>
+                </div>
+
+                {state.error && <p className="error">{state.error}</p>}
+            </div>
+
+
+            <div className='flex flex-col md:flex-row-reverse gap-3 md:gap-5 mx-2 md:m-0'>
+                {/* Modal + Sidebar */}
+                <Modal isOpen={state.showForm} onClose={cancelForm}>
+                    <div className='bg-indigo-100'>
+                        <TaskForm
+                            task={tasks[state.editingTask]}
+                            parentId={state.linkingParent}
+                        />
+                    </div>
+                </Modal>
+                <div className={`max-h-dvh bg-gray-100 p-1 shadow-lg border border-gray-400 md:border-l-2 md:border-r-0 md:rounded-l-xl ${!showFilters && 'hidden'}`}>
+                    <aside className=''>
+                        <TaskFilter
+                            onFilterChange={handleFilterChange}
+                            onSort={applySorting}
+                        />
+                    </aside>
+                </div>
+
+                {/* Task List */}
+                <div className='flex-1'>
+                    {
+                        filteredTasks && (
+                            <p>
+                                {Object.keys(filteredTasks).length} matches
+                                found.
+                            </p>
+                        )
+                        // <p>{filteredTasks.length} matches found.</p>
+                    }
+
+                    {data.total_count === 0 ? (
+                        <p>No tasks yet. Create one to get started!</p>
+                    ) : (
+                        <>
+                        {/* Incomplete Tasks */}
+                            <div>
+                                <h2>
+                                    Incomplete Tasks ({data.incomplete_count})
+                                </h2>
+                                <ul>
+                                    {data.incomplete_tasks.map((tId) => {
+                                        // if tasks are filtered, look for task in filteredTasks
+                                        const task = filteredTasks // && filteredTasks.includes(tId)
+                                            ? filteredTasks[tId] // ? tasks[tId] : null
+                                            : tasks[tId];
+                                        if (!task) return null;
+
+                                        return (
+                                            <li key={tId} className='m-2 md:m-4'>
+                                                <TaskItem
+                                                    task={task}
+                                                    subtasks={
+                                                        task.sub_tasks
+                                                            ? task.sub_tasks.map(
+                                                                  (id) =>
+                                                                      tasks[id]
+                                                              )
+                                                            : []
+                                                    }
+                                                />
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </div>
+
+                            <hr className='text-black/30 my-4' />
+                        
+                        {/* Completed Tasks */}
+                            <div>
+                                <h2 className={`${data.complete_count > 0 && 'hidden'}`}>No Completed Tasks</h2>
+                                
+                                <div className={`${data.complete_count === 0 && 'hidden'}`}>
+                                    <div className='flex items-center'>
+                                        <button className={`btn p-0 ring-0 text-gray-600 bg-gray-200 rounded-full ${toggleCompleteList && 'text-gray-900'}`}
+                                        onClick={() =>
+                                            setToggleCompleteList(
+                                                !toggleCompleteList
+                                            )
+                                        }
+                                        >
+                                        {toggleCompleteList
+                                            ? <ChevronDown className='inline hover:scale-90 transition-all duration-300'/>
+                                            : <ChevronRight className='inline hover:scale-110 transition-all duration-300'/>}
+                                        </button>
+                                        <h2>Complete Tasks ({data.complete_count})</h2> 
+                                    </div>
+                                    
+                                    {toggleCompleteList && (
+                                        <ul>
+                                            {data.complete_tasks.map((tId) => {
+                                                // if tasks are filtered, look for task in filteredTasks
+                                                const task = filteredTasks
+                                                    ? filteredTasks[tId]
+                                                    : tasks[tId];
+                                                if (!task) return null;
+
+                                                return (
+                                                    <li
+                                                        key={tId}
+                                                        className='m-2 md:m-4'
+                                                    >
+                                                        <TaskItem
+                                                            task={task}
+                                                            subtasks={
+                                                                task.sub_tasks
+                                                                    ? task.sub_tasks.map(
+                                                                            (id) =>
+                                                                                tasks[
+                                                                                    id
+                                                                                ]
+                                                                        )
+                                                                    : []
+                                                            }
+                                                        />
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    )}
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+
+        </div>
+    );
 };
 
 export default TaskList;

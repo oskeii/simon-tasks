@@ -1,10 +1,13 @@
-import React, { useState, useRef, useEffect, useMemo, memo } from 'react'
-import { X, Plus } from 'lucide-react'
-import { useOrganizers, useOrganizersManager } from '../context/OrganizersContext';
+import React, { useState, useRef, useEffect, useMemo, memo } from 'react';
+import { X, Plus } from 'lucide-react';
+import {
+    useOrganizers,
+    useOrganizersManager,
+} from '../context/OrganizersContext';
 import { useTasks } from '../context/TasksContext';
 
 const TagSelector = ({ onTagsChange }) => {
-    console.log('TagSelector rendered!')
+    console.log('TagSelector rendered!');
     // Get tags associated with editing task (if any) to set as currently selected tags
     const state = useTasks();
     const { editingTask } = state; // task ID
@@ -14,10 +17,9 @@ const TagSelector = ({ onTagsChange }) => {
     const organizers = useOrganizers();
     const { addTag } = useOrganizersManager();
     const { tags } = organizers; // available tags
-    
+
     const [selectedTags, setSelectedTags] = useState(
-        editingTask ? tags.filter(tag => editingTags.includes(tag.id))
-        : []
+        editingTask ? tags.filter((tag) => editingTags.includes(tag.id)) : []
     );
     const [inputValue, setInputValue] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
@@ -26,35 +28,47 @@ const TagSelector = ({ onTagsChange }) => {
     const dropdownRef = useRef(null);
 
     const partialMatch = (tagName) => {
-        return tagName.toLowerCase().includes(inputValue.trim().toLowerCase())
+        return tagName.toLowerCase().includes(inputValue.trim().toLowerCase());
     };
 
     // Set of selected tag IDs for O(1) lookups
-    const selectedTagIds = useMemo(() => new Set(selectedTags.map(tag => tag.id)), [selectedTags]);
+    const selectedTagIds = useMemo(
+        () => new Set(selectedTags.map((tag) => tag.id)),
+        [selectedTags]
+    );
     // Filter tags based on input
     const filteredTags = useMemo(() => {
         if (!inputValue.trim()) {
             // Return all non-selected tags available
-            return tags.filter(tag => !selectedTagIds.has(tag.id));
+            return tags.filter((tag) => !selectedTagIds.has(tag.id));
         } else {
             // Return all non-selected tags available that also match input
-            return tags.filter(tag => !selectedTagIds.has(tag.id) && partialMatch(tag.name));
+            return tags.filter(
+                (tag) => !selectedTagIds.has(tag.id) && partialMatch(tag.name)
+            );
         }
-    }, [inputValue, selectedTagIds, tags])
-    
-    console.log('Selected Tags:', selectedTagIds, selectedTags)   
-    useEffect(() => console.log('Filtered Tags:', filteredTags), [filteredTags])
-    
+    }, [inputValue, selectedTagIds, tags]);
+
+    console.log('Selected Tags:', selectedTagIds, selectedTags);
+    useEffect(
+        () => console.log('Filtered Tags:', filteredTags),
+        [filteredTags]
+    );
+
     // Handle clicking outside to close dropdown
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(e.target)
+            ) {
                 setShowDropdown(false);
             }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     const handleInputChange = (e) => {
@@ -71,7 +85,7 @@ const TagSelector = ({ onTagsChange }) => {
 
         setSelectedTags([...selectedTags, tag]);
         setInputValue('');
-        setShowDropdown(false); 
+        setShowDropdown(false);
         inputRef.current?.focus();
     };
 
@@ -81,8 +95,9 @@ const TagSelector = ({ onTagsChange }) => {
             // send tag name in API call to create tag
             let tagName = inputValue.trim();
             const newTag = await addTag({ name: tagName });
-                
-            if (!newTag) inputRef.current?.focus(); // error occured
+
+            if (!newTag)
+                inputRef.current?.focus(); // error occured
             else {
                 handleTagSelect(newTag);
             }
@@ -90,7 +105,9 @@ const TagSelector = ({ onTagsChange }) => {
     };
 
     const handleRemoveTag = (tagToRemove) => {
-        setSelectedTags(selectedTags.filter(tag => tag.id !== tagToRemove.id));
+        setSelectedTags(
+            selectedTags.filter((tag) => tag.id !== tagToRemove.id)
+        );
     };
 
     const handleKeyDown = (e) => {
@@ -120,60 +137,70 @@ const TagSelector = ({ onTagsChange }) => {
         }
     };
 
-    const exactMatch = tags.some(tag =>
-        tag.name.toLowerCase() === inputValue.trim().toLowerCase()
+    const exactMatch = tags.some(
+        (tag) => tag.name.toLowerCase() === inputValue.trim().toLowerCase()
     );
 
-
     return (
-        <div className='tag-selector'>
-            <h2>Tag Selector</h2>
-            {organizers.error && <p className='error'>{organizers.error}</p>}
-            <div className='input-container' ref={dropdownRef}>
+        <div className='w-full max-w-md my-1'>
+            <label className='block text-gray-700'>Tags</label>
+            {organizers.error && <p className="error">{organizers.error}</p>}
+
+            <div className="relative" ref={dropdownRef}>
                 {/* Input container with selected tags */}
-                <div>
-                    {selectedTags.map(tag => (
-                        <span key={tag.id}>
+                {/* w-full px-3 py-1 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent */}
+                <div className='w-full px-3 py-1 bg-gray-50 border border-gray-300 rounded-md flex flex-wrap gap-1 items-center focus-within:ring-teal-500 focus-within:border-teal-500'>
+                    {selectedTags.map((tag) => (
+                        <span key={tag.id} className='inline-flex items-center gap-1 bg-teal-100 text-teal-800 px-1 py-0.5 rounded-full text-sm'>
                             {tag.name}
-                            <button
-                                type='button'
+                            <button className='hover:bg-teal-200 rounded-full p-0.5'
+                                type="button"
                                 onClick={() => handleRemoveTag(tag)}
-                            >   <X size={12} /> </button>
+                            >
+                                <X size={12} />
+                            </button>
                         </span>
                     ))}
 
-                    <input
+                    <input className='flex-1 min-w-[120px] outline-none bg-transparent'
                         ref={inputRef}
-                        type='text'
+                        type="text"
                         value={inputValue}
                         onChange={handleInputChange}
                         onFocus={handleInputFocus}
                         onKeyDown={handleKeyDown}
-                        placeholder={selectedTags.length === 0 ? 'Type to search or create tags...' : ''}
+                        placeholder={
+                            selectedTags.length === 0
+                                ? 'Type to search or create tags...'
+                                : ''
+                        }
                     />
                 </div>
 
                 {/* Dropdown */}
                 {showDropdown && (
-                    <div>
+                    <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 max-h-48 overflow-y-auto'>
                         {filteredTags.length > 0 && (
                             <div>
-                                {filteredTags.map(tag => (
-                                    <button key={tag.id}
-                                        type='button'
+                                {filteredTags.map((tag) => (
+                                    <button className='w-full text-left px-3 py-0.5 hover:bg-gray-100 focus:bg-gray-200 focus:outline-none'
+                                        key={tag.id}
+                                        type="button"
                                         onClick={() => handleTagSelect(tag)}
-                                    >{tag.name}</button>
+                                    >
+                                        #{tag.name}
+                                    </button>
                                 ))}
                             </div>
                         )}
 
                         {/* Create new tag option */}
                         {inputValue.trim() && !exactMatch && (
-                            <button
-                                type='button'
+                            <button className='w-full text-left px-3 py-1 hover:bg-emerald-50 focus:bg-emerald-50 focus:outline-none text-emerald-700 border-t border-gray-200'
+                                type="button"
                                 onClick={handleCreateNewTag}
                             >
-                                <div>
+                                <div className='flex items-center gap-2'>
                                     <Plus size={16} />
                                     Create "{inputValue.trim()}"
                                 </div>
@@ -182,13 +209,11 @@ const TagSelector = ({ onTagsChange }) => {
 
                         {/* All available tags selected */}
                         {filteredTags.length === 0 && !inputValue.trim() && (
-                            <div>No more tags available</div>
+                            <div className='px-3 py-1 text-gray-500'>No more tags available</div>
                         )}
-
                     </div>
                 )}
             </div>
-
         </div>
     );
 };

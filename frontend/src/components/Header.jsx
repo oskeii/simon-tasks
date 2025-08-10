@@ -1,66 +1,76 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
-
 const Header = () => {
-  const { auth, logout } = useAuth();
+    const { auth, logout } = useAuth();
 
-  const handleLogout = async () => {
-    await logout();
-  }
+    const handleLogout = async () => {
+        await logout();
+    };
 
-  return (
-    <header className='app-header'>
-      <div className='header-branding'>
-        <h2>
-          <NavLink to="/" end>
-            ToDo App
-          </NavLink>
-        </h2>
-      </div>
+    return (
+        <header className="flex justify-between items-center py-2 px-6 text-white bg-gray-800 rounded-md shadow-md shadow-black">
+            <div className='lowercase tracking-tighter hover:text-amber-100 hover:text-shadow-sm hover:text-shadow-gray-900'>
+                <h2>
+                    <NavLink
+                        to="/"
+                        end
+                    >
+                        Simon Tasks
+                    </NavLink>
+                </h2>
+            </div>
 
-      <nav className='main-nav'> 
-        <ul className='nav-links'>
-          <li>
-            <NavLink to="/profile" end className={({ isActive }) => isActive ? 'active' : ''}>
-            Profile
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/tasks" end className={({ isActive }) => isActive ? 'active' : ''}>
-            Tasks
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/calendar" end className={({ isActive }) => isActive ? 'active' : ''}>
-            Calendar
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/timer" end className={({ isActive }) => isActive ? 'active' : ''}>
-            Timer
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/stats" end className={({ isActive }) => isActive ? 'active' : ''}>
-            Stats
-            </NavLink>
-          </li>
-          
-          {/* <NavLink to="/tasks" className="active">
-            <li>Tasks</li>
-          </NavLink>
-          <NavLink to="/profile" className="active">
-            <li>Profile</li>
-          </NavLink>
-          <li>Calendar</li> */}
-        </ul>
-      </nav>          
 
-    </header>
-      
-  );
+            <nav className="grow ml-10 p-2">
+                <ul className="flex gap-6 font-medium text-gray-300 *:has-[.active]:text-white *:has-[.active]:bg-gray-900  *:rounded-md *:px-3 *:py-2 *:hover:bg-gray-700 *:hover:text-white">
+                    <li>
+                        <NavLink
+                            to="/profile" end
+                        >
+                            Profile
+                        </NavLink>
+                    </li>
+                    <li >
+                        <NavLink
+                            to="/tasks"
+                        >
+                            Tasks
+                        </NavLink>
+                    </li>
+                    <li >
+                        <NavLink
+                            to="/organizer" end
+                        >
+                            Organizers
+                        </NavLink>
+                    </li>
+                    <li >
+                        <NavLink
+                            to="/calendar" end
+                        >
+                            Calendar
+                        </NavLink>
+                    </li>
+                    <li >
+                        <NavLink
+                            to="/timer" end
+                        >
+                            Timer
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink
+                            to="/stats"
+                        >
+                            Stats
+                        </NavLink>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+    );
 };
 
-export default Header
+export default Header;
