@@ -113,49 +113,47 @@ my-todo-app/
 
 ## Quick Start
 **Prerequisites**
-- Python 3.8+
-- Node.js 16+
+- Docker and Docker Compose
 - Git
 
 ```bash
 # > Clone the repository
-git clone https://github.com/oskeii/my-todo-app.git
-cd my-todo-app
+git clone https://github.com/oskeii/simon-tasks.git
+cd simon-tasks
 
-# > Backend environment setup
-pip install pipenv
-pipenv install --ignore-pipfile 
-pipenv shell
-    # --> `--ignore-pipfile` ensures that the exact versions in the Pipfile.lock are installed, avoiding version mismatches.
+# Copy environment template
+cp .env.example .env
 
-# > Database setup and server start
-cd backend
-python manage.py migrate # Run migrations
-python manage.py runserver # Start the server
+# Start the development environment
+chmod +x scripts/docker-dev.sh
+./scripts/docker-dev.sh up
 
-
-# > Frontend setup (in a separate terminal)
-cd frontend
-npm install
-npm run dev
 ```
 The application will be available at:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
+- Database: PostgreSQL on port 5432
+
+### Docker Commands
+Some useful Docker commands:
+```bash
+# Development environment
+./scripts/docker-dev.sh up      # Start all services
+./scripts/docker-dev.sh down    # Stop all services
+./scripts/docker-dev.sh logs    # View logs
+./scripts/docker-dev.sh migrate # Run database migrations
+./scripts/docker-dev.sh demo    # Load demo data
+./scripts/docker-dev.sh test    # Run tests
+./scripts/docker-dev.sh clean   # Clean up everything (stop containers AND remove volumes)
+
+# Access shells
+./scripts/docker-dev.sh shell backend # Django shell
+./scripts/docker-dev.sh shell db      # PostgreSQL shell
+```
 
 ### Demo Access
-You may create a user account from the login page. However, if you would like to load some demo data into the application first, the following will create a demo user with tasks and everything. It will also create an admin account for you to access Django's admin panel.
-```bash
-# Navigate to backend (from root directory)
-cd backend
-# Run this command
-python manage.py setup_demo
-# NOTE: 
-  # append with `--no-reset` to keep current database
-  # append with `--skip-admin` if you don't want to create an admin user, or would prefer to set this up manually
-```
->[!WARNING]
-> Once again, if you do not want to wipe the entire database with this command, please be sure to enter `python manage.py setup_demo --no-reset`
+You may create a user account from the login page. However, if you would like to load some demo data into the application first, use `docker ./scripts/docker-dev.sh demo` to load sample data and create a demo user account.
+
 
 - **Admin Panel**: http://localhost:8000/admin/
   - Username: `admin`
@@ -166,7 +164,7 @@ python manage.py setup_demo
 
 
 ## License
-This project is licensed under the GNU GPL v3 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU GPL v3 License - See [LICENSE](LICENSE) for details.
 
 While this code is open source, please note that it represents my personal portfolio work. 
 If you're a potential employer reviewing my code, welcome! If you're someone looking to build something similar, I encourage you to develop your own implementation rather than copying this project. 😅

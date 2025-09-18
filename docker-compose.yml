@@ -1,0 +1,73 @@
+# Specify the Docker Compose file format version
+version: '3.8'
+
+# Define our services and volumes, and set up a single application using three containers/services
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: todo_db
+
+    environment:
+      POSTGRES_DB: todoapp
+      POSTGRES_USER: todouser
+      POSTGRES_PASSWORD: todopass123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Port mapping - make database accessible from host
+    ports:
+      - "5432:5432"
+    # Verify the container is ready and accepting connections
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todouser -d todoapp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    # build image from Dockerfile
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: todo_backend
+    # These override any .env file settings
+    environment:
+      - DEBUG=1
+      - DJANGO_SECRET=dev-secret-key-not-for-production
+      - DATABASE_URL=postgresql://todouser:todopass123@db:5432/todoapp
+      - DJANGO_LOG_FILE=/app/logs/django.log
+    volumes:
+      - ./backend:/app  # mount source code for hot reloading
+      - ./logs:/app/logs  # store logs on host filesystem
+      - media_files:/app/media
+    ports:
+     - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate &&
+            python manage.py setup_demo --no-reset &&
+            python manage.py runserver 0.0.0.0:8000"
+
+    
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: todo_frontend
+
+    volumes:
+      - ./frontend:/app  # mount source code (hot reloading)
+      - /app/node_modules  # exclude node_modules from bind mount
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  media_files:
+  log_files:
+# "local" driver = store on host filesystem (but Docker manages location)
