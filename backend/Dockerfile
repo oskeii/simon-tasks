@@ -14,12 +14,11 @@ RUN apt-get update \
         postgresql-client \
         build-essential \
         libpq-dev \ 
-        git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-COPY Pipfile Pipfile.lock ./
-RUN pip install pipenv && pipenv install --system --deploy --ignore-pipfile
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project (Done after dependencies so code changes don't invalidate dependency cache)
 COPY . .
