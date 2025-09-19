@@ -22,8 +22,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project (Done after dependencies so code changes don't invalidate dependency cache)
 COPY . .
-# Create directories for logs and media
-RUN mkdir -p /app/logs /app/media
+# Create directories for logs, media, and static files
+RUN mkdir -p /app/logs /app/media /app/staticfiles
+# Collect static files for Django admin styling
+RUN python manage.py collectstatic --noinput --clear 
 
 EXPOSE 8000
 

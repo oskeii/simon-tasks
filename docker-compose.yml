@@ -1,6 +1,3 @@
-# Specify the Docker Compose file format version
-version: '3.8'
-
 # Define our services and volumes, and set up a single application using three containers/services
 services:
   db:
@@ -37,7 +34,7 @@ services:
       - DJANGO_LOG_FILE=/app/logs/django.log
     volumes:
       - ./backend:/app  # mount source code for hot reloading
-      - ./logs:/app/logs  # store logs on host filesystem
+      - log_files:/app/logs
       - media_files:/app/media
     ports:
      - "8000:8000"
@@ -70,4 +67,3 @@ volumes:
   postgres_data:
   media_files:
   log_files:
-# "local" driver = store on host filesystem (but Docker manages location)
