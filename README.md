@@ -111,45 +111,11 @@ my-todo-app/
 └── README.md                 # Project documentation
 ```
 
-## Quick Start
+## Quick Start (under construction)
 **Prerequisites**
 - Docker and Docker Compose
 - Git
 
-```bash
-# > Clone the repository
-git clone https://github.com/oskeii/simon-tasks.git
-cd simon-tasks
-
-# Copy environment template
-cp .env.example .env
-
-# Start the development environment
-chmod +x scripts/docker-dev.sh
-./scripts/docker-dev.sh up
-
-```
-The application will be available at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- Database: PostgreSQL on port 5432
-
-### Docker Commands
-Some useful Docker commands:
-```bash
-# Development environment
-./scripts/docker-dev.sh up      # Start all services
-./scripts/docker-dev.sh down    # Stop all services
-./scripts/docker-dev.sh logs    # View logs
-./scripts/docker-dev.sh migrate # Run database migrations
-./scripts/docker-dev.sh demo    # Load demo data
-./scripts/docker-dev.sh test    # Run tests
-./scripts/docker-dev.sh clean   # Clean up everything (stop containers AND remove volumes)
-
-# Access shells
-./scripts/docker-dev.sh shell backend # Django shell
-./scripts/docker-dev.sh shell db      # PostgreSQL shell
-```
 
 ### Demo Access
 You may create a user account from the login page. However, if you would like to load some demo data into the application first, use `docker ./scripts/docker-dev.sh demo` to load sample data and create a demo user account.
@@ -168,5 +134,6 @@ This project is licensed under the GNU GPL v3 License - See [LICENSE](LICENSE) f
 
 While this code is open source, please note that it represents my personal portfolio work. 
 If you're a potential employer reviewing my code, welcome! If you're someone looking to build something similar, I encourage you to develop your own implementation rather than copying this project. 😅
+
 
 
