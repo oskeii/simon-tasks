@@ -28,7 +28,7 @@ services:
     container_name: todo_backend
     # These override any .env file settings
     environment:
-      - DEBUG=1
+      - DEBUG=true
       - DJANGO_SECRET=dev-secret-key-not-for-production
       - DATABASE_URL=postgresql://todouser:todopass123@db:5432/todoapp
       - DJANGO_LOG_FILE=/app/logs/django.log
