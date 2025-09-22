@@ -10,21 +10,18 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y -no-install-recommends \
+    && apt-get install -y --no-install-recommends \
         postgresql-client \
         build-essential \
         libpq-dev \ 
-        git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-COPY Pipfile Pipfile.lock ./
-RUN pip install pipenv && pipenv install --system --deploy --ignore-pipfile
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project (Done after dependencies so code changes don't invalidate dependency cache)
 COPY . .
-# Create directories for logs and media
-RUN mkdir -p /app/logs /app/media
 
 EXPOSE 8000
 

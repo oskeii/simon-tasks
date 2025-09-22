@@ -40,12 +40,26 @@ class Command(BaseCommand):
 
         self.stdout.write('Creating demo data...')
 
-        # Create admin user
+        # Create admin user only if it doesn't exist
         if not options['skip_admin']:
-            User.objects.create_superuser('admin', 'admin@example.com', 'adminpass123')
-            self.stdout.write(
-                self.style.SUCCESS('✓ Admin user created')
+            admin_user, created = User.objects.get_or_create(
+                username='admin',
+                defaults={
+                    'email': 'admin@example.com',
+                    'is_staff': True,
+                    'is_superuser': True
+                }
             )
+            if created:
+                admin_user.set_password('adminpass123')
+                admin_user.save()
+                self.stdout.write(
+                    self.style.SUCCESS('✓ Admin user created')
+                )
+            else:
+                self.stdout.write(
+                    self.style.WARNING('✓ Admin user already exists')
+                )
             self.stdout.write('🔧 Admin panel: http://localhost:8000/admin/')
             self.stdout.write('👤 Admin user: admin / adminpass123')
 
@@ -80,8 +94,22 @@ class Command(BaseCommand):
             self.stdout.write( self.style.ERROR(f'Demo data file not found: {data_file}') )
             return
 
-        # Create user
-        user = User.objects.create_user(**data['user'])
+        # Check if user already exists
+        username = data['user']['username']
+        user, created = User.objects.get_or_create(
+            username=username,
+            defaults={
+                'email': data['user']['email']
+            }
+        )
+        if created:
+            user.set_password(data['user']['password'])
+            user.save()
+            self.stdout.write(f'✓ Created new user: {username}')
+        else:
+            self.stdout.write(f'✓ User {username} already exists, skipping creation')
+            return username
+
 
         # Create categories
         categories = {}
@@ -150,4 +178,4 @@ class Command(BaseCommand):
             if task.due_date:
                 self.stdout.write(f'    Due: {task.due_date.strftime("%Y-%m-%d %H:%M")}')
 
-        return data['user']['username']
+        return username

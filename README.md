@@ -57,16 +57,18 @@ Projected features include smart task suggestions, time-logging, activity tracki
 **Backend**
 - **Framework:** Django 5.1+ with Django REST Framework
 - **Authentication:** JWT with custom cookie-based implementation
-- **Database:** SQLite (development)
+- **Database:** PostgreSQL (docker/production), SQLite (local development)
   
 **Frontend**
-- **Framework:** React.js with modern hooks and functional components
+- **Framework:** React.js  with Vite build tool
 - **HTTP Client:** Axios for API communication
 - **State Management:** Custom hooks for efficient state management
+- **Styling:** Tailwind CSS for responsive design
   
 **Development Tools**
+- **Containerization:** Docker & Docker Compose with multi-service composition
 - **API Testing:** Postman for endpoint validation
-- **Package Management:** Pipenv (Python), npm (Node.js)
+- **Package Management:** Pip (Python), npm (Node.js)
 
 ## Project Status
 ### Phase 1: Core MVP ✅
@@ -77,6 +79,7 @@ Projected features include smart task suggestions, time-logging, activity tracki
 - [x] Category and tag system
 - [x] Task search, filter, and sort functionality
 ### Phase 2: Enhanced Functionality
+- [x] Docker containerization setup
 - [ ] Comprehensive testing suite (unit, integration, e2e)
 - [ ] Responsive styling/ UX improvements
 - [ ] Calendar integration with weekly/daily views
@@ -91,14 +94,17 @@ Projected features include smart task suggestions, time-logging, activity tracki
 - [ ] Intelligent task suggestions (w/ constraints algorithm)
 
 ## Project Structure
-```bash
+```
 my-todo-app/
 ├── backend/                    # Django backend
 │   ├── api/                   # API app with views and URLs
 │   ├── tasks/                 # Task models and business logic
 │   ├── users/                 # User models and authentication
 │   ├── backend/               # Project settings and configuration
-│   └── media/                 # User uploaded files
+│   ├── media/                 # User uploaded files
+│   ├── logs/                  # Application logs
+│   ├── Dockerfile             # Backend container configuration
+│   └── requirements.txt       # Python dependencies
 ├── frontend/                   # React frontend
 │   ├── src/
 │   │   ├── components/        # Reusable UI components
@@ -107,66 +113,56 @@ my-todo-app/
 │   │   ├── services/         # API service layer
 │   │   └── utils/            # Utility functions
 │   ├── public/               # Static assets
+│   ├── Dockerfile            # Frontend container configuration
 │   └── package.json          # Dependencies and scripts
+├── docker-compose.yml         # Multi-service container orchestration
 └── README.md                 # Project documentation
 ```
 
 ## Quick Start
 **Prerequisites**
-- Docker and Docker Compose
-- Git
+- Docker Desktop
+- ~2GB free disk space for containers and images
 
+**1. Clone the repository:**
 ```bash
-# > Clone the repository
 git clone https://github.com/oskeii/simon-tasks.git
 cd simon-tasks
-
-# Copy environment template
-cp .env.example .env
-
-# Start the development environment
-chmod +x scripts/docker-dev.sh
-./scripts/docker-dev.sh up
-
 ```
-The application will be available at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- Database: PostgreSQL on port 5432
-
-### Docker Commands
-Some useful Docker commands:
+**2. Start the application:**
 ```bash
-# Development environment
-./scripts/docker-dev.sh up      # Start all services
-./scripts/docker-dev.sh down    # Stop all services
-./scripts/docker-dev.sh logs    # View logs
-./scripts/docker-dev.sh migrate # Run database migrations
-./scripts/docker-dev.sh demo    # Load demo data
-./scripts/docker-dev.sh test    # Run tests
-./scripts/docker-dev.sh clean   # Clean up everything (stop containers AND remove volumes)
-
-# Access shells
-./scripts/docker-dev.sh shell backend # Django shell
-./scripts/docker-dev.sh shell db      # PostgreSQL shell
+docker compose up --build -d
 ```
 
-### Demo Access
-You may create a user account from the login page. However, if you would like to load some demo data into the application first, use `docker ./scripts/docker-dev.sh demo` to load sample data and create a demo user account.
+**The application will be available at:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000/api
+- Admin Panel: http://localhost:8000/admin
 
+**Default credentials:**
 
-- **Admin Panel**: http://localhost:8000/admin/
-  - Username: `admin`
-  - Password: `adminpass123`
-- **Demo User**:
-  - Username: `see message in terminal`
-  - Password: `demopass123`
+The setup automatically creates demo data and an admin user on first run. 
+*You may also create a user account from the login page.*
+- **Admin User:** `admin`/`adminpass123`
+- **Demo User**: Check the (backend) terminal output for login credentials
+```👤 Demo user: [username] / demopass123```
 
+<!-- ### Environment Configuration
+- **Development settings** are configured in docker-compose.yml
+- **Database:** PostgreSQL runs in container with persistent volume
+- **Media files:** Stored in Docker volume, accessible at /media/
+- **Logs:** Available in backend/logs/ and via docker compose logs
+
+### More info...
+- [Docker Commands Reference]
+- [Development Guide]
+
+ -->
 
 ## License
 This project is licensed under the GNU GPL v3 License - See [LICENSE](LICENSE) for details.
-
+<!-- 
 While this code is open source, please note that it represents my personal portfolio work. 
 If you're a potential employer reviewing my code, welcome! If you're someone looking to build something similar, I encourage you to develop your own implementation rather than copying this project. 😅
-
+ -->
 
